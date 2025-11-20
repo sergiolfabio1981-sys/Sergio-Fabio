@@ -3,11 +3,26 @@ import { GoogleGenAI, Chat } from "@google/genai";
 let chatSession: Chat | null = null;
 
 const getClient = () => {
-  if (!process.env.API_KEY) {
+  let apiKey: string | undefined;
+  
+  try {
+    // Attempt to read process.env.API_KEY safely
+    apiKey = process.env.API_KEY;
+  } catch (error) {
+    // Ignore ReferenceError if process is not defined
+  }
+
+  // Use provided API Key if process.env is missing
+  if (!apiKey) {
+    apiKey = "AIzaSyCuNIDFrtz5UnWpUuimM6sWVJNLL-yVM-Q";
+  }
+
+  if (!apiKey) {
     console.error("API_KEY is missing");
     throw new Error("API_KEY is missing");
   }
-  return new GoogleGenAI({ apiKey: process.env.API_KEY });
+  
+  return new GoogleGenAI({ apiKey });
 };
 
 export const initializeChat = () => {
@@ -54,8 +69,8 @@ export const sendMessageToGemini = async function* (message: string) {
     }
   } catch (error) {
     console.error("Error sending message to Gemini:", error);
-    yield "Lo siento, tuve un problema al procesar tu mensaje. Por favor intenta nuevamente.";
-    // Re-initialize just in case
+    yield "Lo siento, tuve un pequeño problema de conexión. ¿Podrías repetirme eso?";
+    // Re-initialize just in case connection was lost
     chatSession = null;
   }
 };
