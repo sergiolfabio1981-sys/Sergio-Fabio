@@ -1,18 +1,13 @@
-export interface ItineraryDay {
-  day: number;
-  activity: string;
-}
-
 export interface Trip {
   id: string;
   title: string;
   location: string;
   price: number;
   description: string;
-  images: string[]; // Changed from image: string to images: string[]
+  images: string[];
   isOffer: boolean;
   offerExpiresAt?: string; // ISO date string
-  itinerary: ItineraryDay[];
+  availableDates: string[];
 }
 
 export interface ChatMessage {

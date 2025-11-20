@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Trip } from '../types';
 import Countdown from './Countdown';
@@ -9,6 +9,21 @@ interface TripCardProps {
 
 const TripCard: React.FC<TripCardProps> = ({ trip }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Auto-play carousel
+  useEffect(() => {
+    if (trip.images.length <= 1 || isHovered) return;
+
+    // Randomize interval slightly so cards don't sync perfectly (3s - 5s)
+    const intervalDuration = 3000 + Math.random() * 2000;
+
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % trip.images.length);
+    }, intervalDuration);
+
+    return () => clearInterval(interval);
+  }, [trip.images.length, isHovered]);
 
   const nextImage = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -22,8 +37,18 @@ const TripCard: React.FC<TripCardProps> = ({ trip }) => {
     setCurrentImageIndex((prev) => (prev - 1 + trip.images.length) % trip.images.length);
   };
 
+  const formattedPrice = new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+    minimumFractionDigits: 0
+  }).format(trip.price);
+
   return (
-    <div className={`group relative bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 ${trip.isOffer ? 'border-2 border-orange-400' : ''}`}>
+    <div 
+      className={`group relative bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 ${trip.isOffer ? 'border-2 border-orange-400' : ''}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="relative h-56 overflow-hidden">
         {/* Image Display */}
         <img 
@@ -53,7 +78,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip }) => {
               {trip.images.map((_, idx) => (
                 <div 
                   key={idx} 
-                  className={`w-1.5 h-1.5 rounded-full shadow-sm ${idx === currentImageIndex ? 'bg-white' : 'bg-white/50'}`}
+                  className={`w-1.5 h-1.5 rounded-full shadow-sm transition-colors duration-300 ${idx === currentImageIndex ? 'bg-white' : 'bg-white/50'}`}
                 />
               ))}
             </div>
@@ -93,7 +118,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip }) => {
         <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
           <div className="flex flex-col">
             <span className="text-xs text-gray-400 uppercase">Desde</span>
-            <span className="text-2xl font-bold text-gray-800">${trip.price}</span>
+            <span className="text-2xl font-bold text-gray-800">{formattedPrice}</span>
           </div>
           <Link 
             to={`/trip/${trip.id}`}

@@ -3,7 +3,38 @@ import { Trip } from './types';
 export const ADMIN_EMAIL = "sergiolfabio1981@gmail.com";
 export const ADMIN_PASS = "Colo1981";
 
+// Helper to generate requested dates for the example
+const DATES_JAN_2026_FRIDAYS = [
+  "Viernes 02 de Enero, 2026",
+  "Viernes 09 de Enero, 2026",
+  "Viernes 16 de Enero, 2026",
+  "Viernes 23 de Enero, 2026",
+  "Viernes 30 de Enero, 2026"
+];
+
+const DATES_FEB_2026_FRIDAYS = [
+  "Viernes 06 de Febrero, 2026",
+  "Viernes 13 de Febrero, 2026",
+  "Viernes 20 de Febrero, 2026",
+  "Viernes 27 de Febrero, 2026"
+];
+
+const DATES_MAR_2026_SUNDAYS = [
+  "Domingo 01 de Marzo, 2026",
+  "Domingo 08 de Marzo, 2026",
+  "Domingo 15 de Marzo, 2026",
+  "Domingo 22 de Marzo, 2026",
+  "Domingo 29 de Marzo, 2026"
+];
+
+const ALL_EXAMPLE_DATES = [
+  ...DATES_JAN_2026_FRIDAYS,
+  ...DATES_FEB_2026_FRIDAYS,
+  ...DATES_MAR_2026_SUNDAYS
+];
+
 export const INITIAL_TRIPS: Trip[] = [
+  // OFERTAS DESTACADAS EXISTENTES
   {
     id: '1',
     title: 'Florianópolis Mágico',
@@ -17,12 +48,7 @@ export const INITIAL_TRIPS: Trip[] = [
     ],
     isOffer: true,
     offerExpiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
-    itinerary: [
-      { day: 1, activity: 'Llegada y check-in en Hotel frente al mar.' },
-      { day: 2, activity: 'Tour por Ilha do Campeche.' },
-      { day: 3, activity: 'Día libre en Barra da Lagoa.' },
-      { day: 4, activity: 'Cena despedida y regreso.' }
-    ]
+    availableDates: ALL_EXAMPLE_DATES
   },
   {
     id: '2',
@@ -37,14 +63,67 @@ export const INITIAL_TRIPS: Trip[] = [
     ],
     isOffer: true,
     offerExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 1 day from now
-    itinerary: [
-      { day: 1, activity: 'Llegada y caipiriña de bienvenida.' },
-      { day: 2, activity: 'Visita al Cristo Redentor y Pan de Azúcar.' },
-      { day: 3, activity: 'Día de playa en Ipanema.' },
-      { day: 4, activity: 'Tour histórico por el centro.' },
-      { day: 5, activity: 'Regreso.' }
-    ]
+    availableDates: ALL_EXAMPLE_DATES
   },
+  // NUEVAS OFERTAS (4)
+  {
+    id: '6',
+    title: 'Natal & Dunas',
+    location: 'Rio Grande do Norte, Brasil',
+    price: 1150,
+    description: 'Conocida como la Ciudad del Sol. Paseos en buggy por las dunas de Genipabu y playas interminables.',
+    images: [
+      'https://picsum.photos/seed/natal1/800/600',
+      'https://picsum.photos/seed/natal2/800/600'
+    ],
+    isOffer: true,
+    offerExpiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
+    availableDates: ALL_EXAMPLE_DATES
+  },
+  {
+    id: '7',
+    title: 'Caribe Brasileño: Maceió',
+    location: 'Alagoas, Brasil',
+    price: 1080,
+    description: 'Aguas verdes esmeralda, piscinas naturales en Pajuçara y una costanera imperdible.',
+    images: [
+      'https://picsum.photos/seed/maceio1/800/600',
+      'https://picsum.photos/seed/maceio2/800/600'
+    ],
+    isOffer: true,
+    offerExpiresAt: new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString(),
+    availableDates: ALL_EXAMPLE_DATES
+  },
+  {
+    id: '8',
+    title: 'Jericoacoara Exclusivo',
+    location: 'Ceará, Brasil',
+    price: 1350,
+    description: 'Un paraíso entre dunas y lagunas. Disfruta del atardecer y la famosa Pedra Furada.',
+    images: [
+      'https://picsum.photos/seed/jeri1/800/600',
+      'https://picsum.photos/seed/jeri2/800/600'
+    ],
+    isOffer: true,
+    offerExpiresAt: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString(),
+    availableDates: ALL_EXAMPLE_DATES
+  },
+  {
+    id: '9',
+    title: 'Buceo en Arraial do Cabo',
+    location: 'Rio de Janeiro, Brasil',
+    price: 920,
+    description: 'Conocida como la capital del buceo. Playas de arena blanca y aguas turquesas impresionantes.',
+    images: [
+      'https://picsum.photos/seed/arraial1/800/600',
+      'https://picsum.photos/seed/arraial2/800/600'
+    ],
+    isOffer: true,
+    offerExpiresAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+    availableDates: ALL_EXAMPLE_DATES
+  },
+
+  // DESTINOS REGULARES (Existentes + Nuevos)
   {
     id: '3',
     title: 'Relax en Buzios',
@@ -57,13 +136,7 @@ export const INITIAL_TRIPS: Trip[] = [
       'https://picsum.photos/seed/buzios3/800/600'
     ],
     isOffer: false,
-    itinerary: [
-      { day: 1, activity: 'Traslado privado y alojamiento.' },
-      { day: 2, activity: 'Paseo en Buggy por 7 playas.' },
-      { day: 3, activity: 'Navegación en Escuna.' },
-      { day: 4, activity: 'Día libre para compras en Rua das Pedras.' },
-      { day: 5, activity: 'Regreso.' }
-    ]
+    availableDates: ALL_EXAMPLE_DATES
   },
   {
     id: '4',
@@ -76,13 +149,7 @@ export const INITIAL_TRIPS: Trip[] = [
       'https://picsum.photos/seed/salvador2/800/600'
     ],
     isOffer: false,
-    itinerary: [
-      { day: 1, activity: 'Llegada a Salvador.' },
-      { day: 2, activity: 'City Tour Histórico Pelourinho.' },
-      { day: 3, activity: 'Playa Praia do Forte.' },
-      { day: 4, activity: 'Show folclórico y cena bahiana.' },
-      { day: 5, activity: 'Regreso.' }
-    ]
+    availableDates: ALL_EXAMPLE_DATES
   },
   {
     id: '5',
@@ -96,12 +163,111 @@ export const INITIAL_TRIPS: Trip[] = [
       'https://picsum.photos/seed/porto3/800/600'
     ],
     isOffer: false,
-    itinerary: [
-      { day: 1, activity: 'Recepción y traslado.' },
-      { day: 2, activity: 'Paseo en Jangada a las piscinas naturales.' },
-      { day: 3, activity: 'Tour de playas en Buggy.' },
-      { day: 4, activity: 'Día libre.' },
-      { day: 5, activity: 'Regreso.' }
-    ]
+    availableDates: ALL_EXAMPLE_DATES
+  },
+  // NUEVOS DESTINOS REGULARES (8)
+  {
+    id: '10',
+    title: 'Fernando de Noronha',
+    location: 'Pernambuco, Brasil',
+    price: 2500,
+    description: 'El archipiélago más exclusivo de Brasil. Santuario ecológico, delfines y playas vírgenes.',
+    images: [
+      'https://picsum.photos/seed/noronha1/800/600',
+      'https://picsum.photos/seed/noronha2/800/600'
+    ],
+    isOffer: false,
+    availableDates: ALL_EXAMPLE_DATES
+  },
+  {
+    id: '11',
+    title: 'Recife & Olinda',
+    location: 'Pernambuco, Brasil',
+    price: 980,
+    description: 'Historia colonial, carnavales callejeros y la belleza de la Venecia brasileña.',
+    images: [
+      'https://picsum.photos/seed/recife1/800/600',
+      'https://picsum.photos/seed/recife2/800/600'
+    ],
+    isOffer: false,
+    availableDates: ALL_EXAMPLE_DATES
+  },
+  {
+    id: '12',
+    title: 'Ilha Grande Aventura',
+    location: 'Rio de Janeiro, Brasil',
+    price: 890,
+    description: 'Sin autos, solo senderos, cascadas y playas de ensueño como Lopes Mendes.',
+    images: [
+      'https://picsum.photos/seed/ilhagrande1/800/600',
+      'https://picsum.photos/seed/ilhagrande2/800/600'
+    ],
+    isOffer: false,
+    availableDates: ALL_EXAMPLE_DATES
+  },
+  {
+    id: '13',
+    title: 'Morro de São Paulo',
+    location: 'Bahía, Brasil',
+    price: 1020,
+    description: 'Fiesta y relax en una isla paradisíaca. Tirolesa, playas numeradas y buena gastronomía.',
+    images: [
+      'https://picsum.photos/seed/morro1/800/600',
+      'https://picsum.photos/seed/morro2/800/600'
+    ],
+    isOffer: false,
+    availableDates: ALL_EXAMPLE_DATES
+  },
+  {
+    id: '14',
+    title: 'Praia do Forte Eco',
+    location: 'Bahía, Brasil',
+    price: 1150,
+    description: 'Proyecto Tamar (tortugas marinas), resorts de lujo y una villa encantadora.',
+    images: [
+      'https://picsum.photos/seed/praiaforte1/800/600',
+      'https://picsum.photos/seed/praiaforte2/800/600'
+    ],
+    isOffer: false,
+    availableDates: ALL_EXAMPLE_DATES
+  },
+  {
+    id: '15',
+    title: 'Canoa Quebrada',
+    location: 'Ceará, Brasil',
+    price: 940,
+    description: 'Famosa por sus acantilados rojos y el símbolo de la luna y la estrella. Vuelos en parapente.',
+    images: [
+      'https://picsum.photos/seed/canoa1/800/600',
+      'https://picsum.photos/seed/canoa2/800/600'
+    ],
+    isOffer: false,
+    availableDates: ALL_EXAMPLE_DATES
+  },
+  {
+    id: '16',
+    title: 'Maragogi',
+    location: 'Alagoas, Brasil',
+    price: 1060,
+    description: 'Conocida por sus Galés (piscinas naturales) en alta mar. Un espectáculo visual.',
+    images: [
+      'https://picsum.photos/seed/maragogi1/800/600',
+      'https://picsum.photos/seed/maragogi2/800/600'
+    ],
+    isOffer: false,
+    availableDates: ALL_EXAMPLE_DATES
+  },
+  {
+    id: '17',
+    title: 'Itacaré Surf & Selva',
+    location: 'Bahía, Brasil',
+    price: 990,
+    description: 'Donde la selva atlántica se encuentra con el mar. Ideal para surfistas y amantes de la naturaleza.',
+    images: [
+      'https://picsum.photos/seed/itacare1/800/600',
+      'https://picsum.photos/seed/itacare2/800/600'
+    ],
+    isOffer: false,
+    availableDates: ALL_EXAMPLE_DATES
   }
 ];
