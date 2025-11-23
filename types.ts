@@ -10,6 +10,18 @@ export interface Trip {
   availableDates: string[];
 }
 
+export interface Apartment {
+  id: string;
+  title: string;
+  location: string;
+  pricePerNight: number;
+  description: string;
+  images: string[];
+  bedrooms: number;
+  maxGuests: number;
+  amenities: string[]; // Wifi, Pileta, Aire Acondicionado, etc.
+}
+
 export interface ChatMessage {
   id: string;
   role: 'user' | 'model';

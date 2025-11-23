@@ -1,4 +1,4 @@
-import { Trip } from './types';
+import { Trip, Apartment } from './types';
 
 export const ADMIN_EMAIL = "sergiolfabio1981@gmail.com";
 export const ADMIN_PASS = "Colo1981";
@@ -123,7 +123,7 @@ export const INITIAL_TRIPS: Trip[] = [
     availableDates: ALL_EXAMPLE_DATES
   },
 
-  // DESTINOS REGULARES (Existentes + Nuevos)
+  // DESTINOS REGULARES
   {
     id: '3',
     title: 'Relax en Buzios',
@@ -165,7 +165,6 @@ export const INITIAL_TRIPS: Trip[] = [
     isOffer: false,
     availableDates: ALL_EXAMPLE_DATES
   },
-  // NUEVOS DESTINOS REGULARES (8)
   {
     id: '10',
     title: 'Fernando de Noronha',
@@ -269,5 +268,79 @@ export const INITIAL_TRIPS: Trip[] = [
     ],
     isOffer: false,
     availableDates: ALL_EXAMPLE_DATES
+  }
+];
+
+export const INITIAL_RENTALS: Apartment[] = [
+  {
+    id: 'apt-1',
+    title: 'Penthouse Jurerê Internacional',
+    location: 'Florianópolis, Brasil',
+    pricePerNight: 35000,
+    description: 'Lujoso ático frente al mar en la zona más exclusiva de Floripa. Cuenta con terraza privada, jacuzzi y vista panorámica al océano. A pasos de los mejores Beach Clubs.',
+    images: [
+      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=1980&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1512918760532-3edbed71741b?q=80&w=2076&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1484154218962-a1c002085d2f?q=80&w=2071&auto=format&fit=crop'
+    ],
+    bedrooms: 3,
+    maxGuests: 6,
+    amenities: ['Wifi Alta Velocidad', 'Aire Acondicionado', 'Jacuzzi Privado', 'Seguridad 24hs', 'Estacionamiento']
+  },
+  {
+    id: 'apt-2',
+    title: 'Loft Moderno en Copacabana',
+    location: 'Rio de Janeiro, Brasil',
+    pricePerNight: 28000,
+    description: 'Diseño minimalista y ubicación inmejorable. A solo una cuadra de la playa y cerca de restaurantes y bares. Ventanales de piso a techo con vista parcial al mar.',
+    images: [
+      'https://images.unsplash.com/photo-1502005229766-3c622724c071?q=80&w=1974&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1556020685-ae79c95eda3d?q=80&w=1974&auto=format&fit=crop'
+    ],
+    bedrooms: 1,
+    maxGuests: 3,
+    amenities: ['Wifi', 'Smart TV', 'Cocina Completa', 'Aire Acondicionado']
+  },
+  {
+    id: 'apt-3',
+    title: 'Casa Geribá con Piscina',
+    location: 'Búzios, Brasil',
+    pricePerNight: 45000,
+    description: 'Hermosa casa de estilo buziano a 300 metros de la playa de Geribá. Amplio jardín, piscina privada y quincho con parrilla. Ideal para familias grandes.',
+    images: [
+      'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1560185007-cde436f6a4d0?q=80&w=2070&auto=format&fit=crop'
+    ],
+    bedrooms: 4,
+    maxGuests: 10,
+    amenities: ['Piscina Privada', 'Parrilla', 'Jardín', 'Wifi', 'Cocina equipada']
+  },
+  {
+    id: 'apt-4',
+    title: 'Flat Canasvieiras Family',
+    location: 'Florianópolis, Brasil',
+    pricePerNight: 22000,
+    description: 'Cómodo departamento en el centro de Canasvieiras. A dos cuadras del mar. Edificio con piscina en la terraza y salón de juegos. Muy cerca de supermercados.',
+    images: [
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1505693416388-b0346ef41439?q=80&w=2074&auto=format&fit=crop'
+    ],
+    bedrooms: 2,
+    maxGuests: 5,
+    amenities: ['Piscina compartida', 'Wifi', 'Balcón', 'Aire Acondicionado']
+  },
+  {
+    id: 'apt-5',
+    title: 'Ipanema Ocean Front',
+    location: 'Rio de Janeiro, Brasil',
+    pricePerNight: 55000,
+    description: 'La mejor vista de Río. Departamento de categoría frente al Posto 9. Decoración de lujo, servicio de limpieza diario incluido y acceso directo a la playa.',
+    images: [
+      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=2070&auto=format&fit=crop'
+    ],
+    bedrooms: 3,
+    maxGuests: 6,
+    amenities: ['Vista al mar', 'Servicio de limpieza', 'Wifi Premium', 'Seguridad 24hs', 'Lavandería']
   }
 ];

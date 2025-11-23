@@ -6,6 +6,8 @@ import Chatbot from './components/Chatbot';
 import Home from './pages/Home';
 import Details from './pages/Details';
 import Admin from './pages/Admin';
+import Rentals from './pages/Rentals';
+import RentalDetails from './pages/RentalDetails';
 
 const App: React.FC = () => {
   return (
@@ -16,6 +18,8 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/trip/:id" element={<Details />} />
+            <Route path="/rentals" element={<Rentals />} />
+            <Route path="/rentals/:id" element={<RentalDetails />} />
             <Route path="/admin" element={<Admin />} />
           </Routes>
         </main>
