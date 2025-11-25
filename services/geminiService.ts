@@ -5,8 +5,14 @@ let chatSession: Chat | null = null;
 
 export const initializeChat = () => {
   try {
-    // Usamos la API Key proporcionada directamente
-    const apiKey = "AIzaSyCuNIDFrtz5UnWpUuimM6sWVJNLL-yVM-Q";
+    // Usamos la variable de entorno para la API Key
+    // En Vercel, configura esta variable como 'API_KEY' en la sección Environment Variables
+    const apiKey = process.env.API_KEY;
+    
+    if (!apiKey) {
+        console.warn("API Key no encontrada en variables de entorno.");
+        return;
+    }
     
     const ai = new GoogleGenAI({ apiKey });
     
@@ -47,7 +53,7 @@ export const sendMessageToGemini = async function* (message: string) {
   }
 
   if (!chatSession) {
-    yield "Error crítico: No se pudo conectar con el servicio de IA. Verifica tu conexión.";
+    yield "Error de configuración: Falta la API Key. Por favor contacta al administrador.";
     return;
   }
 
@@ -65,7 +71,7 @@ export const sendMessageToGemini = async function* (message: string) {
     let debugMessage = "¡Ups! Una ola interfirió en mi señal. ";
     
     if (error.toString().includes("403")) {
-        debugMessage += "\n(Error 403: Acceso denegado. Es probable que tu API Key restrinja el dominio 'abrastravel.vercel.app'. Revisa la configuración en Google Cloud Console).";
+        debugMessage += "\n(Error 403: Acceso denegado. Revisa las restricciones de dominio de tu API Key en Google Cloud Console).";
     } else if (error.toString().includes("429")) {
         debugMessage += "\n(Error 429: Cuota de uso excedida).";
     } else if (error.message) {
