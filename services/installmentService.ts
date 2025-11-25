@@ -2,7 +2,7 @@
 import { InstallmentTrip } from '../types';
 import { INITIAL_INSTALLMENT_TRIPS } from '../constants';
 
-const INSTALLMENT_STORAGE_KEY = 'abras_travel_installments_v2';
+const INSTALLMENT_STORAGE_KEY = 'abras_travel_installments_v3';
 
 export const getInstallmentTrips = (): InstallmentTrip[] => {
   const stored = localStorage.getItem(INSTALLMENT_STORAGE_KEY);

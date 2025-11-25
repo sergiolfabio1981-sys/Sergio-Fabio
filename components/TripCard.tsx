@@ -30,6 +30,10 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
   const isInstallment = item.type === 'installment';
   const isTrip = !isRental && !isExcursion && !isHotel && !isInstallment;
 
+  // Extra features for Trips (Flight) and Others (Rating)
+  const includesFlight = (item as any).includesFlight;
+  const rating = (item as any).rating;
+
   // Determine Link URL
   let linkUrl = `/trip/${item.id}`;
   if (isRental) linkUrl = `/rentals/${item.id}`;
@@ -157,13 +161,31 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
             )}
         </div>
 
-        <div className="absolute top-2 left-2 z-10 flex gap-1">
-           {isRental && <span className="bg-purple-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">{t('card.rental')}</span>}
-           {isExcursion && <span className="bg-green-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">{t('card.excursion')}</span>}
-           {isHotel && <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">{t('card.hotel')}</span>}
-           {isInstallment && <span className="bg-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">ABRAS CUOTAS</span>}
+        <div className="absolute top-2 left-2 z-10 flex flex-col items-start gap-1">
+           <div className="flex gap-1">
+                {isRental && <span className="bg-purple-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">{t('card.rental')}</span>}
+                {isExcursion && <span className="bg-green-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">{t('card.excursion')}</span>}
+                {isHotel && <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">{t('card.hotel')}</span>}
+                {isInstallment && <span className="bg-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">ABRAS CUOTAS</span>}
+           </div>
+           
+           {/* Flight Included Badge */}
+           {includesFlight && (
+               <div className="bg-sky-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow flex items-center">
+                   <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
+                   Incluye Vuelo
+               </div>
+           )}
         </div>
         
+        {/* Rating Badge (Despegar Style) */}
+        {rating && (
+            <div className="absolute bottom-2 right-2 bg-blue-900 text-white text-xs font-bold px-2 py-1 rounded flex items-center shadow">
+                <span className="text-sm mr-1">{rating}</span>
+                <span className="font-normal opacity-80 text-[10px]">Fantástico</span>
+            </div>
+        )}
+
         {item.isOffer && (item as any).offerExpiresAt && (
           <div className="absolute bottom-2 left-2 z-10"><Countdown targetDate={(item as any).offerExpiresAt} /></div>
         )}

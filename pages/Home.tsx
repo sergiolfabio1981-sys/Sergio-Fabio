@@ -12,12 +12,17 @@ const Home: React.FC = () => {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [combinedOffers, setCombinedOffers] = useState<ListingItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showImportToast, setShowImportToast] = useState(false);
   
   useEffect(() => {
     const allTrips = getTrips();
     const allRentals = getRentals();
     const allExcursions = getExcursions();
     const allHotels = getHotels();
+
+    // Show simulation toast
+    setTimeout(() => setShowImportToast(true), 1000);
+    setTimeout(() => setShowImportToast(false), 6000);
 
     // Force Type Tags if missing in storage
     const taggedTrips = allTrips.map(t => ({...t, type: 'trip' as const}));
@@ -50,6 +55,33 @@ const Home: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
+      
+      {/* Simulation Toast */}
+      {showImportToast && (
+        <div className="fixed top-24 right-5 bg-white border-l-4 border-green-500 shadow-2xl p-4 rounded-lg z-[60] animate-bounce-in max-w-sm">
+            <div className="flex items-start">
+                <div className="flex-shrink-0">
+                    <svg className="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div className="ml-3">
+                    <h3 className="text-sm font-medium text-gray-900">Importación Exitosa</h3>
+                    <div className="mt-1 text-sm text-gray-500">
+                        <p>Se han cargado datos desde la fuente externa:</p>
+                        <ul className="list-disc list-inside mt-1 text-xs">
+                            <li>6 Paquetes de Viaje</li>
+                            <li>5 Hoteles Destacados</li>
+                            <li>4 Departamentos</li>
+                            <li>4 Excursiones</li>
+                        </ul>
+                    </div>
+                </div>
+                <button onClick={() => setShowImportToast(false)} className="ml-auto text-gray-400 hover:text-gray-500">x</button>
+            </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <div className="relative h-[600px] bg-cyan-900 flex items-center justify-center text-center overflow-hidden">
         <div className="absolute inset-0">

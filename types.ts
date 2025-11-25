@@ -10,6 +10,9 @@ export interface Trip {
   offerExpiresAt?: string; // ISO date string
   availableDates: string[];
   discount?: number;
+  includesFlight?: boolean; // New: mimic package feature
+  rating?: number; // New: mimic user rating
+  reviewsCount?: number; // New
   type?: 'trip';
 }
 
@@ -28,6 +31,8 @@ export interface Apartment {
   lat?: number;
   lng?: number;
   discount?: number;
+  rating?: number;
+  reviewsCount?: number;
   type?: 'rental';
 }
 
@@ -45,6 +50,8 @@ export interface Hotel {
   lat?: number;
   lng?: number;
   discount?: number;
+  rating?: number;
+  reviewsCount?: number;
   type?: 'hotel';
 }
 
@@ -60,6 +67,8 @@ export interface Excursion {
   duration: string; // e.g. "Full Day", "4 hours"
   availableDates: string[]; // e.g. "Lunes, Miércoles y Viernes"
   discount?: number;
+  rating?: number;
+  reviewsCount?: number;
   type?: 'excursion';
 }
 

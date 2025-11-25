@@ -2,8 +2,8 @@
 import { Trip } from '../types';
 import { INITIAL_TRIPS } from '../constants';
 
-// Updated key to v4 to force reload of new discount data
-const STORAGE_KEY = 'abras_travel_trips_v4';
+// Updated key to v5 to force reload of Despegar-style data
+const STORAGE_KEY = 'abras_travel_trips_v5';
 
 export const getTrips = (): Trip[] => {
   const stored = localStorage.getItem(STORAGE_KEY);
@@ -47,5 +47,7 @@ export const createEmptyTrip = (): Trip => ({
   images: [`https://picsum.photos/seed/${Date.now()}/800/600`],
   isOffer: false,
   availableDates: [],
-  discount: 0
+  discount: 0,
+  includesFlight: false,
+  rating: undefined
 });
