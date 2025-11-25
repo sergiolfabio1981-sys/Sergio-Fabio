@@ -1,8 +1,9 @@
+
 import { Trip } from '../types';
 import { INITIAL_TRIPS } from '../constants';
 
-// Updated key to v2 to force reload of new data for users with existing localStorage
-const STORAGE_KEY = 'abras_travel_trips_v2';
+// Updated key to v4 to force reload of new discount data
+const STORAGE_KEY = 'abras_travel_trips_v4';
 
 export const getTrips = (): Trip[] => {
   const stored = localStorage.getItem(STORAGE_KEY);
@@ -45,5 +46,6 @@ export const createEmptyTrip = (): Trip => ({
   description: '',
   images: [`https://picsum.photos/seed/${Date.now()}/800/600`],
   isOffer: false,
-  availableDates: []
+  availableDates: [],
+  discount: 0
 });

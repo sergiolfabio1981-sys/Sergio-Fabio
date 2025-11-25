@@ -1,8 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getTripById } from '../services/tripService';
 import { Trip } from '../types';
 import { ADMIN_EMAIL } from '../constants';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 // Type definition for jsPDF since it's loaded via CDN
 declare global {
@@ -38,6 +41,9 @@ const Details: React.FC = () => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [availableSpots, setAvailableSpots] = useState(25); 
   const [isPaid, setIsPaid] = useState(false);
+
+  const { t } = useLanguage();
+  const { formatPrice } = useCurrency();
 
   useEffect(() => {
     if (id) {
@@ -144,15 +150,6 @@ const Details: React.FC = () => {
       setIsPaid(true);
   };
 
-  // Format currency helper
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-AR', {
-        style: 'currency',
-        currency: 'ARS',
-        minimumFractionDigits: 0
-    }).format(amount);
-  };
-
   const generatePDF = () => {
     if (!trip) return;
     const { jsPDF } = window.jspdf;
@@ -180,7 +177,7 @@ const Details: React.FC = () => {
     const basePrice = trip.price * guests;
     const bookingFee = basePrice * 0.10;
     doc.text(`Estado del Pago (Reserva): CONFIRMADO`, 20, 80);
-    doc.text(`Monto Abonado (Servicio): ${formatCurrency(bookingFee)}`, 20, 87);
+    doc.text(`Monto Abonado (Servicio): ${formatPrice(bookingFee)}`, 20, 87);
 
     // Passengers
     doc.setFontSize(14);
@@ -203,8 +200,8 @@ const Details: React.FC = () => {
   if (!trip) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Destino no encontrado</h2>
-        <Link to="/" className="text-cyan-600 hover:underline">Volver al inicio</Link>
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">{t('results.no_trips')}</h2>
+        <Link to="/" className="text-cyan-600 hover:underline">{t('results.back_home')}</Link>
       </div>
     );
   }
@@ -256,7 +253,7 @@ const Details: React.FC = () => {
         <div className="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black/80 to-transparent">
           <div className="max-w-7xl mx-auto">
             <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold mb-3 inline-block">
-              {trip.isOffer ? 'OFERTA ESPECIAL' : 'DESTINO TOP'}
+              {trip.isOffer ? t('card.offer') : 'DESTINO TOP'}
             </span>
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-2">{trip.title}</h1>
             <div className="flex items-center text-white/90 text-lg">
@@ -274,7 +271,7 @@ const Details: React.FC = () => {
         {/* Left Content: Description & Dates */}
         <div className="lg:col-span-2 space-y-8">
           <div className="bg-white rounded-xl shadow-md p-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Sobre este viaje</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">{t('booking.about')}</h2>
             <p className="text-gray-600 leading-relaxed text-lg">{trip.description}</p>
           </div>
 
@@ -283,7 +280,7 @@ const Details: React.FC = () => {
               <svg className="w-6 h-6 mr-2 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              Próximas Salidas
+              {t('booking.departures')}
             </h2>
             {trip.availableDates.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -304,13 +301,13 @@ const Details: React.FC = () => {
         <div className="lg:col-span-1">
           <div className="bg-white rounded-xl shadow-lg p-6 sticky top-24 border border-gray-100">
             <div className="flex justify-between items-end mb-6">
-              <span className="text-gray-500">Precio por persona</span>
-              <span className="text-3xl font-bold text-cyan-600">{formatCurrency(trip.price)}</span>
+              <span className="text-gray-500">{t('booking.pricePerPerson')}</span>
+              <span className="text-3xl font-bold text-cyan-600">{formatPrice(trip.price)}</span>
             </div>
 
             <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleInitiateBooking(); }}>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Elige tu fecha de salida</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('booking.departureDate')}</label>
                 <select 
                   className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-cyan-500 focus:border-cyan-500 p-3 border bg-white"
                   value={selectedDate}
@@ -325,7 +322,7 @@ const Details: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Viajeros</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('booking.passengers')}</label>
                 <div className="flex items-center border border-gray-300 rounded-lg p-1">
                   <button 
                     type="button"
@@ -347,16 +344,16 @@ const Details: React.FC = () => {
 
               <div className="pt-4 border-t border-gray-100 space-y-2">
                 <div className="flex justify-between text-gray-600 text-sm">
-                  <span>Subtotal ({guests} viajeros)</span>
-                  <span>{formatCurrency(basePrice)}</span>
+                  <span>Subtotal ({guests} pax)</span>
+                  <span>{formatPrice(basePrice)}</span>
                 </div>
                 <div className="flex justify-between text-gray-500 text-sm">
-                  <span>Cargo por servicio (10%)</span>
-                  <span>{formatCurrency(bookingFee)}</span>
+                  <span>{t('booking.serviceFee')} (10%)</span>
+                  <span>{formatPrice(bookingFee)}</span>
                 </div>
                 <div className="flex justify-between font-bold text-xl text-cyan-700 pt-2 border-t border-gray-100 mt-2">
-                  <span>Total</span>
-                  <span>{formatCurrency(totalPrice)}</span>
+                  <span>{t('booking.total')}</span>
+                  <span>{formatPrice(totalPrice)}</span>
                 </div>
               </div>
 
@@ -365,7 +362,7 @@ const Details: React.FC = () => {
                 disabled={!selectedDate}
                 className="w-full bg-orange-500 disabled:bg-gray-300 text-white font-bold py-4 rounded-lg hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/30 mt-4 disabled:shadow-none disabled:cursor-not-allowed"
               >
-                {selectedDate ? 'Reservar Ahora' : 'Selecciona fecha'}
+                {selectedDate ? t('booking.reserve') : t('booking.selectDate')}
               </button>
               <p className="text-center text-xs text-gray-400 mt-2">Se solicitarán los datos a continuación.</p>
             </form>
@@ -379,8 +376,7 @@ const Details: React.FC = () => {
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div className="p-6 bg-cyan-600 text-white sticky top-0 z-10 flex justify-between items-center">
               <div>
-                <h2 className="text-2xl font-bold">Finalizar Reserva</h2>
-                <p className="text-cyan-100 text-sm">Complete los datos de todos los pasajeros</p>
+                <h2 className="text-2xl font-bold">{t('booking.completeData')}</h2>
               </div>
               <button 
                 onClick={() => setIsBookingModalOpen(false)}
@@ -397,12 +393,12 @@ const Details: React.FC = () => {
                     <span className="w-6 h-6 rounded-full bg-cyan-100 text-cyan-700 flex items-center justify-center text-xs">
                         {index + 1}
                     </span>
-                    Datos del Pasajero {index + 1}
+                    Pasajero {index + 1}
                   </h3>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="col-span-1 md:col-span-2">
-                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Nombre y Apellido</label>
+                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">{t('booking.fullName')}</label>
                         <input 
                             type="text" 
                             required
@@ -416,7 +412,7 @@ const Details: React.FC = () => {
                     {/* Email field only for Passenger 1 */}
                     {index === 0 && (
                         <div className="col-span-1 md:col-span-2 lg:col-span-3 bg-orange-50 p-4 rounded-lg border border-orange-100">
-                            <label className="block text-xs font-bold text-orange-600 uppercase mb-1">Correo Electrónico (Principal)</label>
+                            <label className="block text-xs font-bold text-orange-600 uppercase mb-1">{t('booking.email')} (Principal)</label>
                             <input 
                                 type="email" 
                                 required
@@ -441,7 +437,7 @@ const Details: React.FC = () => {
                     </div>
 
                     <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Fecha de Nacimiento</label>
+                        <label className="block text-xs font-bold text-gray-500 uppercase mb-1">{t('booking.birthDate')}</label>
                         <input 
                             type="date" 
                             required
@@ -510,7 +506,7 @@ const Details: React.FC = () => {
                     type="submit" 
                     className="px-8 py-3 bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-700 shadow-lg shadow-cyan-500/30 transition-transform transform hover:scale-105"
                 >
-                    Siguiente Paso: Pago
+                    {t('booking.continue')}
                 </button>
               </div>
             </form>
@@ -536,8 +532,8 @@ const Details: React.FC = () => {
 
                         <div className="p-8">
                             <div className="mb-6 text-center">
-                                <p className="text-gray-500 text-sm mb-2">Total a abonar en concepto de reserva:</p>
-                                <p className="text-4xl font-bold text-gray-800">{formatCurrency(bookingFee)}</p>
+                                <p className="text-gray-500 text-sm mb-2">{t('booking.serviceFee')}:</p>
+                                <p className="text-4xl font-bold text-gray-800">{formatPrice(bookingFee)}</p>
                                 <p className="text-xs text-gray-400 mt-1">(Cargo por servicio del 10%)</p>
                             </div>
 

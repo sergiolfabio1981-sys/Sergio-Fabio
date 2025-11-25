@@ -1,8 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getRentalById } from '../services/rentalService';
 import { Apartment } from '../types';
 import { ADMIN_EMAIL } from '../constants';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 declare global {
   interface Window {
@@ -37,6 +40,9 @@ const RentalDetails: React.FC = () => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [availableSpots, setAvailableSpots] = useState(5); // Less spots for rentals
   const [isPaid, setIsPaid] = useState(false);
+
+  const { t } = useLanguage();
+  const { formatPrice } = useCurrency();
 
   useEffect(() => {
     if (id) {
@@ -129,14 +135,6 @@ const RentalDetails: React.FC = () => {
       setIsPaid(true);
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-AR', {
-        style: 'currency',
-        currency: 'ARS',
-        minimumFractionDigits: 0
-    }).format(amount);
-  };
-
   const generatePDF = () => {
     if (!rental) return;
     const { jsPDF } = window.jspdf;
@@ -159,8 +157,8 @@ const RentalDetails: React.FC = () => {
     doc.text(`Noches: ${nights}`, 20, 73);
 
     doc.text(`Estado del Pago (Reserva 10%): CONFIRMADO`, 20, 85);
-    doc.text(`Monto Abonado: ${formatCurrency(bookingFee)}`, 20, 92);
-    doc.text(`Saldo a pagar en destino: ${formatCurrency(totalPrice - bookingFee)}`, 20, 99);
+    doc.text(`Monto Abonado: ${formatPrice(bookingFee)}`, 20, 92);
+    doc.text(`Saldo a pagar en destino: ${formatPrice(totalPrice - bookingFee)}`, 20, 99);
 
     doc.setFontSize(14);
     doc.text("Titular de la Reserva:", 20, 115);
@@ -248,7 +246,7 @@ const RentalDetails: React.FC = () => {
           <div className="bg-white rounded-xl shadow-lg p-6 sticky top-24 border border-gray-100">
             <div className="flex justify-between items-end mb-6">
               <span className="text-gray-500">Precio por noche</span>
-              <span className="text-3xl font-bold text-cyan-600">{formatCurrency(rental.pricePerNight)}</span>
+              <span className="text-3xl font-bold text-cyan-600">{formatPrice(rental.pricePerNight)}</span>
             </div>
 
             <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleInitiateBooking(); }}>
@@ -279,12 +277,12 @@ const RentalDetails: React.FC = () => {
               {nights > 0 && (
                   <div className="bg-gray-50 p-4 rounded-lg space-y-2 text-sm">
                       <div className="flex justify-between">
-                          <span>{formatCurrency(rental.pricePerNight)} x {nights} noches</span>
-                          <span>{formatCurrency(totalPrice)}</span>
+                          <span>{formatPrice(rental.pricePerNight)} x {nights} noches</span>
+                          <span>{formatPrice(totalPrice)}</span>
                       </div>
                       <div className="flex justify-between font-bold text-orange-600 pt-2 border-t border-gray-200">
                           <span>Reserva (10%)</span>
-                          <span>{formatCurrency(bookingFee)}</span>
+                          <span>{formatPrice(bookingFee)}</span>
                       </div>
                       <p className="text-xs text-gray-400 mt-1">El resto se abona al llegar a la propiedad.</p>
                   </div>
@@ -335,8 +333,8 @@ const RentalDetails: React.FC = () => {
                         <h3 className="text-2xl font-bold text-gray-800 mb-2">Confirmar Alquiler</h3>
                         <p className="text-gray-500 mb-6">Abona el 10% para bloquear las fechas.</p>
                         
-                        <div className="text-4xl font-bold text-cyan-600 mb-2">{formatCurrency(bookingFee)}</div>
-                        <p className="text-xs text-gray-400 mb-6">Saldo restante: {formatCurrency(totalPrice - bookingFee)}</p>
+                        <div className="text-4xl font-bold text-cyan-600 mb-2">{formatPrice(bookingFee)}</div>
+                        <p className="text-xs text-gray-400 mb-6">Saldo restante: {formatPrice(totalPrice - bookingFee)}</p>
 
                         <div className="bg-red-50 text-red-600 p-2 rounded mb-6 text-sm font-bold animate-pulse">
                             ¡Atención! Solo quedan {availableSpots} propiedades similares disponibles.

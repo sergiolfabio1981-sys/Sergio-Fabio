@@ -1,7 +1,8 @@
+
 import { Apartment } from '../types';
 import { INITIAL_RENTALS } from '../constants';
 
-const RENTAL_STORAGE_KEY = 'abras_travel_rentals_v1';
+const RENTAL_STORAGE_KEY = 'abras_travel_rentals_v2';
 
 export const getRentals = (): Apartment[] => {
   const stored = localStorage.getItem(RENTAL_STORAGE_KEY);
@@ -45,5 +46,9 @@ export const createEmptyRental = (): Apartment => ({
   images: [`https://picsum.photos/seed/${Date.now()}/800/600`],
   bedrooms: 1,
   maxGuests: 2,
-  amenities: []
+  amenities: [],
+  isOffer: false,
+  lat: undefined,
+  lng: undefined,
+  discount: 0
 });
