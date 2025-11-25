@@ -9,7 +9,11 @@ import { getInstallmentTrips, saveInstallmentTrip, deleteInstallmentTrip, create
 import { ADMIN_EMAIL, ADMIN_PASS } from '../constants';
 
 const Admin: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // Check localStorage for persisted session
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+      return localStorage.getItem('abras_isAdmin') === 'true';
+  });
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -55,9 +59,15 @@ const Admin: React.FC = () => {
     e.preventDefault();
     if (email === ADMIN_EMAIL && password === ADMIN_PASS) {
       setIsAuthenticated(true);
+      localStorage.setItem('abras_isAdmin', 'true'); // Persist session
     } else {
       alert('Credenciales inválidas');
     }
+  };
+  
+  const handleLogout = () => {
+      setIsAuthenticated(false);
+      localStorage.removeItem('abras_isAdmin');
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'trip' | 'rental' | 'excursion' | 'hotel' | 'installment') => {
@@ -132,12 +142,15 @@ const Admin: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6 flex-wrap gap-2">
             <h1 className="text-3xl font-bold text-gray-800">Panel de Administración</h1>
-            <div className="flex space-x-2 bg-white rounded-lg p-1 shadow-sm overflow-x-auto">
-                <button onClick={() => setActiveTab('trips')} className={`px-4 py-2 rounded-md ${activeTab === 'trips' ? 'bg-cyan-600 text-white' : 'hover:bg-gray-100'}`}>Viajes</button>
-                <button onClick={() => setActiveTab('rentals')} className={`px-4 py-2 rounded-md ${activeTab === 'rentals' ? 'bg-cyan-600 text-white' : 'hover:bg-gray-100'}`}>Alquileres</button>
-                <button onClick={() => setActiveTab('hotels')} className={`px-4 py-2 rounded-md ${activeTab === 'hotels' ? 'bg-cyan-600 text-white' : 'hover:bg-gray-100'}`}>Hoteles</button>
-                <button onClick={() => setActiveTab('excursions')} className={`px-4 py-2 rounded-md ${activeTab === 'excursions' ? 'bg-cyan-600 text-white' : 'hover:bg-gray-100'}`}>Excursiones</button>
-                <button onClick={() => setActiveTab('installments')} className={`px-4 py-2 rounded-md ${activeTab === 'installments' ? 'bg-cyan-600 text-white' : 'hover:bg-gray-100'}`}>ABRAS Cuotas</button>
+            <div className="flex items-center gap-4">
+                <div className="flex space-x-2 bg-white rounded-lg p-1 shadow-sm overflow-x-auto">
+                    <button onClick={() => setActiveTab('trips')} className={`px-4 py-2 rounded-md ${activeTab === 'trips' ? 'bg-cyan-600 text-white' : 'hover:bg-gray-100'}`}>Viajes</button>
+                    <button onClick={() => setActiveTab('rentals')} className={`px-4 py-2 rounded-md ${activeTab === 'rentals' ? 'bg-cyan-600 text-white' : 'hover:bg-gray-100'}`}>Alquileres</button>
+                    <button onClick={() => setActiveTab('hotels')} className={`px-4 py-2 rounded-md ${activeTab === 'hotels' ? 'bg-cyan-600 text-white' : 'hover:bg-gray-100'}`}>Hoteles</button>
+                    <button onClick={() => setActiveTab('excursions')} className={`px-4 py-2 rounded-md ${activeTab === 'excursions' ? 'bg-cyan-600 text-white' : 'hover:bg-gray-100'}`}>Excursiones</button>
+                    <button onClick={() => setActiveTab('installments')} className={`px-4 py-2 rounded-md ${activeTab === 'installments' ? 'bg-cyan-600 text-white' : 'hover:bg-gray-100'}`}>ABRAS Cuotas</button>
+                </div>
+                <button onClick={handleLogout} className="bg-red-100 text-red-600 px-4 py-2 rounded-lg font-bold hover:bg-red-200">Salir</button>
             </div>
         </div>
 

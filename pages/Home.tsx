@@ -20,9 +20,13 @@ const Home: React.FC = () => {
     const allExcursions = getExcursions();
     const allHotels = getHotels();
 
-    // Show simulation toast
-    setTimeout(() => setShowImportToast(true), 1000);
-    setTimeout(() => setShowImportToast(false), 6000);
+    // Check if user is admin before showing simulation toast
+    const isAdmin = localStorage.getItem('abras_isAdmin') === 'true';
+    if (isAdmin) {
+        // Show simulation toast
+        setTimeout(() => setShowImportToast(true), 1000);
+        setTimeout(() => setShowImportToast(false), 6000);
+    }
 
     // Force Type Tags if missing in storage
     const taggedTrips = allTrips.map(t => ({...t, type: 'trip' as const}));
@@ -56,7 +60,7 @@ const Home: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
       
-      {/* Simulation Toast */}
+      {/* Simulation Toast (Only visible to admins) */}
       {showImportToast && (
         <div className="fixed top-24 right-5 bg-white border-l-4 border-green-500 shadow-2xl p-4 rounded-lg z-[60] animate-bounce-in max-w-sm">
             <div className="flex items-start">
