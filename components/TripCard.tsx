@@ -54,7 +54,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
       const diffMonths = (depDate.getFullYear() - now.getFullYear()) * 12 + (depDate.getMonth() - now.getMonth());
       installmentCount = diffMonths > 0 ? diffMonths : 1;
       installmentValue = basePrice / installmentCount;
-      priceLabel = t('card.totalPrice');
+      priceLabel = t('card.perMonth');
   } else {
       basePrice = (item as any).price || 0;
       priceLabel = t('card.totalPrice');
@@ -64,8 +64,10 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
   const discount = (item as any).discount || 0;
   const hasDiscount = discount > 0;
   // If basePrice is the selling price, calculate original.
-  // Original = Price / (1 - discount/100)
   const originalPrice = hasDiscount ? basePrice / (1 - (discount/100)) : 0;
+  
+  // Decide what numeric value to display in the main slot
+  const displayPrice = isInstallment ? installmentValue : basePrice;
 
 
   // Calculate Totals for Modal
@@ -125,7 +127,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
             <img 
             src={item.images[currentImageIndex]} 
             alt={`${item.title} - view`}
-            className="w-full h-full object-cover transition-transform duration-500"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
         </Link>
         
@@ -144,7 +146,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
         {/* OFFER & DISCOUNT BADGES */}
         <div className="absolute top-0 right-0 flex flex-col items-end z-10">
             {item.isOffer && (
-            <div className="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg mb-1">
+            <div className="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg mb-1 shadow">
                 {t('card.offer')}
             </div>
             )}
@@ -155,7 +157,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
             )}
         </div>
 
-        <div className="absolute top-2 left-2 z-10">
+        <div className="absolute top-2 left-2 z-10 flex gap-1">
            {isRental && <span className="bg-purple-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">{t('card.rental')}</span>}
            {isExcursion && <span className="bg-green-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">{t('card.excursion')}</span>}
            {isHotel && <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">{t('card.hotel')}</span>}
@@ -167,7 +169,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
         )}
       </div>
       
-      <div className="p-5 flex flex-col h-full min-h-[180px]">
+      <div className="p-5 flex flex-col h-full min-h-[220px]">
         <Link to={linkUrl} className="block">
             <h3 className="text-xl font-bold text-gray-800 group-hover:text-cyan-600 transition-colors line-clamp-1 mb-1">
                 {item.title}
@@ -175,7 +177,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
         </Link>
         
         {isHotel && (item as any).stars && (
-            <div className="flex text-yellow-400 mb-2">
+            <div className="flex text-yellow-400 mb-2 text-sm">
                 {Array((item as any).stars).fill(0).map((_, i) => (
                     <span key={i}>★</span>
                 ))}
@@ -192,32 +194,39 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
         
         <div className="flex flex-col mt-auto pt-4 border-t border-gray-100 gap-3">
           <div className="flex justify-between items-end">
-              <div className="flex flex-col">
-                <span className="text-xs text-gray-400 uppercase">
+              <div className="flex flex-col w-full">
+                <span className="text-xs text-gray-400 uppercase font-bold tracking-wide mb-1">
                     {isInstallment ? `${installmentCount} ${t('card.installments')} ${t('card.of')}` : t('card.from')}
                 </span>
                 
                 {/* PRICE DISPLAY */}
-                <div className="flex flex-col">
+                <div className="flex flex-wrap items-baseline gap-2">
                     {hasDiscount && !isInstallment && (
                         <span className="text-xs text-gray-400 line-through decoration-red-500">
                             {formatPrice(originalPrice)}
                         </span>
                     )}
-                    <div>
-                        <span className={`text-2xl font-bold ${hasDiscount ? 'text-red-600' : 'text-gray-800'}`}>
-                            {isInstallment ? formatPrice(installmentValue) : formatPrice(basePrice)}
+                    
+                    {displayPrice > 0 ? (
+                        <div className="flex items-baseline gap-1">
+                            <span className={`text-2xl font-bold ${hasDiscount ? 'text-red-600' : 'text-gray-800'}`}>
+                                {formatPrice(displayPrice)}
+                            </span>
+                            <span className="text-xs text-gray-500 font-medium bg-gray-100 px-1 rounded">{priceLabel}</span>
+                        </div>
+                    ) : (
+                        <span className="text-xl font-bold text-cyan-700 uppercase">
+                            {t('card.ask')}
                         </span>
-                        <span className="text-xs text-gray-500 ml-1">{priceLabel}</span>
-                    </div>
+                    )}
                 </div>
               </div>
           </div>
           
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2 mt-2">
               <button 
                 onClick={openQuickView}
-                className="flex items-center justify-center px-3 py-2 bg-gray-100 text-gray-700 text-sm font-bold rounded-lg hover:bg-gray-200 transition-colors"
+                className="flex items-center justify-center px-3 py-2 bg-gray-50 text-gray-700 text-sm font-bold rounded-lg hover:bg-gray-200 transition-colors border border-gray-200"
               >
                   + Info
               </button>

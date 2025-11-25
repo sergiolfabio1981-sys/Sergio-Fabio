@@ -10,17 +10,19 @@ export const translations = {
     },
     card: {
       night: 'noche',
-      perNight: 'Precio x noche',
+      perNight: 'x noche',
       totalPrice: 'Precio Total',
       total: 'Total',
       from: 'Desde',
       installments: 'cuotas',
+      perMonth: 'x mes',
       of: 'de',
       offer: 'OFERTA',
       rental: 'ALQUILER',
       excursion: 'EXCURSIÓN',
       hotel: 'HOTEL',
-      details: 'Ver Detalle'
+      details: 'Ver Detalle',
+      ask: 'Consultar'
     },
     booking: {
       budget: 'Presupuesto',
@@ -66,17 +68,19 @@ export const translations = {
     },
     card: {
       night: 'noite',
-      perNight: 'Preço p/ noite',
+      perNight: 'p/ noite',
       totalPrice: 'Preço Total',
       total: 'Total',
       from: 'A partir de',
       installments: 'parcelas',
+      perMonth: 'p/ mês',
       of: 'de',
       offer: 'OFERTA',
       rental: 'ALUGUEL',
       excursion: 'PASSEIO',
       hotel: 'HOTEL',
-      details: 'Ver Detalhes'
+      details: 'Ver Detalhes',
+      ask: 'Consultar'
     },
     booking: {
       budget: 'Orçamento',
@@ -122,17 +126,19 @@ export const translations = {
     },
     card: {
       night: 'night',
-      perNight: 'Price per night',
+      perNight: 'per night',
       totalPrice: 'Total Price',
       total: 'Total',
       from: 'From',
       installments: 'installments',
+      perMonth: 'per month',
       of: 'of',
       offer: 'OFFER',
       rental: 'RENTAL',
       excursion: 'TOUR',
       hotel: 'HOTEL',
-      details: 'View Details'
+      details: 'View Details',
+      ask: 'Ask us'
     },
     booking: {
       budget: 'Budget',
