@@ -1,10 +1,11 @@
+
 import { GoogleGenAI, Chat } from "@google/genai";
 
 let chatSession: Chat | null = null;
 
 export const initializeChat = () => {
   try {
-    // Usamos la API Key proporcionada directamente para asegurar la conexión
+    // Usamos la API Key proporcionada directamente
     const apiKey = "AIzaSyCuNIDFrtz5UnWpUuimM6sWVJNLL-yVM-Q";
     
     const ai = new GoogleGenAI({ apiKey });
@@ -12,6 +13,13 @@ export const initializeChat = () => {
     chatSession = ai.chats.create({
       model: 'gemini-2.5-flash',
       config: {
+        // Configuramos filtros de seguridad permisivos para evitar bloqueos de contenido turístico
+        safetySettings: [
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
+        ],
         systemInstruction: `Eres "Cami", la asistente virtual amigable y profesional de la agencia de viajes "ABRAS Travel", especializada en destinos de playa, especialmente Brasil.
         Tu objetivo es ayudar a los usuarios y RECOLECTAR la siguiente información para generar un lead de venta:
         1. Nombre completo.
@@ -39,7 +47,7 @@ export const sendMessageToGemini = async function* (message: string) {
   }
 
   if (!chatSession) {
-    yield "Lo siento, estoy teniendo dificultades para conectar con la central. Por favor, intenta de nuevo en unos segundos o contáctanos por WhatsApp.";
+    yield "Error crítico: No se pudo conectar con el servicio de IA. Verifica tu conexión.";
     return;
   }
 
@@ -50,9 +58,22 @@ export const sendMessageToGemini = async function* (message: string) {
          yield chunk.text;
        }
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error sending message to Gemini:", error);
-    yield "¡Ups! Una ola interfirió en mi señal. ¿Podrías repetirme eso, por favor?";
+    
+    // Mensaje de error detallado para diagnosticar en producción
+    let debugMessage = "¡Ups! Una ola interfirió en mi señal. ";
+    
+    if (error.toString().includes("403")) {
+        debugMessage += "\n(Error 403: Acceso denegado. Es probable que tu API Key restrinja el dominio 'abrastravel.vercel.app'. Revisa la configuración en Google Cloud Console).";
+    } else if (error.toString().includes("429")) {
+        debugMessage += "\n(Error 429: Cuota de uso excedida).";
+    } else if (error.message) {
+        debugMessage += `\n(Detalle técnico: ${error.message})`;
+    }
+
+    yield debugMessage;
+    
     // Reiniciamos la sesión por si hubo un error de contexto o expiración
     chatSession = null;
   }
