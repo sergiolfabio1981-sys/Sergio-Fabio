@@ -66,14 +66,13 @@ const Home: React.FC = () => {
                     </svg>
                 </div>
                 <div className="ml-3">
-                    <h3 className="text-sm font-medium text-gray-900">Importación Exitosa</h3>
+                    <h3 className="text-sm font-medium text-gray-900">Importación Completada</h3>
                     <div className="mt-1 text-sm text-gray-500">
-                        <p>Se han cargado datos desde la fuente externa:</p>
+                        <p>Datos de inventario global actualizados.</p>
                         <ul className="list-disc list-inside mt-1 text-xs">
-                            <li>6 Paquetes de Viaje</li>
-                            <li>5 Hoteles Destacados</li>
-                            <li>4 Departamentos</li>
-                            <li>4 Excursiones</li>
+                            <li>Paquetes con Aéreos</li>
+                            <li>Hoteles 5 Estrellas</li>
+                            <li>Alquileres de Lujo</li>
                         </ul>
                     </div>
                 </div>

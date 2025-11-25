@@ -2,7 +2,7 @@
 import { Excursion } from '../types';
 import { INITIAL_EXCURSIONS } from '../constants';
 
-const EXCURSION_STORAGE_KEY = 'abras_travel_excursions_v3';
+const EXCURSION_STORAGE_KEY = 'abras_travel_excursions_v5';
 
 export const getExcursions = (): Excursion[] => {
   const stored = localStorage.getItem(EXCURSION_STORAGE_KEY);

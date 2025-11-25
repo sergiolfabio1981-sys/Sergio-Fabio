@@ -2,8 +2,8 @@
 import { Trip } from '../types';
 import { INITIAL_TRIPS } from '../constants';
 
-// Updated key to v5 to force reload of Despegar-style data
-const STORAGE_KEY = 'abras_travel_trips_v5';
+// Updated key to v7 to restore Despegar data
+const STORAGE_KEY = 'abras_travel_trips_v7';
 
 export const getTrips = (): Trip[] => {
   const stored = localStorage.getItem(STORAGE_KEY);
