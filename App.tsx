@@ -16,6 +16,8 @@ import Hotels from './pages/Hotels';
 import HotelDetails from './pages/HotelDetails';
 import Installments from './pages/Installments';
 import InstallmentDetails from './pages/InstallmentDetails';
+import WorldCup from './pages/WorldCup';
+import WorldCupDetails from './pages/WorldCupDetails';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
 
@@ -39,6 +41,8 @@ const App: React.FC = () => {
                 <Route path="/excursions/:id" element={<ExcursionDetails />} />
                 <Route path="/installments" element={<Installments />} />
                 <Route path="/installments/:id" element={<InstallmentDetails />} />
+                <Route path="/worldcup" element={<WorldCup />} />
+                <Route path="/worldcup/:id" element={<WorldCupDetails />} />
                 <Route path="/admin" element={<Admin />} />
               </Routes>
             </main>

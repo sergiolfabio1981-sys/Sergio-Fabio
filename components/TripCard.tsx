@@ -29,8 +29,11 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
   const isRental = item.type === 'rental' || 'pricePerNight' in item;
   const isHotel = item.type === 'hotel' || ('stars' in item && 'pricePerNight' in item);
   const isInstallment = item.type === 'installment';
+  const isWorldCup = item.type === 'worldcup';
   const isExcursion = item.type === 'excursion';
-  const isTrip = !isRental && !isExcursion && !isHotel && !isInstallment;
+  const isTrip = !isRental && !isExcursion && !isHotel && !isInstallment && !isWorldCup;
+
+  const baseCurrency = (item as any).baseCurrency || 'ARS';
 
   // Extra features
   const includesFlight = (item as any).includesFlight;
@@ -42,6 +45,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
   if (isExcursion) linkUrl = `/excursions/${item.id}`;
   if (isHotel) linkUrl = `/hotels/${item.id}`;
   if (isInstallment) linkUrl = `/installments/${item.id}`;
+  if (isWorldCup) linkUrl = `/worldcup/${item.id}`;
 
   // --- ROBUST PRICE LOGIC ---
   let displayPrice = 0;
@@ -60,6 +64,16 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
       rawPriceForCalc = total; // For installments, calculation is different
       const now = new Date();
       const depDate = new Date((item as any).departureDate);
+      const diffMonths = (depDate.getFullYear() - now.getFullYear()) * 12 + (depDate.getMonth() - now.getMonth());
+      installmentCount = diffMonths > 0 ? diffMonths : 1;
+      displayPrice = total / installmentCount;
+      priceLabel = t('card.perMonth');
+  } else if (isWorldCup && 'totalPrice' in item) {
+      // World Cup Plan (Fixed departure June 2026)
+      const total = (item as any).totalPrice || 0;
+      rawPriceForCalc = total;
+      const now = new Date();
+      const depDate = new Date('2026-06-01'); // Fixed date
       const diffMonths = (depDate.getFullYear() - now.getFullYear()) * 12 + (depDate.getMonth() - now.getMonth());
       installmentCount = diffMonths > 0 ? diffMonths : 1;
       displayPrice = total / installmentCount;
@@ -92,7 +106,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
   let subtotal = 0;
   if (isHotel || isRental) {
       subtotal = rawPriceForCalc * unitCount;
-  } else if (isInstallment) {
+  } else if (isInstallment || isWorldCup) {
       // For installments, we usually show the total contract value in modal calculator
       subtotal = (item as any).totalPrice * guests;
   } else {
@@ -187,6 +201,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
                 {isExcursion && <span className="bg-green-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">{t('card.excursion')}</span>}
                 {isHotel && <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">{t('card.hotel')}</span>}
                 {isInstallment && <span className="bg-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">ABRAS CUOTAS</span>}
+                {isWorldCup && <span className="bg-gradient-to-r from-blue-600 to-sky-400 text-white text-[10px] font-bold px-2 py-1 rounded shadow border border-white">MUNDIAL 2026</span>}
            </div>
            
            {includesFlight && (
@@ -236,21 +251,21 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
           <div className="flex justify-between items-end">
               <div className="flex flex-col w-full">
                 <span className="text-xs text-gray-400 uppercase font-bold tracking-wide mb-1">
-                    {isInstallment ? `${installmentCount} ${t('card.installments')} ${t('card.of')}` : t('card.from')}
+                    {(isInstallment || isWorldCup) ? `${installmentCount} ${t('card.installments')} ${t('card.of')}` : t('card.from')}
                 </span>
                 
                 {/* PRICE DISPLAY */}
                 <div className="flex flex-wrap items-baseline gap-2">
                     {hasDiscount && (
                         <span className="text-xs text-gray-400 line-through decoration-red-500">
-                            {formatPrice(originalPrice)}
+                            {formatPrice(originalPrice, baseCurrency)}
                         </span>
                     )}
                     
                     {displayPrice > 0 ? (
                         <div className="flex items-baseline gap-1">
                             <span className={`text-2xl font-bold ${hasDiscount ? 'text-red-600' : 'text-gray-800'}`}>
-                                {formatPrice(displayPrice)}
+                                {formatPrice(displayPrice, baseCurrency)}
                             </span>
                             <span className="text-xs text-gray-500 font-medium bg-gray-100 px-1 rounded">{priceLabel}</span>
                         </div>
@@ -324,7 +339,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
                         )}
                         {/* Modal Price Overlay */}
                          <div className="absolute bottom-2 left-2 bg-black/70 text-white text-sm font-bold px-3 py-1 rounded backdrop-blur-sm">
-                            {formatPrice(displayPrice)} <span className="text-xs font-normal opacity-80">{priceLabel}</span>
+                            {formatPrice(displayPrice, baseCurrency)} <span className="text-xs font-normal opacity-80">{priceLabel}</span>
                         </div>
                     </div>
 
@@ -342,7 +357,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
                                         <input type="date" className="w-full border rounded p-1 text-sm" min={checkIn} value={checkOut} onChange={e=>setCheckOut(e.target.value)} />
                                     </div>
                                 </div>
-                            ) : isInstallment ? (
+                            ) : (isInstallment || isWorldCup) ? (
                                 <div className="bg-indigo-50 p-2 rounded text-center border border-indigo-100 text-indigo-800">
                                     {t('booking.departureDate')}: <strong>{(item as any).departureDate}</strong>
                                 </div>
@@ -369,7 +384,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
                         <div className="bg-cyan-50 p-4 rounded-lg space-y-2 text-sm mb-6">
                             <div className="flex justify-between text-gray-600">
                                 <span>Base {(isHotel || isRental) ? `(${unitCount} ${t('card.night')})` : 'x Persona'}</span>
-                                <span>{formatPrice(subtotal)}</span>
+                                <span>{formatPrice(subtotal, baseCurrency)}</span>
                             </div>
                             {hasDiscount && (
                             <div className="flex justify-between text-green-600 font-bold">
@@ -379,11 +394,11 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
                             )}
                             <div className="flex justify-between font-bold text-orange-600">
                                 <span>{t('booking.serviceFee')} (10%)</span>
-                                <span>{formatPrice(serviceFee)}</span>
+                                <span>{formatPrice(serviceFee, baseCurrency)}</span>
                             </div>
                             <div className="flex justify-between font-bold text-lg text-gray-800 pt-2 border-t border-cyan-100 mt-2">
                                 <span>{t('booking.total')}</span>
-                                <span>{formatPrice(totalEstimated)}</span>
+                                <span>{formatPrice(totalEstimated, baseCurrency)}</span>
                             </div>
                         </div>
 

@@ -1,5 +1,5 @@
 
-import { Trip, Apartment, Excursion, Hotel, InstallmentTrip } from './types';
+import { Trip, Apartment, Excursion, Hotel, InstallmentTrip, WorldCupTrip } from './types';
 
 export const ADMIN_EMAIL = "sergiolfabio1981@gmail.com";
 export const ADMIN_PASS = "Colo1981";
@@ -22,6 +22,7 @@ export const INITIAL_TRIPS: Trip[] = [
     includesFlight: true,
     rating: 9.2,
     reviewsCount: 1250,
+    baseCurrency: 'ARS',
     type: 'trip'
   },
   {
@@ -40,6 +41,7 @@ export const INITIAL_TRIPS: Trip[] = [
     includesFlight: true,
     rating: 9.5,
     reviewsCount: 840,
+    baseCurrency: 'ARS',
     type: 'trip'
   },
   {
@@ -57,6 +59,7 @@ export const INITIAL_TRIPS: Trip[] = [
     includesFlight: true,
     rating: 9.8,
     reviewsCount: 3200,
+    baseCurrency: 'ARS',
     type: 'trip'
   },
   {
@@ -74,6 +77,7 @@ export const INITIAL_TRIPS: Trip[] = [
     includesFlight: true,
     rating: 8.9,
     reviewsCount: 510,
+    baseCurrency: 'ARS',
     type: 'trip'
   },
   {
@@ -92,6 +96,7 @@ export const INITIAL_TRIPS: Trip[] = [
     includesFlight: true,
     rating: 8.7,
     reviewsCount: 1100,
+    baseCurrency: 'ARS',
     type: 'trip'
   }
 ];
@@ -105,10 +110,10 @@ export const INITIAL_HOTELS: Hotel[] = [
     pricePerNight: 165000,
     description: 'Ubicado directamente sobre las arenas blancas de la Playa de Joaquina. El Cris Hotel ofrece habitaciones con balcón privado y vistas al mar o las dunas. Es el lugar ideal para amantes del surf y familias que buscan estar a pasos del agua. Cuenta con un desayuno buffet variado servido en un salón con vista panorámica.',
     images: [
-        'https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?q=80&w=1932&auto=format&fit=crop', // Beachfront equivalent
-        'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop', // Exterior
-        'https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=1974&auto=format&fit=crop', // Room View
-        'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?q=80&w=2070&auto=format&fit=crop'  // Balcony
+        'https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?q=80&w=1932&auto=format&fit=crop', 
+        'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop', 
+        'https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=1974&auto=format&fit=crop', 
+        'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?q=80&w=2070&auto=format&fit=crop'
     ],
     stars: 3,
     amenities: [
@@ -126,6 +131,7 @@ export const INITIAL_HOTELS: Hotel[] = [
     reviewsCount: 1400,
     lat: -27.610,
     lng: -48.450,
+    baseCurrency: 'ARS',
     type: 'hotel'
   },
   {
@@ -135,12 +141,12 @@ export const INITIAL_HOTELS: Hotel[] = [
     pricePerNight: 195000,
     description: 'El Hotel Porto Sol Beach ofrece una experiencia inigualable frente al mar en la playa de Ingleses. Este hotel de 4 estrellas cuenta con el reconocido restaurante Maricota, que sirve platos regionales e internacionales. Los huéspedes pueden disfrutar de una piscina al aire libre, cancha de tenis y una sala de juegos. Las habitaciones son amplias, luminosas y disponen de aire acondicionado, TV por cable, caja fuerte y baño privado. Además, el hotel ofrece servicio de playa con sombrillas y reposeras para su total comodidad.',
     images: [
-        'https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=2025&auto=format&fit=crop', // Pool/Facade
-        'https://images.unsplash.com/photo-1613545325278-f24b0cae1224?q=80&w=2070&auto=format&fit=crop', // Room
-        'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=2070&auto=format&fit=crop', // Resort View
-        'https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1974&auto=format&fit=crop', // Restaurant
-        'https://images.unsplash.com/photo-1563784462386-044fd95e9852?q=80&w=2070&auto=format&fit=crop', // Beach
-        'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?q=80&w=2070&auto=format&fit=crop'  // Lobby/Bar
+        'https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=2025&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1613545325278-f24b0cae1224?q=80&w=2070&auto=format&fit=crop', 
+        'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=2070&auto=format&fit=crop', 
+        'https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1974&auto=format&fit=crop', 
+        'https://images.unsplash.com/photo-1563784462386-044fd95e9852?q=80&w=2070&auto=format&fit=crop', 
+        'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?q=80&w=2070&auto=format&fit=crop' 
     ],
     stars: 4,
     amenities: [
@@ -163,6 +169,7 @@ export const INITIAL_HOTELS: Hotel[] = [
     reviewsCount: 950,
     lat: -27.427,
     lng: -48.396,
+    baseCurrency: 'ARS',
     type: 'hotel'
   },
   {
@@ -183,6 +190,7 @@ export const INITIAL_HOTELS: Hotel[] = [
     reviewsCount: 4500,
     lat: -34.610,
     lng: -58.365,
+    baseCurrency: 'ARS',
     type: 'hotel'
   },
   {
@@ -202,6 +210,7 @@ export const INITIAL_HOTELS: Hotel[] = [
     reviewsCount: 3200,
     lat: -22.990,
     lng: -43.230,
+    baseCurrency: 'ARS',
     type: 'hotel'
   },
   {
@@ -222,6 +231,7 @@ export const INITIAL_HOTELS: Hotel[] = [
     reviewsCount: 1800,
     lat: -27.585,
     lng: -48.545,
+    baseCurrency: 'ARS',
     type: 'hotel'
   },
   {
@@ -241,6 +251,7 @@ export const INITIAL_HOTELS: Hotel[] = [
     reviewsCount: 5100,
     lat: -12.490,
     lng: -38.000,
+    baseCurrency: 'ARS',
     type: 'hotel'
   }
 ];
@@ -268,6 +279,7 @@ export const INITIAL_RENTALS: Apartment[] = [
     reviewsCount: 120,
     lat: 25.790,
     lng: -80.130,
+    baseCurrency: 'ARS',
     type: 'rental'
   },
   {
@@ -288,6 +300,7 @@ export const INITIAL_RENTALS: Apartment[] = [
     reviewsCount: 85,
     lat: -34.588,
     lng: -58.390,
+    baseCurrency: 'ARS',
     type: 'rental'
   },
   {
@@ -308,6 +321,7 @@ export const INITIAL_RENTALS: Apartment[] = [
     reviewsCount: 45,
     lat: -27.430,
     lng: -48.490,
+    baseCurrency: 'ARS',
     type: 'rental'
   }
 ];
@@ -329,6 +343,7 @@ export const INITIAL_EXCURSIONS: Excursion[] = [
     availableDates: ['Todos los días'],
     rating: 9.8,
     reviewsCount: 15000,
+    baseCurrency: 'ARS',
     type: 'excursion'
   },
   {
@@ -347,6 +362,7 @@ export const INITIAL_EXCURSIONS: Excursion[] = [
     availableDates: ['Lunes a Sábado'],
     rating: 9.7,
     reviewsCount: 4200,
+    baseCurrency: 'ARS',
     type: 'excursion'
   },
   {
@@ -365,6 +381,7 @@ export const INITIAL_EXCURSIONS: Excursion[] = [
     availableDates: ['Martes y Jueves'],
     rating: 9.5,
     reviewsCount: 1800,
+    baseCurrency: 'ARS',
     type: 'excursion'
   }
 ];
@@ -382,6 +399,7 @@ export const INITIAL_INSTALLMENT_TRIPS: InstallmentTrip[] = [
         ],
         departureDate: '2027-02-15',
         isOffer: true,
+        baseCurrency: 'ARS',
         type: 'installment'
     },
     {
@@ -396,6 +414,107 @@ export const INITIAL_INSTALLMENT_TRIPS: InstallmentTrip[] = [
         ],
         departureDate: '2026-01-15',
         isOffer: true,
+        baseCurrency: 'ARS',
         type: 'installment'
+    }
+];
+
+// --- MUNDIAL 2026 (BASE CURRENCY USD) ---
+export const INITIAL_WORLDCUP_TRIPS: WorldCupTrip[] = [
+    {
+        id: 'wc-arg-usa',
+        title: 'Paquete Argentina - Mundial 2026',
+        location: 'USA - México - Canadá',
+        totalPrice: 8500, // USD
+        description: '¡Seguí a la Scaloneta en la defensa del título! Incluye vuelos desde Buenos Aires, traslados, 15 noches de alojamiento y entradas garantizadas para fase de grupos.',
+        images: [
+            'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?q=80&w=1931&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1551958219-acbc608c6377?q=80&w=2070&auto=format&fit=crop'
+        ],
+        departureDate: '2026-06-10',
+        originCountry: 'Salida desde Argentina',
+        isOffer: true,
+        baseCurrency: 'USD',
+        type: 'worldcup'
+    },
+    {
+        id: 'wc-bra-usa',
+        title: 'Pacote Brasil - Copa 2026',
+        location: 'USA - México - Canadá',
+        totalPrice: 8800, // USD
+        description: 'Acompanhe a seleção brasileira rumo ao Hexa! Voos saindo de São Paulo/Rio, hotéis categoria 4 estrelas e ingressos para os jogos.',
+        images: [
+            'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=2070&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1522778119026-d647f0565c6a?q=80&w=2070&auto=format&fit=crop'
+        ],
+        departureDate: '2026-06-10',
+        originCountry: 'Salida desde Brasil',
+        isOffer: true,
+        baseCurrency: 'USD',
+        type: 'worldcup'
+    },
+    {
+        id: 'wc-col-usa',
+        title: 'Paquete Colombia - Mundial 2026',
+        location: 'USA - México - Canadá',
+        totalPrice: 7800, // USD
+        description: '¡Apoya a la Tricolor en el Mundial! Vuelos directos desde Bogotá, traslados, alojamiento y entradas para seguir a la selección.',
+        images: [
+            'https://images.unsplash.com/photo-1518605348400-43ded60bdf73?q=80&w=2070&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1628102491629-778571d893a3?q=80&w=2000&auto=format&fit=crop'
+        ],
+        departureDate: '2026-06-10',
+        originCountry: 'Salida desde Colombia',
+        isOffer: true,
+        baseCurrency: 'USD',
+        type: 'worldcup'
+    },
+    {
+        id: 'wc-bol-usa',
+        title: 'Paquete Bolivia - Mundial 2026',
+        location: 'USA - México - Canadá',
+        totalPrice: 7500, // USD
+        description: 'Vive la emoción del mundial. Salida desde Santa Cruz de la Sierra. Hotelería seleccionada, traslados y entradas.',
+        images: [
+            'https://images.unsplash.com/photo-1529900748604-07564a03e7a6?q=80&w=2070&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?q=80&w=2070&auto=format&fit=crop'
+        ],
+        departureDate: '2026-06-10',
+        originCountry: 'Salida desde Bolivia',
+        isOffer: false,
+        baseCurrency: 'USD',
+        type: 'worldcup'
+    },
+    {
+        id: 'wc-ecu-usa',
+        title: 'Paquete Ecuador - Mundial 2026',
+        location: 'USA - México - Canadá',
+        totalPrice: 7700, // USD
+        description: 'Alienta a la Tri. Paquete completo con vuelos desde Quito/Guayaquil, alojamiento 4 estrellas y tickets oficiales.',
+        images: [
+            'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=2070&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=2070&auto=format&fit=crop'
+        ],
+        departureDate: '2026-06-10',
+        originCountry: 'Salida desde Ecuador',
+        isOffer: false,
+        baseCurrency: 'USD',
+        type: 'worldcup'
+    },
+    {
+        id: 'wc-uru-usa',
+        title: 'Paquete Uruguay - Mundial 2026',
+        location: 'USA - México - Canadá',
+        totalPrice: 8500, // USD
+        description: 'La Celeste te necesita. Paquete completo con salida desde Montevideo. Pagá en cuotas fijas en dólares.',
+        images: [
+            'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=2070&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=2005&auto=format&fit=crop'
+        ],
+        departureDate: '2026-06-10',
+        originCountry: 'Salida desde Uruguay',
+        isOffer: false,
+        baseCurrency: 'USD',
+        type: 'worldcup'
     }
 ];

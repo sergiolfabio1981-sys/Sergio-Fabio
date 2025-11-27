@@ -6,21 +6,20 @@ type Currency = 'ARS' | 'USD' | 'BRL' | 'UYU' | 'CLP' | 'COP' | 'MXN';
 interface CurrencyContextProps {
   currency: Currency;
   setCurrency: (c: Currency) => void;
-  formatPrice: (amountInArs: number) => string;
-  convertPrice: (amountInArs: number) => number;
+  formatPrice: (amount: number, baseCurrency?: string) => string;
+  convertPrice: (amount: number, baseCurrency?: string) => number;
 }
 
 // Tasas de cambio aproximadas (Base ARS - Pesos Argentinos)
 // Se calcula: Cuántos ARS vale 1 unidad de la moneda destino.
-// O en la lógica inversa usada aquí: Por cuánto dividir el ARS para obtener la moneda destino.
 const EXCHANGE_RATES = {
   ARS: 1,
-  USD: 1220, // Dólar Blue/Turista aprox
-  BRL: 215,  // Real
-  UYU: 31,   // Peso Uruguayo (1 USD ~ 42 UYU -> 1220/42 approx)
-  CLP: 1.30, // Peso Chileno (1 USD ~ 940 CLP -> 1220/940 approx)
-  COP: 0.28, // Peso Colombiano (1 USD ~ 4300 COP)
-  MXN: 60    // Peso Mexicano (1 USD ~ 20 MXN)
+  USD: 1220, // 1 USD = 1220 ARS
+  BRL: 215,  // 1 BRL = 215 ARS
+  UYU: 31,   // 1 UYU = 31 ARS
+  CLP: 1.30, // 1 CLP = 1.30 ARS
+  COP: 0.28, // 1 COP = 0.28 ARS
+  MXN: 60    // 1 MXN = 60 ARS
 };
 
 const CurrencyContext = createContext<CurrencyContextProps | undefined>(undefined);
@@ -42,16 +41,25 @@ export const CurrencyProvider: React.FC<{ children: ReactNode }> = ({ children }
     localStorage.setItem('abras_currency', c);
   };
 
-  const convertPrice = (amountInArs: number): number => {
-    // Si el valor no es numérico, devolvemos 0
-    if (isNaN(amountInArs) || amountInArs === undefined) return 0;
+  // Convert any base currency amount to the currently selected currency
+  const convertPrice = (amount: number, baseCurrency: string = 'ARS'): number => {
+    if (isNaN(amount) || amount === undefined) return 0;
+
+    // 1. Convert everything to ARS first (Common Denominator)
+    let amountInArs = amount;
     
-    if (currency === 'ARS') return amountInArs;
+    if (baseCurrency === 'USD') {
+        amountInArs = amount * EXCHANGE_RATES.USD;
+    } 
+    // Add other base currencies here if needed in future
+
+    // 2. Convert ARS to Target Currency
+    // Formula: AmountInArs / RateOfTarget
     return amountInArs / EXCHANGE_RATES[currency];
   };
 
-  const formatPrice = (amountInArs: number): string => {
-    const value = convertPrice(amountInArs);
+  const formatPrice = (amount: number, baseCurrency: string = 'ARS'): string => {
+    const value = convertPrice(amount, baseCurrency);
     
     // Configuraciones regionales para formato de números
     let locale = 'en-US'; // Default para USD

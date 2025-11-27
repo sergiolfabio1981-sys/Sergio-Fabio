@@ -13,6 +13,7 @@ export interface Trip {
   includesFlight?: boolean; // New: mimic package feature
   rating?: number; // New: mimic user rating
   reviewsCount?: number; // New
+  baseCurrency?: 'ARS' | 'USD';
   type?: 'trip';
 }
 
@@ -33,6 +34,7 @@ export interface Apartment {
   discount?: number;
   rating?: number;
   reviewsCount?: number;
+  baseCurrency?: 'ARS' | 'USD';
   type?: 'rental';
 }
 
@@ -52,6 +54,7 @@ export interface Hotel {
   discount?: number;
   rating?: number;
   reviewsCount?: number;
+  baseCurrency?: 'ARS' | 'USD';
   type?: 'hotel';
 }
 
@@ -69,6 +72,7 @@ export interface Excursion {
   discount?: number;
   rating?: number;
   reviewsCount?: number;
+  baseCurrency?: 'ARS' | 'USD';
   type?: 'excursion';
 }
 
@@ -82,10 +86,26 @@ export interface InstallmentTrip {
   departureDate: string; // ISO string or "YYYY-MM-DD"
   isOffer: boolean; // Just for highlighting
   discount?: number;
+  baseCurrency?: 'ARS' | 'USD';
   type?: 'installment';
 }
 
-export type ListingItem = Trip | Apartment | Excursion | Hotel | InstallmentTrip;
+export interface WorldCupTrip {
+  id: string;
+  title: string;
+  location: string;
+  totalPrice: number;
+  description: string;
+  images: string[];
+  departureDate: string; // Fixed mostly to June 2026
+  originCountry: string; // e.g. "Salida desde Argentina"
+  isOffer: boolean;
+  discount?: number;
+  baseCurrency?: 'ARS' | 'USD'; // Force USD for World Cup
+  type?: 'worldcup';
+}
+
+export type ListingItem = Trip | Apartment | Excursion | Hotel | InstallmentTrip | WorldCupTrip;
 
 export interface ChatMessage {
   id: string;
