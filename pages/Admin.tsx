@@ -18,6 +18,9 @@ const Admin: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState<'trips' | 'rentals' | 'excursions' | 'hotels' | 'installments'>('trips');
+  
+  // URL Input State for Images
+  const [imageUrlInput, setImageUrlInput] = useState('');
 
   // Trip State
   const [trips, setTrips] = useState<Trip[]>([]);
@@ -91,33 +94,45 @@ const Admin: React.FC = () => {
     else if (type === 'installment' && editingInstallment) setEditingInstallment(prev => prev ? { ...prev, images: [...prev.images, ...newImages] } : null);
   };
 
+  const handleAddImageUrl = (type: 'trip' | 'rental' | 'excursion' | 'hotel' | 'installment') => {
+      if (!imageUrlInput.trim()) return;
+
+      if (type === 'rental' && editingRental) setEditingRental(prev => prev ? { ...prev, images: [...prev.images, imageUrlInput] } : null);
+      else if (type === 'trip' && editingTrip) setEditingTrip(prev => prev ? { ...prev, images: [...prev.images, imageUrlInput] } : null);
+      else if (type === 'excursion' && editingExcursion) setEditingExcursion(prev => prev ? { ...prev, images: [...prev.images, imageUrlInput] } : null);
+      else if (type === 'hotel' && editingHotel) setEditingHotel(prev => prev ? { ...prev, images: [...prev.images, imageUrlInput] } : null);
+      else if (type === 'installment' && editingInstallment) setEditingInstallment(prev => prev ? { ...prev, images: [...prev.images, imageUrlInput] } : null);
+      
+      setImageUrlInput(''); // Clear input after adding
+  };
+
   // TRIP Handlers
-  const openEditTrip = (t: Trip) => { setEditingTrip({...t}); setTripDatesInput(t.availableDates.join('\n')); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setIsModalOpen(true); };
-  const openCreateTrip = () => { setEditingTrip(createEmptyTrip()); setTripDatesInput(''); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setIsModalOpen(true); };
+  const openEditTrip = (t: Trip) => { setEditingTrip({...t}); setTripDatesInput(t.availableDates.join('\n')); setImageUrlInput(''); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setIsModalOpen(true); };
+  const openCreateTrip = () => { setEditingTrip(createEmptyTrip()); setTripDatesInput(''); setImageUrlInput(''); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setIsModalOpen(true); };
   const saveCurrentTrip = (e: any) => { e.preventDefault(); if(!editingTrip) return; saveTrip({...editingTrip, availableDates: tripDatesInput.split('\n').filter(d=>d.trim()!=='')}); setTrips(getTrips()); setIsModalOpen(false); };
   const deleteCurrentTrip = (id: string) => { if(window.confirm("¿Eliminar?")) { deleteTrip(id); setTrips(getTrips()); }};
 
   // RENTAL Handlers
-  const openEditRental = (r: Apartment) => { setEditingRental({...r}); setRentalAmenitiesInput(r.amenities.join('\n')); setEditingTrip(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setIsModalOpen(true); };
-  const openCreateRental = () => { setEditingRental(createEmptyRental()); setRentalAmenitiesInput(''); setEditingTrip(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setIsModalOpen(true); };
+  const openEditRental = (r: Apartment) => { setEditingRental({...r}); setRentalAmenitiesInput(r.amenities.join('\n')); setImageUrlInput(''); setEditingTrip(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setIsModalOpen(true); };
+  const openCreateRental = () => { setEditingRental(createEmptyRental()); setRentalAmenitiesInput(''); setImageUrlInput(''); setEditingTrip(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setIsModalOpen(true); };
   const saveCurrentRental = (e: any) => { e.preventDefault(); if(!editingRental) return; saveRental({...editingRental, amenities: rentalAmenitiesInput.split('\n').filter(a=>a.trim()!=='')}); setRentals(getRentals()); setIsModalOpen(false); };
   const deleteCurrentRental = (id: string) => { if(window.confirm("¿Eliminar?")) { deleteRental(id); setRentals(getRentals()); }};
 
   // HOTEL Handlers
-  const openEditHotel = (h: Hotel) => { setEditingHotel({...h}); setHotelAmenitiesInput(h.amenities.join('\n')); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingInstallment(null); setIsModalOpen(true); };
-  const openCreateHotel = () => { setEditingHotel(createEmptyHotel()); setHotelAmenitiesInput(''); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingInstallment(null); setIsModalOpen(true); };
+  const openEditHotel = (h: Hotel) => { setEditingHotel({...h}); setHotelAmenitiesInput(h.amenities.join('\n')); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingInstallment(null); setIsModalOpen(true); };
+  const openCreateHotel = () => { setEditingHotel(createEmptyHotel()); setHotelAmenitiesInput(''); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingInstallment(null); setIsModalOpen(true); };
   const saveCurrentHotel = (e: any) => { e.preventDefault(); if(!editingHotel) return; saveHotel({...editingHotel, amenities: hotelAmenitiesInput.split('\n').filter(a=>a.trim()!=='')}); setHotels(getHotels()); setIsModalOpen(false); };
   const deleteCurrentHotel = (id: string) => { if(window.confirm("¿Eliminar?")) { deleteHotel(id); setHotels(getHotels()); }};
 
   // EXCURSION Handlers
-  const openEditExcursion = (exc: Excursion) => { setEditingExcursion({...exc}); setExcursionDatesInput(exc.availableDates.join('\n')); setEditingTrip(null); setEditingRental(null); setEditingHotel(null); setEditingInstallment(null); setIsModalOpen(true); };
-  const openCreateExcursion = () => { setEditingExcursion(createEmptyExcursion()); setExcursionDatesInput(''); setEditingTrip(null); setEditingRental(null); setEditingHotel(null); setEditingInstallment(null); setIsModalOpen(true); };
+  const openEditExcursion = (exc: Excursion) => { setEditingExcursion({...exc}); setExcursionDatesInput(exc.availableDates.join('\n')); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingHotel(null); setEditingInstallment(null); setIsModalOpen(true); };
+  const openCreateExcursion = () => { setEditingExcursion(createEmptyExcursion()); setExcursionDatesInput(''); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingHotel(null); setEditingInstallment(null); setIsModalOpen(true); };
   const saveCurrentExcursion = (e: any) => { e.preventDefault(); if(!editingExcursion) return; saveExcursion({...editingExcursion, availableDates: excursionDatesInput.split('\n').filter(d=>d.trim()!=='')}); setExcursions(getExcursions()); setIsModalOpen(false); };
   const deleteCurrentExcursion = (id: string) => { if(window.confirm("¿Eliminar?")) { deleteExcursion(id); setExcursions(getExcursions()); }};
 
   // INSTALLMENT Handlers
-  const openEditInstallment = (item: InstallmentTrip) => { setEditingInstallment({...item}); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setIsModalOpen(true); };
-  const openCreateInstallment = () => { setEditingInstallment(createEmptyInstallmentTrip()); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setIsModalOpen(true); };
+  const openEditInstallment = (item: InstallmentTrip) => { setEditingInstallment({...item}); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setIsModalOpen(true); };
+  const openCreateInstallment = () => { setEditingInstallment(createEmptyInstallmentTrip()); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setIsModalOpen(true); };
   const saveCurrentInstallment = (e: React.FormEvent) => { e.preventDefault(); if (!editingInstallment) return; saveInstallmentTrip(editingInstallment); setInstallments(getInstallmentTrips()); setIsModalOpen(false); };
   const deleteCurrentInstallment = (id: string) => { if(window.confirm("¿Eliminar plan?")) { deleteInstallmentTrip(id); setInstallments(getInstallmentTrips()); }};
 
@@ -224,7 +239,16 @@ const Admin: React.FC = () => {
                            <div>
                               <label className="block text-sm font-bold mb-1">Imágenes</label>
                               <div className="flex gap-2 mb-2 overflow-x-auto">{editingTrip.images.map((img,i)=><div key={i} className="relative group min-w-[64px]"><img src={img} className="w-16 h-16 object-cover rounded" /><button type="button" onClick={()=>{const newImages = [...editingTrip.images]; newImages.splice(i,1); setEditingTrip({...editingTrip, images: newImages})}} className="absolute top-0 right-0 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100">x</button></div>)}</div>
-                              <input type="file" multiple onChange={(e)=>handleFileUpload(e, 'trip')} />
+                              <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border">
+                                  <div className="flex gap-2">
+                                      <input type="text" placeholder="https://ejemplo.com/foto.jpg" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} />
+                                      <button type="button" onClick={()=>handleAddImageUrl('trip')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm whitespace-nowrap">Agregar URL</button>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                      <span className="text-xs text-gray-500">O subir desde PC:</span>
+                                      <input type="file" multiple onChange={(e)=>handleFileUpload(e, 'trip')} className="text-sm" />
+                                  </div>
+                              </div>
                            </div>
                            <div className="flex justify-end gap-2"><button type="button" onClick={()=>setIsModalOpen(false)} className="px-4 py-2 border rounded">Cancelar</button><button type="submit" className="bg-cyan-600 text-white px-4 py-2 rounded">Guardar</button></div>
                       </form>
@@ -254,7 +278,16 @@ const Admin: React.FC = () => {
                           <div>
                               <label className="block text-sm font-bold mb-1">Imágenes</label>
                               <div className="flex gap-2 mb-2 overflow-x-auto">{editingRental.images.map((img,i)=><div key={i} className="relative group min-w-[64px]"><img src={img} className="w-16 h-16 object-cover rounded" /><button type="button" onClick={()=>{const newImages = [...editingRental.images]; newImages.splice(i,1); setEditingRental({...editingRental, images: newImages})}} className="absolute top-0 right-0 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100">x</button></div>)}</div>
-                              <input type="file" multiple onChange={(e)=>handleFileUpload(e, 'rental')} />
+                              <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border">
+                                  <div className="flex gap-2">
+                                      <input type="text" placeholder="https://ejemplo.com/foto.jpg" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} />
+                                      <button type="button" onClick={()=>handleAddImageUrl('rental')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm whitespace-nowrap">Agregar URL</button>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                      <span className="text-xs text-gray-500">O subir desde PC:</span>
+                                      <input type="file" multiple onChange={(e)=>handleFileUpload(e, 'rental')} className="text-sm" />
+                                  </div>
+                              </div>
                           </div>
                           <div className="flex justify-end gap-2"><button type="button" onClick={()=>setIsModalOpen(false)} className="px-4 py-2 border rounded">Cancelar</button><button type="submit" className="bg-cyan-600 text-white px-4 py-2 rounded">Guardar</button></div>
                       </form>
@@ -283,7 +316,16 @@ const Admin: React.FC = () => {
                           <div>
                               <label className="block text-sm font-bold mb-1">Imágenes</label>
                               <div className="flex gap-2 mb-2 overflow-x-auto">{editingHotel.images.map((img,i)=><div key={i} className="relative group min-w-[64px]"><img src={img} className="w-16 h-16 object-cover rounded" /><button type="button" onClick={()=>{const newImages = [...editingHotel.images]; newImages.splice(i,1); setEditingHotel({...editingHotel, images: newImages})}} className="absolute top-0 right-0 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100">x</button></div>)}</div>
-                              <input type="file" multiple onChange={(e)=>handleFileUpload(e, 'hotel')} />
+                              <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border">
+                                  <div className="flex gap-2">
+                                      <input type="text" placeholder="https://ejemplo.com/foto.jpg" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} />
+                                      <button type="button" onClick={()=>handleAddImageUrl('hotel')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm whitespace-nowrap">Agregar URL</button>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                      <span className="text-xs text-gray-500">O subir desde PC:</span>
+                                      <input type="file" multiple onChange={(e)=>handleFileUpload(e, 'hotel')} className="text-sm" />
+                                  </div>
+                              </div>
                           </div>
                           <div className="flex justify-end gap-2"><button type="button" onClick={()=>setIsModalOpen(false)} className="px-4 py-2 border rounded">Cancelar</button><button type="submit" className="bg-cyan-600 text-white px-4 py-2 rounded">Guardar</button></div>
                       </form>
@@ -308,7 +350,16 @@ const Admin: React.FC = () => {
                           <div>
                               <label className="block text-sm font-bold mb-1">Imágenes</label>
                               <div className="flex gap-2 mb-2 overflow-x-auto">{editingExcursion.images.map((img,i)=><div key={i} className="relative group min-w-[64px]"><img src={img} className="w-16 h-16 object-cover rounded" /><button type="button" onClick={()=>{const newImages = [...editingExcursion.images]; newImages.splice(i,1); setEditingExcursion({...editingExcursion, images: newImages})}} className="absolute top-0 right-0 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100">x</button></div>)}</div>
-                              <input type="file" multiple onChange={(e)=>handleFileUpload(e, 'excursion')} />
+                              <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border">
+                                  <div className="flex gap-2">
+                                      <input type="text" placeholder="https://ejemplo.com/foto.jpg" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} />
+                                      <button type="button" onClick={()=>handleAddImageUrl('excursion')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm whitespace-nowrap">Agregar URL</button>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                      <span className="text-xs text-gray-500">O subir desde PC:</span>
+                                      <input type="file" multiple onChange={(e)=>handleFileUpload(e, 'excursion')} className="text-sm" />
+                                  </div>
+                              </div>
                           </div>
                           <div className="flex justify-end gap-2"><button type="button" onClick={()=>setIsModalOpen(false)} className="px-4 py-2 border rounded">Cancelar</button><button type="submit" className="bg-cyan-600 text-white px-4 py-2 rounded">Guardar</button></div>
                       </form>
@@ -339,7 +390,16 @@ const Admin: React.FC = () => {
                           <div>
                               <label className="block text-sm font-bold mb-1">Imágenes</label>
                               <div className="flex gap-2 mb-2 overflow-x-auto">{editingInstallment.images.map((img,i)=><div key={i} className="relative group min-w-[64px]"><img src={img} className="w-16 h-16 object-cover rounded" /><button type="button" onClick={()=>{const newImages = [...editingInstallment.images]; newImages.splice(i,1); setEditingInstallment({...editingInstallment, images: newImages})}} className="absolute top-0 right-0 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100">x</button></div>)}</div>
-                              <input type="file" multiple onChange={(e)=>handleFileUpload(e, 'installment')} />
+                              <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border">
+                                  <div className="flex gap-2">
+                                      <input type="text" placeholder="https://ejemplo.com/foto.jpg" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} />
+                                      <button type="button" onClick={()=>handleAddImageUrl('installment')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm whitespace-nowrap">Agregar URL</button>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                      <span className="text-xs text-gray-500">O subir desde PC:</span>
+                                      <input type="file" multiple onChange={(e)=>handleFileUpload(e, 'installment')} className="text-sm" />
+                                  </div>
+                              </div>
                           </div>
                           <div className="flex justify-end gap-2 pt-4">
                               <button type="button" onClick={()=>setIsModalOpen(false)} className="px-4 py-2 border rounded">Cancelar</button>
