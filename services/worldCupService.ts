@@ -2,8 +2,8 @@
 import { WorldCupTrip } from '../types';
 import { INITIAL_WORLDCUP_TRIPS } from '../constants';
 
-// Bump version to v2 to load new USD trips and countries
-const WORLDCUP_STORAGE_KEY = 'abras_travel_worldcup_v2';
+// Bump version to v3 to load new USD trips and countries
+const WORLDCUP_STORAGE_KEY = 'abras_travel_worldcup_v3';
 
 export const getWorldCupTrips = (): WorldCupTrip[] => {
   const stored = localStorage.getItem(WORLDCUP_STORAGE_KEY);

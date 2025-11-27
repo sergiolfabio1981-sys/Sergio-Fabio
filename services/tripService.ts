@@ -3,7 +3,7 @@ import { Trip } from '../types';
 import { INITIAL_TRIPS } from '../constants';
 
 // Bump version to force fresh data load for pricing fix
-const STORAGE_KEY = 'abras_travel_trips_v10';
+const STORAGE_KEY = 'abras_travel_trips_v11';
 
 export const getTrips = (): Trip[] => {
   const stored = localStorage.getItem(STORAGE_KEY);
