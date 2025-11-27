@@ -22,6 +22,9 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
   // For Hotels/Rentals
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
+  
+  // Carousel state for Modal
+  const [modalImageIndex, setModalImageIndex] = useState(0);
 
   // Determine type
   const isRental = item.type === 'rental';
@@ -94,7 +97,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
   const serviceFee = subtotal * 0.10;
   const totalEstimated = subtotal + serviceFee;
 
-  // Auto-play carousel
+  // Auto-play carousel for card only
   useEffect(() => {
     if (item.images.length <= 1 || isHovered) return;
     const intervalDuration = 3000 + Math.random() * 2000;
@@ -113,8 +116,19 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
     setCurrentImageIndex((prev) => (prev - 1 + item.images.length) % item.images.length);
   };
 
+  // Modal Image Navigation
+  const nextModalImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setModalImageIndex((prev) => (prev + 1) % item.images.length);
+  };
+  const prevModalImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setModalImageIndex((prev) => (prev - 1 + item.images.length) % item.images.length);
+  };
+
   const openQuickView = (e: React.MouseEvent) => {
       e.preventDefault();
+      setModalImageIndex(0); // Reset to first image when opening modal
       setIsQuickViewOpen(true);
   };
 
@@ -266,76 +280,115 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
     {/* Quick View Modal */}
     {isQuickViewOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={() => setIsQuickViewOpen(false)}>
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden" onClick={e => e.stopPropagation()}>
-                <div className="bg-cyan-700 p-4 text-white flex justify-between items-center">
-                    <h3 className="font-bold text-lg">{t('booking.budget')}: {item.title}</h3>
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
+                
+                {/* Modal Header */}
+                <div className="bg-cyan-700 p-4 text-white flex justify-between items-center shrink-0">
+                    <h3 className="font-bold text-lg truncate pr-4">{item.title}</h3>
                     <button onClick={() => setIsQuickViewOpen(false)} className="hover:bg-white/20 p-1 rounded"><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
                 </div>
-                <div className="p-6">
-                    <div className="mb-4">
-                        <p className="text-sm text-gray-500 mb-2 font-bold uppercase">{t('booking.availability')}</p>
-                        {(isHotel || isRental) ? (
-                            <div className="grid grid-cols-2 gap-2">
-                                <div>
-                                    <label className="text-xs text-gray-400">Check-in</label>
-                                    <input type="date" className="w-full border rounded p-1 text-sm" value={checkIn} onChange={e=>setCheckIn(e.target.value)} />
-                                </div>
-                                <div>
-                                    <label className="text-xs text-gray-400">Check-out</label>
-                                    <input type="date" className="w-full border rounded p-1 text-sm" min={checkIn} value={checkOut} onChange={e=>setCheckOut(e.target.value)} />
-                                </div>
-                            </div>
-                        ) : isInstallment ? (
-                             <div className="bg-indigo-50 p-2 rounded text-center border border-indigo-100 text-indigo-800">
-                                 {t('booking.departureDate')}: <strong>{(item as any).departureDate}</strong>
-                             </div>
-                        ) : (
-                            <div className="bg-gray-50 p-2 rounded max-h-32 overflow-y-auto border text-sm">
-                                {(item as any).availableDates?.length > 0 ? (item as any).availableDates.map((d:string, i:number) => (
-                                    <div key={i} className="mb-1 pb-1 border-b border-gray-200 last:border-0">{d}</div>
-                                )) : <span className="text-gray-400">{t('card.details')}</span>}
-                            </div>
-                        )}
-                    </div>
+                
+                {/* Modal Body with Scroll */}
+                <div className="overflow-y-auto">
                     
-                    <div className="mb-6">
-                         <div className="flex justify-between items-center mb-2">
-                             <span className="text-sm font-bold text-gray-700">{t('booking.passengers')} / {t('filters.guests')}</span>
-                             <div className="flex items-center border rounded">
-                                 <button onClick={()=>setGuests(Math.max(1, guests-1))} className="px-3 py-1 bg-gray-100 hover:bg-gray-200">-</button>
-                                 <span className="px-3 font-bold">{guests}</span>
-                                 <button onClick={()=>setGuests(guests+1)} className="px-3 py-1 bg-gray-100 hover:bg-gray-200">+</button>
-                             </div>
-                         </div>
-                    </div>
-
-                    <div className="bg-cyan-50 p-4 rounded-lg space-y-2 text-sm mb-6">
-                        <div className="flex justify-between text-gray-600">
-                            <span>Base {(isHotel || isRental) ? `(${unitCount} ${t('card.night')})` : 'x Persona'}</span>
-                            <span>{formatPrice(subtotal)}</span>
-                        </div>
-                        {hasDiscount && (
-                           <div className="flex justify-between text-green-600 font-bold">
-                               <span>Descuento aplicado ({discount}%)</span>
-                               <span>-</span>
-                           </div>
+                    {/* Modal Image Carousel */}
+                    <div className="relative h-64 w-full bg-gray-100 group">
+                        <img 
+                            src={item.images[modalImageIndex]} 
+                            alt={`${item.title} - ${modalImageIndex + 1}`} 
+                            className="w-full h-full object-cover"
+                        />
+                        
+                        {/* Modal Carousel Controls */}
+                        {item.images.length > 1 && (
+                            <>
+                                <button onClick={prevModalImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                                </button>
+                                <button onClick={nextModalImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                                </button>
+                                {/* Image Counter */}
+                                <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded font-mono">
+                                    {modalImageIndex + 1} / {item.images.length}
+                                </div>
+                            </>
                         )}
-                        <div className="flex justify-between font-bold text-orange-600">
-                            <span>{t('booking.serviceFee')} (10%)</span>
-                            <span>{formatPrice(serviceFee)}</span>
-                        </div>
-                        <div className="flex justify-between font-bold text-lg text-gray-800 pt-2 border-t border-cyan-100 mt-2">
-                            <span>{t('booking.total')}</span>
-                            <span>{formatPrice(totalEstimated)}</span>
-                        </div>
+                        
+                        {/* Offer Badge in Modal */}
+                        {item.isOffer && (
+                             <div className="absolute top-2 left-2 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded shadow">
+                                {t('card.offer')}
+                            </div>
+                        )}
                     </div>
 
-                    <Link 
-                        to={linkUrl}
-                        className="block w-full text-center bg-cyan-600 text-white font-bold py-3 rounded-lg hover:bg-cyan-700 transition-colors shadow-lg"
-                    >
-                        {t('booking.continue')}
-                    </Link>
+                    <div className="p-6">
+                        <div className="mb-4">
+                            <p className="text-sm text-gray-500 mb-2 font-bold uppercase">{t('booking.availability')}</p>
+                            {(isHotel || isRental) ? (
+                                <div className="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label className="text-xs text-gray-400">Check-in</label>
+                                        <input type="date" className="w-full border rounded p-1 text-sm" value={checkIn} onChange={e=>setCheckIn(e.target.value)} />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-gray-400">Check-out</label>
+                                        <input type="date" className="w-full border rounded p-1 text-sm" min={checkIn} value={checkOut} onChange={e=>setCheckOut(e.target.value)} />
+                                    </div>
+                                </div>
+                            ) : isInstallment ? (
+                                <div className="bg-indigo-50 p-2 rounded text-center border border-indigo-100 text-indigo-800">
+                                    {t('booking.departureDate')}: <strong>{(item as any).departureDate}</strong>
+                                </div>
+                            ) : (
+                                <div className="bg-gray-50 p-2 rounded max-h-32 overflow-y-auto border text-sm">
+                                    {(item as any).availableDates?.length > 0 ? (item as any).availableDates.map((d:string, i:number) => (
+                                        <div key={i} className="mb-1 pb-1 border-b border-gray-200 last:border-0">{d}</div>
+                                    )) : <span className="text-gray-400">{t('card.details')}</span>}
+                                </div>
+                            )}
+                        </div>
+                        
+                        <div className="mb-6">
+                            <div className="flex justify-between items-center mb-2">
+                                <span className="text-sm font-bold text-gray-700">{t('booking.passengers')} / {t('filters.guests')}</span>
+                                <div className="flex items-center border rounded">
+                                    <button onClick={()=>setGuests(Math.max(1, guests-1))} className="px-3 py-1 bg-gray-100 hover:bg-gray-200">-</button>
+                                    <span className="px-3 font-bold">{guests}</span>
+                                    <button onClick={()=>setGuests(guests+1)} className="px-3 py-1 bg-gray-100 hover:bg-gray-200">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-cyan-50 p-4 rounded-lg space-y-2 text-sm mb-6">
+                            <div className="flex justify-between text-gray-600">
+                                <span>Base {(isHotel || isRental) ? `(${unitCount} ${t('card.night')})` : 'x Persona'}</span>
+                                <span>{formatPrice(subtotal)}</span>
+                            </div>
+                            {hasDiscount && (
+                            <div className="flex justify-between text-green-600 font-bold">
+                                <span>Descuento aplicado ({discount}%)</span>
+                                <span>-</span>
+                            </div>
+                            )}
+                            <div className="flex justify-between font-bold text-orange-600">
+                                <span>{t('booking.serviceFee')} (10%)</span>
+                                <span>{formatPrice(serviceFee)}</span>
+                            </div>
+                            <div className="flex justify-between font-bold text-lg text-gray-800 pt-2 border-t border-cyan-100 mt-2">
+                                <span>{t('booking.total')}</span>
+                                <span>{formatPrice(totalEstimated)}</span>
+                            </div>
+                        </div>
+
+                        <Link 
+                            to={linkUrl}
+                            className="block w-full text-center bg-cyan-600 text-white font-bold py-3 rounded-lg hover:bg-cyan-700 transition-colors shadow-lg"
+                        >
+                            {t('booking.continue')}
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>
