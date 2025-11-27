@@ -1,10 +1,12 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import { ListingItem } from '../types';
 import Countdown from './Countdown';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
+import { generateSharePDF } from '../services/pdfShareService';
 
 interface TripCardProps {
   trip: ListingItem;
@@ -12,10 +14,12 @@ interface TripCardProps {
 
 const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const { t } = useLanguage();
   const { formatPrice } = useCurrency();
+
+  // PDF Generation State
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   // Quick View Logic State
   const [guests, setGuests] = useState(2);
@@ -117,16 +121,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
   const serviceFee = subtotal * 0.10;
   const totalEstimated = subtotal + serviceFee;
 
-  // Auto-play carousel for card only
-  useEffect(() => {
-    if (item.images.length <= 1 || isHovered) return;
-    const intervalDuration = 3000 + Math.random() * 2000;
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % item.images.length);
-    }, intervalDuration);
-    return () => clearInterval(interval);
-  }, [item.images.length, isHovered]);
-
+  // Manual Navigation Only
   const nextImage = (e: React.MouseEvent) => {
     e.preventDefault(); e.stopPropagation();
     setCurrentImageIndex((prev) => (prev + 1) % item.images.length);
@@ -148,16 +143,26 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
 
   const openQuickView = (e: React.MouseEvent) => {
       e.preventDefault();
+      e.stopPropagation();
       setModalImageIndex(0); 
       setIsQuickViewOpen(true);
+  };
+
+  const handleSharePdf = async () => {
+      setIsGeneratingPdf(true);
+      // Format the price string for the PDF
+      const priceString = displayPrice > 0 
+        ? `${formatPrice(displayPrice, baseCurrency)} ${priceLabel}` 
+        : t('card.ask');
+        
+      await generateSharePDF(item, priceString);
+      setIsGeneratingPdf(false);
   };
 
   return (
     <>
     <div 
       className={`group relative bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 ${item.isOffer ? 'border-2 border-orange-400' : ''}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       <div className="relative h-56 overflow-hidden">
         {/* Image Display */}
@@ -169,20 +174,24 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
             />
         </Link>
         
-        {/* Controls */}
+        {/* Controls - Always visible on hover */}
         {item.images.length > 1 && (
           <>
-            <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-20">
+            <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-20">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             </button>
-            <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-20">
+            <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-20">
                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
             </button>
+            {/* Index Indicator */}
+            <div className="absolute bottom-2 right-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                {currentImageIndex + 1}/{item.images.length}
+            </div>
           </>
         )}
 
         {/* OFFER & DISCOUNT BADGES */}
-        <div className="absolute top-0 right-0 flex flex-col items-end z-10">
+        <div className="absolute top-0 right-0 flex flex-col items-end z-10 pointer-events-none">
             {item.isOffer && (
             <div className="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg mb-1 shadow">
                 {t('card.offer')}
@@ -195,7 +204,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
             )}
         </div>
 
-        <div className="absolute top-2 left-2 z-10 flex flex-col items-start gap-1">
+        <div className="absolute top-2 left-2 z-10 flex flex-col items-start gap-1 pointer-events-none">
            <div className="flex gap-1">
                 {isRental && <span className="bg-purple-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">{t('card.rental')}</span>}
                 {isExcursion && <span className="bg-green-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">{t('card.excursion')}</span>}
@@ -213,14 +222,14 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
         </div>
         
         {rating && (
-            <div className="absolute bottom-2 right-2 bg-blue-900 text-white text-xs font-bold px-2 py-1 rounded flex items-center shadow">
+            <div className="absolute bottom-2 right-2 bg-blue-900 text-white text-xs font-bold px-2 py-1 rounded flex items-center shadow z-10 pointer-events-none">
                 <span className="text-sm mr-1">{rating}</span>
                 <span className="font-normal opacity-80 text-[10px]">Fantástico</span>
             </div>
         )}
 
         {item.isOffer && (item as any).offerExpiresAt && (
-          <div className="absolute bottom-2 left-2 z-10"><Countdown targetDate={(item as any).offerExpiresAt} /></div>
+          <div className="absolute bottom-2 left-2 z-10 pointer-events-none"><Countdown targetDate={(item as any).offerExpiresAt} /></div>
         )}
       </div>
       
@@ -281,13 +290,13 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
           <div className="grid grid-cols-2 gap-2 mt-2">
               <button 
                 onClick={openQuickView}
-                className="flex items-center justify-center px-3 py-2 bg-gray-50 text-gray-700 text-sm font-bold rounded-lg hover:bg-gray-200 transition-colors border border-gray-200"
+                className="flex items-center justify-center px-3 py-2 bg-gray-50 text-gray-700 text-sm font-bold rounded-lg hover:bg-gray-200 transition-colors border border-gray-200 z-20 relative cursor-pointer active:bg-gray-300"
               >
                   + Info
               </button>
               <Link 
                 to={linkUrl}
-                className="flex items-center justify-center px-3 py-2 bg-cyan-600 text-white text-sm font-bold rounded-lg hover:bg-cyan-700 transition-colors"
+                className="flex items-center justify-center px-3 py-2 bg-cyan-600 text-white text-sm font-bold rounded-lg hover:bg-cyan-700 transition-colors z-20 relative"
               >
                 {t('card.details')}
               </Link>
@@ -296,15 +305,15 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
       </div>
     </div>
 
-    {/* Quick View Modal */}
-    {isQuickViewOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={() => setIsQuickViewOpen(false)}>
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
+    {/* Quick View Modal - Using Portal to escape the transformed parent */}
+    {isQuickViewOpen && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={() => setIsQuickViewOpen(false)}>
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] relative" onClick={e => e.stopPropagation()}>
                 
                 {/* Modal Header */}
                 <div className="bg-cyan-700 p-4 text-white flex justify-between items-center shrink-0">
                     <h3 className="font-bold text-lg truncate pr-4">{item.title}</h3>
-                    <button onClick={() => setIsQuickViewOpen(false)} className="hover:bg-white/20 p-1 rounded"><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
+                    <button onClick={() => setIsQuickViewOpen(false)} className="hover:bg-white/20 p-1 rounded transition-colors"><svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
                 </div>
                 
                 {/* Modal Body with Scroll */}
@@ -344,6 +353,25 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
                     </div>
 
                     <div className="p-6">
+                        {/* Share PDF Button */}
+                        <button 
+                            onClick={handleSharePdf}
+                            disabled={isGeneratingPdf}
+                            className="w-full mb-6 flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold py-3 rounded-lg hover:shadow-lg hover:scale-[1.01] transition-all disabled:opacity-50 active:scale-95"
+                        >
+                            {isGeneratingPdf ? (
+                                <>
+                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    Generando Folleto...
+                                </>
+                            ) : (
+                                <>
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                    Compartir / Descargar PDF
+                                </>
+                            )}
+                        </button>
+
                         <div className="mb-4">
                             <p className="text-sm text-gray-500 mb-2 font-bold uppercase">{t('booking.availability')}</p>
                             {(isHotel || isRental) ? (
@@ -411,7 +439,8 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     )}
     </>
   );
