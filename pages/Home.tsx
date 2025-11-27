@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Trip, ListingItem, HeroSlide } from '../types';
+import { Trip, ListingItem, HeroSlide, PromoBanner } from '../types';
 import { getTrips } from '../services/tripService';
 import { getRentals } from '../services/rentalService';
 import { getExcursions } from '../services/excursionService';
 import { getHotels } from '../services/hotelService';
-import { getHeroSlides } from '../services/heroService';
+import { getHeroSlides, getPromoBanners } from '../services/heroService';
 import TripCard from '../components/TripCard';
 
 const Home: React.FC = () => {
@@ -15,13 +15,15 @@ const Home: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showImportToast, setShowImportToast] = useState(false);
   
-  // Carousel State
+  // Carousel & Banner State
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([]);
+  const [promoBanners, setPromoBanners] = useState<PromoBanner[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
-    // Load Hero Slides
+    // Load Hero Content
     setHeroSlides(getHeroSlides());
+    setPromoBanners(getPromoBanners());
 
     const allTrips = getTrips();
     const allRentals = getRentals();
@@ -232,6 +234,25 @@ const Home: React.FC = () => {
                     <p className="text-sm text-gray-500">Estamos contigo en cada paso.</p>
                 </div>
             </div>
+        </div>
+
+        {/* DYNAMIC PROMOTIONAL BANNERS GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+            {promoBanners.map((banner, idx) => (
+                <Link key={banner.id} to={banner.link} className="relative h-64 rounded-2xl overflow-hidden group shadow-xl">
+                    <img 
+                        src={banner.image} 
+                        alt={banner.title} 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className={`absolute inset-0 flex flex-col justify-center px-8 md:px-12 ${idx === 0 ? 'bg-gradient-to-r from-blue-900/90 via-blue-800/60 to-transparent' : 'bg-gradient-to-r from-indigo-900/90 via-indigo-800/60 to-transparent'}`}>
+                        <span className="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full w-fit mb-2 backdrop-blur-sm border border-white/30">{banner.badge}</span>
+                        <h2 className="text-3xl md:text-4xl font-black text-white mb-2">{banner.title}</h2>
+                        <p className="text-blue-100 mb-4 max-w-xs">{banner.subtitle}</p>
+                        <span className="text-white font-bold underline decoration-2 underline-offset-4 group-hover:text-cyan-300 transition-colors">{banner.ctaText} &rarr;</span>
+                    </div>
+                </Link>
+            ))}
         </div>
 
         {/* All Destinations (Trips Only) */}

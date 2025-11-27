@@ -1,5 +1,5 @@
 
-import { Trip, Apartment, Excursion, Hotel, InstallmentTrip, WorldCupTrip, HeroSlide } from './types';
+import { Trip, Apartment, Excursion, Hotel, InstallmentTrip, WorldCupTrip, HeroSlide, PromoBanner } from './types';
 
 export const ADMIN_EMAIL = "sergiolfabio1981@gmail.com";
 export const ADMIN_PASS = "Colo1981";
@@ -40,6 +40,27 @@ export const INITIAL_HERO_SLIDES: HeroSlide[] = [
     ctaText: "Explorar Europa",
     ctaLink: "/trips",
     highlightColor: "text-emerald-400"
+  }
+];
+
+export const INITIAL_PROMO_BANNERS: PromoBanner[] = [
+  {
+    id: 'banner_worldcup',
+    title: 'MUNDIAL 2026',
+    subtitle: 'Asegurá tu lugar para la próxima Copa del Mundo. Paquetes exclusivos.',
+    image: 'https://images.unsplash.com/photo-1522778119026-d647f0565c6a?q=80&w=2070&auto=format&fit=crop',
+    badge: 'USA - MÉXICO - CANADÁ',
+    ctaText: 'Ver Paquetes',
+    link: '/worldcup'
+  },
+  {
+    id: 'banner_installments',
+    title: 'ABRAS CUOTAS',
+    subtitle: 'Congelá el precio y pagá tu viaje en cuotas mensuales sin interés.',
+    image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=2070&auto=format&fit=crop',
+    badge: 'PLAN DE AHORRO',
+    ctaText: 'Comenzar a Pagar',
+    link: '/installments'
   }
 ];
 

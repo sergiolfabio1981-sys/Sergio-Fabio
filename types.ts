@@ -115,6 +115,16 @@ export interface HeroSlide {
   highlightColor: string; // Tailwind color class for accents
 }
 
+export interface PromoBanner {
+  id: string;
+  title: string;
+  subtitle: string;
+  image: string;
+  badge: string;
+  ctaText: string;
+  link: string;
+}
+
 export type ListingItem = Trip | Apartment | Excursion | Hotel | InstallmentTrip | WorldCupTrip;
 
 export interface ChatMessage {

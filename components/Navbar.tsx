@@ -81,7 +81,7 @@ const Navbar: React.FC = () => {
       )
     },
     { 
-      name: 'Admin', 
+      name: 'Usuario', 
       path: '/admin',
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -116,11 +116,11 @@ const Navbar: React.FC = () => {
     <nav className="bg-white shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         
-        {/* Top Section: Centered Logo + Config */}
-        <div className="flex justify-between items-center py-2 relative">
+        {/* Top Section: Logo (Center) + Config (Right) */}
+        <div className="flex flex-col md:flex-row justify-center items-center py-2 relative">
           
-          {/* Mobile Menu Button (Left aligned) */}
-          <div className="md:hidden z-20">
+          {/* Mobile Menu Button (Absolute Left on small screens) */}
+          <div className="absolute left-0 top-4 md:hidden z-20">
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-gray-600 hover:text-orange-500 focus:outline-none p-2"
@@ -135,27 +135,23 @@ const Navbar: React.FC = () => {
             </button>
           </div>
 
-          {/* Logo (Centered) */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
+          {/* Logo (Always Centered) */}
+          <div className="z-10 mb-2 md:mb-0">
             <Link to="/" className="flex flex-col items-center group">
               <div className="flex items-center gap-2 mb-1">
                  <svg className="w-10 h-10 text-orange-500 transform group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
-                <span className="font-bold text-3xl tracking-tighter text-cyan-700 whitespace-nowrap hidden sm:inline">
+                <span className="font-bold text-3xl tracking-tighter text-cyan-700 whitespace-nowrap">
                   ABRAS <span className="text-orange-500">Travel</span>
-                </span>
-                {/* Short logo for mobile */}
-                <span className="font-bold text-xl tracking-tighter text-cyan-700 sm:hidden">
-                  ABRAS
                 </span>
               </div>
               <div className="h-1 w-16 bg-gradient-to-r from-orange-400 to-cyan-400 rounded-full"></div>
             </Link>
           </div>
 
-          {/* Config: Language & Currency Dropdowns (Right) */}
-          <div className="hidden sm:flex items-center gap-4 z-20 ml-auto">
+          {/* Config: Language & Currency (Absolute Right on Desktop) */}
+          <div className="hidden md:flex items-center gap-4 absolute right-0 top-1/2 -translate-y-1/2">
              
              {/* Currency Dropdown */}
              <div className="relative">
@@ -170,7 +166,7 @@ const Navbar: React.FC = () => {
                 </button>
                 
                 {currencyDropdownOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in max-h-80 overflow-y-auto">
+                  <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in max-h-80 overflow-y-auto z-50">
                     {currencies.map(c => (
                       <button 
                         key={c.code}
@@ -200,7 +196,7 @@ const Navbar: React.FC = () => {
                 </button>
 
                 {languageDropdownOpen && (
-                   <div className="absolute top-full right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in">
+                   <div className="absolute top-full right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in z-50">
                       {languages.map(l => (
                          <button 
                            key={l.code}
@@ -222,14 +218,14 @@ const Navbar: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Section: Centered Navigation Links (Desktop) */}
+        {/* Bottom Section: Centered Navigation Links (Visible on Medium+ screens) */}
         <div className="hidden md:flex justify-center mt-2 border-t border-gray-100 pt-2">
-          <div className="flex space-x-1 lg:space-x-8">
+          <div className="flex space-x-1 lg:space-x-4">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`flex flex-col items-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 group ${
+                className={`flex flex-col items-center px-2 lg:px-4 py-2 rounded-lg text-xs font-medium transition-all duration-200 group ${
                   isActive(link.path)
                     ? 'text-cyan-700 bg-cyan-50'
                     : 'text-gray-500 hover:text-orange-500 hover:bg-orange-50'
@@ -238,7 +234,7 @@ const Navbar: React.FC = () => {
                 <span className={`mb-1 transition-transform group-hover:-translate-y-1 ${isActive(link.path) ? 'text-cyan-600' : 'text-gray-400 group-hover:text-orange-500'}`}>
                   {link.icon}
                 </span>
-                <span>{link.name}</span>
+                <span className="whitespace-nowrap">{link.name}</span>
               </Link>
             ))}
           </div>
