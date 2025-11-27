@@ -2,8 +2,8 @@
 import { Trip } from '../types';
 import { INITIAL_TRIPS } from '../constants';
 
-// Updated key to v7 to restore Despegar data
-const STORAGE_KEY = 'abras_travel_trips_v7';
+// Bump version to force fresh data load for pricing fix
+const STORAGE_KEY = 'abras_travel_trips_v10';
 
 export const getTrips = (): Trip[] => {
   const stored = localStorage.getItem(STORAGE_KEY);

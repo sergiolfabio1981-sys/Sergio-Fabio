@@ -89,9 +89,13 @@ const Navbar: React.FC = () => {
   ];
 
   const currencies = [
-    { code: 'ARS', label: 'Pesos (ARS)', symbol: '$' },
-    { code: 'USD', label: 'Dólar (USD)', symbol: 'US$' },
-    { code: 'BRL', label: 'Real (BRL)', symbol: 'R$' }
+    { code: 'USD', label: 'Dólar', symbol: 'US$', flag: '🇺🇸' },
+    { code: 'ARS', label: 'Argentina', symbol: '$', flag: '🇦🇷' },
+    { code: 'BRL', label: 'Brasil', symbol: 'R$', flag: '🇧🇷' },
+    { code: 'UYU', label: 'Uruguay', symbol: '$', flag: '🇺🇾' },
+    { code: 'CLP', label: 'Chile', symbol: '$', flag: '🇨🇱' },
+    { code: 'COP', label: 'Colombia', symbol: '$', flag: '🇨🇴' },
+    { code: 'MXN', label: 'México', symbol: '$', flag: '🇲🇽' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -148,22 +152,27 @@ const Navbar: React.FC = () => {
              <div className="relative">
                 <button 
                   onClick={() => { setCurrencyDropdownOpen(!currencyDropdownOpen); setLanguageDropdownOpen(false); }}
-                  className="flex items-center gap-1 text-sm font-bold text-gray-600 hover:text-cyan-700 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100 hover:border-cyan-200 transition-all"
+                  className="flex items-center gap-1 text-sm font-bold text-gray-600 hover:text-cyan-700 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100 hover:border-cyan-200 transition-all min-w-[80px]"
                 >
                   <span className="text-xs text-gray-400 font-normal uppercase mr-1">Moneda:</span> 
+                  <span className="mr-1">{(currentCurr as any).flag}</span>
                   {currentCurr.code} 
                   <svg className={`w-3 h-3 ml-1 transition-transform ${currencyDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                 </button>
                 
                 {currencyDropdownOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in">
+                  <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in max-h-80 overflow-y-auto">
                     {currencies.map(c => (
                       <button 
                         key={c.code}
                         onClick={() => { setCurrency(c.code as any); setCurrencyDropdownOpen(false); }}
-                        className={`w-full text-left px-4 py-2 text-sm flex justify-between hover:bg-cyan-50 transition-colors ${currency === c.code ? 'text-cyan-700 font-bold bg-cyan-50' : 'text-gray-600'}`}
+                        className={`w-full text-left px-4 py-2 text-sm flex items-center justify-between hover:bg-cyan-50 transition-colors ${currency === c.code ? 'text-cyan-700 font-bold bg-cyan-50' : 'text-gray-600'}`}
                       >
-                        <span>{c.label}</span>
+                        <div className="flex items-center">
+                            <span className="mr-2 text-lg">{(c as any).flag}</span>
+                            <span>{c.label}</span>
+                        </div>
+                        <span className="text-xs text-gray-400 font-mono">{c.code}</span>
                       </button>
                     ))}
                   </div>
@@ -234,16 +243,17 @@ const Navbar: React.FC = () => {
           {/* Config Section for Mobile */}
           <div className="p-4 bg-gray-50 border-b border-gray-200">
              <h4 className="text-xs font-bold text-gray-400 uppercase mb-3">Configuración</h4>
-             <div className="grid grid-cols-2 gap-4">
+             <div className="grid grid-cols-1 gap-4">
                  <div>
                     <label className="block text-xs font-bold text-gray-500 mb-1">Moneda</label>
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-wrap gap-2">
                         {currencies.map(c => (
                             <button 
                                 key={c.code}
                                 onClick={() => setCurrency(c.code as any)}
-                                className={`text-left px-2 py-1 text-sm rounded ${currency === c.code ? 'bg-cyan-600 text-white' : 'bg-white border text-gray-600'}`}
+                                className={`flex items-center gap-1 px-2 py-1 text-sm rounded border ${currency === c.code ? 'bg-cyan-600 text-white border-cyan-600' : 'bg-white border-gray-200 text-gray-600'}`}
                             >
+                                <span>{(c as any).flag}</span>
                                 {c.code}
                             </button>
                         ))}
@@ -251,12 +261,12 @@ const Navbar: React.FC = () => {
                  </div>
                  <div>
                     <label className="block text-xs font-bold text-gray-500 mb-1">Idioma</label>
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-wrap gap-2">
                         {languages.map(l => (
                             <button 
                                 key={l.code}
                                 onClick={() => setLanguage(l.code as any)}
-                                className={`text-left px-2 py-1 text-sm rounded flex items-center gap-2 ${language === l.code ? 'bg-cyan-600 text-white' : 'bg-white border text-gray-600'}`}
+                                className={`px-2 py-1 text-sm rounded flex items-center gap-2 border ${language === l.code ? 'bg-cyan-600 text-white border-cyan-600' : 'bg-white border-gray-200 text-gray-600'}`}
                             >
                                 <span>{l.flag}</span> {l.code.toUpperCase()}
                             </button>

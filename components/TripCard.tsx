@@ -19,21 +19,20 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
 
   // Quick View Logic State
   const [guests, setGuests] = useState(2);
-  // For Hotels/Rentals
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   
   // Carousel state for Modal
   const [modalImageIndex, setModalImageIndex] = useState(0);
 
-  // Determine type
-  const isRental = item.type === 'rental';
-  const isExcursion = item.type === 'excursion';
-  const isHotel = item.type === 'hotel';
+  // Determine type and properties safely
+  const isRental = item.type === 'rental' || 'pricePerNight' in item;
+  const isHotel = item.type === 'hotel' || ('stars' in item && 'pricePerNight' in item);
   const isInstallment = item.type === 'installment';
+  const isExcursion = item.type === 'excursion';
   const isTrip = !isRental && !isExcursion && !isHotel && !isInstallment;
 
-  // Extra features for Trips (Flight) and Others (Rating)
+  // Extra features
   const includesFlight = (item as any).includesFlight;
   const rating = (item as any).rating;
 
@@ -44,40 +43,40 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
   if (isHotel) linkUrl = `/hotels/${item.id}`;
   if (isInstallment) linkUrl = `/installments/${item.id}`;
 
-  // Determine Prices & Discounts
-  let basePrice = 0;
+  // --- ROBUST PRICE LOGIC ---
+  let displayPrice = 0;
+  let rawPriceForCalc = 0; // The base unit price (per night or per person)
   let priceLabel = '';
-  let installmentCount = 0;
-  let installmentValue = 0;
+  let installmentCount = 1;
 
-  if (isRental || isHotel) {
-      basePrice = (item as any).pricePerNight || 0;
+  if ('pricePerNight' in item) {
+      // Hotel or Rental
+      displayPrice = (item as any).pricePerNight || 0;
+      rawPriceForCalc = displayPrice;
       priceLabel = t('card.perNight');
-  } else if (isInstallment) {
-      basePrice = (item as any).totalPrice || 0;
-      // Calculate months diff
+  } else if (isInstallment && 'totalPrice' in item) {
+      // Installment Plan
+      const total = (item as any).totalPrice || 0;
+      rawPriceForCalc = total; // For installments, calculation is different
       const now = new Date();
       const depDate = new Date((item as any).departureDate);
       const diffMonths = (depDate.getFullYear() - now.getFullYear()) * 12 + (depDate.getMonth() - now.getMonth());
       installmentCount = diffMonths > 0 ? diffMonths : 1;
-      installmentValue = basePrice / installmentCount;
+      displayPrice = total / installmentCount;
       priceLabel = t('card.perMonth');
-  } else {
-      basePrice = (item as any).price || 0;
+  } else if ('price' in item) {
+      // Regular Trip or Excursion
+      displayPrice = (item as any).price || 0;
+      rawPriceForCalc = displayPrice;
       priceLabel = t('card.totalPrice');
   }
 
   // Discount Logic
   const discount = (item as any).discount || 0;
   const hasDiscount = discount > 0;
-  // If basePrice is the selling price, calculate original.
-  const originalPrice = hasDiscount ? basePrice / (1 - (discount/100)) : 0;
+  const originalPrice = hasDiscount && displayPrice > 0 ? displayPrice / (1 - (discount/100)) : 0;
   
-  // Decide what numeric value to display in the main slot
-  const displayPrice = isInstallment ? installmentValue : basePrice;
-
-
-  // Calculate Totals for Modal
+  // --- MODAL CALCULATIONS ---
   const calculateDays = () => {
       if (!checkIn || !checkOut) return 1;
       const start = new Date(checkIn);
@@ -89,10 +88,17 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
   
   const unitCount = (isHotel || isRental) ? calculateDays() : 1;
   
-  // Subtotal logic varies
-  const subtotal = (isHotel || isRental) 
-    ? basePrice * unitCount 
-    : (isInstallment ? basePrice * guests : basePrice * guests); 
+  // Subtotal calculation
+  let subtotal = 0;
+  if (isHotel || isRental) {
+      subtotal = rawPriceForCalc * unitCount;
+  } else if (isInstallment) {
+      // For installments, we usually show the total contract value in modal calculator
+      subtotal = (item as any).totalPrice * guests;
+  } else {
+      // Trips / Excursions
+      subtotal = rawPriceForCalc * guests;
+  }
 
   const serviceFee = subtotal * 0.10;
   const totalEstimated = subtotal + serviceFee;
@@ -128,7 +134,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
 
   const openQuickView = (e: React.MouseEvent) => {
       e.preventDefault();
-      setModalImageIndex(0); // Reset to first image when opening modal
+      setModalImageIndex(0); 
       setIsQuickViewOpen(true);
   };
 
@@ -183,7 +189,6 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
                 {isInstallment && <span className="bg-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">ABRAS CUOTAS</span>}
            </div>
            
-           {/* Flight Included Badge */}
            {includesFlight && (
                <div className="bg-sky-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow flex items-center">
                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
@@ -192,7 +197,6 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
            )}
         </div>
         
-        {/* Rating Badge (Despegar Style) */}
         {rating && (
             <div className="absolute bottom-2 right-2 bg-blue-900 text-white text-xs font-bold px-2 py-1 rounded flex items-center shadow">
                 <span className="text-sm mr-1">{rating}</span>
@@ -237,7 +241,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
                 
                 {/* PRICE DISPLAY */}
                 <div className="flex flex-wrap items-baseline gap-2">
-                    {hasDiscount && !isInstallment && (
+                    {hasDiscount && (
                         <span className="text-xs text-gray-400 line-through decoration-red-500">
                             {formatPrice(originalPrice)}
                         </span>
@@ -299,7 +303,6 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
                             className="w-full h-full object-cover"
                         />
                         
-                        {/* Modal Carousel Controls */}
                         {item.images.length > 1 && (
                             <>
                                 <button onClick={prevModalImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors">
@@ -308,19 +311,21 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
                                 <button onClick={nextModalImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors">
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                                 </button>
-                                {/* Image Counter */}
                                 <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded font-mono">
                                     {modalImageIndex + 1} / {item.images.length}
                                 </div>
                             </>
                         )}
                         
-                        {/* Offer Badge in Modal */}
                         {item.isOffer && (
                              <div className="absolute top-2 left-2 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded shadow">
                                 {t('card.offer')}
                             </div>
                         )}
+                        {/* Modal Price Overlay */}
+                         <div className="absolute bottom-2 left-2 bg-black/70 text-white text-sm font-bold px-3 py-1 rounded backdrop-blur-sm">
+                            {formatPrice(displayPrice)} <span className="text-xs font-normal opacity-80">{priceLabel}</span>
+                        </div>
                     </div>
 
                     <div className="p-6">
