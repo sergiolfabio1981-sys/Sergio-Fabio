@@ -99,6 +99,73 @@ export const INITIAL_TRIPS: Trip[] = [
 // --- HOTELES (Cadenas Internacionales) ---
 export const INITIAL_HOTELS: Hotel[] = [
   {
+    id: 'htl-cris',
+    title: 'Cris Hotel',
+    location: 'Praia da Joaquina, Florianópolis',
+    pricePerNight: 165000,
+    description: 'Ubicado directamente sobre las arenas blancas de la Playa de Joaquina. El Cris Hotel ofrece habitaciones con balcón privado y vistas al mar o las dunas. Es el lugar ideal para amantes del surf y familias que buscan estar a pasos del agua. Cuenta con un desayuno buffet variado servido en un salón con vista panorámica.',
+    images: [
+        'https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?q=80&w=1932&auto=format&fit=crop', // Beachfront equivalent
+        'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop', // Exterior
+        'https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=1974&auto=format&fit=crop', // Room View
+        'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?q=80&w=2070&auto=format&fit=crop'  // Balcony
+    ],
+    stars: 3,
+    amenities: [
+        'Frente a la playa',
+        'Desayuno Incluido',
+        'Wifi Gratis',
+        'Habitaciones con Balcón',
+        'Aire Acondicionado',
+        'Estacionamiento',
+        'Recepción 24hs'
+    ],
+    isOffer: true,
+    discount: 5,
+    rating: 8.8,
+    reviewsCount: 1400,
+    lat: -27.610,
+    lng: -48.450,
+    type: 'hotel'
+  },
+  {
+    id: 'htl-porto-sol',
+    title: 'Hotel Porto Sol Beach',
+    location: 'Ingleses, Florianópolis',
+    pricePerNight: 195000,
+    description: 'El Hotel Porto Sol Beach ofrece una experiencia inigualable frente al mar en la playa de Ingleses. Este hotel de 4 estrellas cuenta con el reconocido restaurante Maricota, que sirve platos regionales e internacionales. Los huéspedes pueden disfrutar de una piscina al aire libre, cancha de tenis y una sala de juegos. Las habitaciones son amplias, luminosas y disponen de aire acondicionado, TV por cable, caja fuerte y baño privado. Además, el hotel ofrece servicio de playa con sombrillas y reposeras para su total comodidad.',
+    images: [
+        'https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=2025&auto=format&fit=crop', // Pool/Facade
+        'https://images.unsplash.com/photo-1613545325278-f24b0cae1224?q=80&w=2070&auto=format&fit=crop', // Room
+        'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=2070&auto=format&fit=crop', // Resort View
+        'https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1974&auto=format&fit=crop', // Restaurant
+        'https://images.unsplash.com/photo-1563784462386-044fd95e9852?q=80&w=2070&auto=format&fit=crop', // Beach
+        'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?q=80&w=2070&auto=format&fit=crop'  // Lobby/Bar
+    ],
+    stars: 4,
+    amenities: [
+        'Frente a la playa', 
+        'Piscina al aire libre', 
+        'Restaurante Maricota', 
+        'Cancha de Tenis', 
+        'Sala de Juegos', 
+        'Desayuno Buffet', 
+        'Wifi Gratis',
+        'Servicio de Playa',
+        'Recepción 24 horas',
+        'Bar',
+        'Aire Acondicionado',
+        'Estacionamiento (con cargo)'
+    ],
+    isOffer: true,
+    discount: 10,
+    rating: 8.5,
+    reviewsCount: 950,
+    lat: -27.427,
+    lng: -48.396,
+    type: 'hotel'
+  },
+  {
     id: 'htl-hilton-ba',
     title: 'Hilton Buenos Aires',
     location: 'Puerto Madero, Argentina',
@@ -188,7 +255,9 @@ export const INITIAL_RENTALS: Apartment[] = [
     description: 'Moderno apartamento con vista al océano. Acceso directo a la playa, piscina del edificio y valet parking incluido. A minutos de Lincoln Road.',
     images: [
         'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=2080&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070&auto=format&fit=crop'
+        'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=2070&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1484154218962-a1c002085d2f?q=80&w=2070&auto=format&fit=crop'
     ],
     bedrooms: 2,
     maxGuests: 4,

@@ -56,7 +56,7 @@ const RentalDetails: React.FC = () => {
       setCurrentImageIndex((prev) => (prev + 1) % rental.images.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [rental]);
+  }, [rental, currentImageIndex]);
 
   const calculateDays = () => {
       if (!checkIn || !checkOut) return 0;
@@ -213,7 +213,24 @@ const RentalDetails: React.FC = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+       {/* Gallery Thumbnails */}
+       {rental.images.length > 1 && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20 mb-8">
+            <div className="flex gap-2 overflow-x-auto pb-4 pt-4 scrollbar-hide snap-x">
+                {rental.images.map((img, idx) => (
+                    <button 
+                        key={idx}
+                        onClick={() => setCurrentImageIndex(idx)}
+                        className={`flex-shrink-0 w-24 h-16 md:w-32 md:h-20 rounded-lg overflow-hidden border-2 transition-all shadow-md snap-start ${idx === currentImageIndex ? 'border-orange-500 scale-105 ring-2 ring-orange-200' : 'border-white opacity-80 hover:opacity-100'}`}
+                    >
+                        <img src={img} className="w-full h-full object-cover" alt={`View ${idx}`} />
+                    </button>
+                ))}
+            </div>
+        </div>
+      )}
+
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${rental.images.length > 1 ? '' : '-mt-10 relative z-10'} grid grid-cols-1 lg:grid-cols-3 gap-8`}>
         {/* Left Content */}
         <div className="lg:col-span-2 space-y-8">
           <div className="bg-white rounded-xl shadow-md p-8">
@@ -227,7 +244,7 @@ const RentalDetails: React.FC = () => {
             </div>
             
             <h2 className="text-2xl font-bold text-gray-800 mb-4">Descripción</h2>
-            <p className="text-gray-600 leading-relaxed text-lg mb-6">{rental.description}</p>
+            <p className="text-gray-600 leading-relaxed text-lg mb-6 whitespace-pre-line">{rental.description}</p>
             
             <h3 className="text-lg font-bold text-gray-800 mb-3">Comodidades</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -246,7 +263,12 @@ const RentalDetails: React.FC = () => {
           <div className="bg-white rounded-xl shadow-lg p-6 sticky top-24 border border-gray-100">
             <div className="flex justify-between items-end mb-6">
               <span className="text-gray-500">Precio por noche</span>
-              <span className="text-3xl font-bold text-cyan-600">{formatPrice(rental.pricePerNight)}</span>
+              <div className="text-right">
+                  {rental.discount && (
+                      <span className="text-sm text-gray-400 line-through mr-2">{formatPrice(rental.pricePerNight / (1 - rental.discount/100))}</span>
+                  )}
+                  <span className="text-3xl font-bold text-cyan-600">{formatPrice(rental.pricePerNight)}</span>
+              </div>
             </div>
 
             <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleInitiateBooking(); }}>

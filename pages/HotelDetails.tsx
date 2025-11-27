@@ -53,7 +53,7 @@ const HotelDetails: React.FC = () => {
       setCurrentImageIndex((prev) => (prev + 1) % hotel.images.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [hotel]);
+  }, [hotel, currentImageIndex]);
 
   const calculateDays = () => {
       if (!checkIn || !checkOut) return 0;
@@ -210,18 +210,38 @@ const HotelDetails: React.FC = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Gallery Thumbnails */}
+      {hotel.images.length > 1 && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20 mb-8">
+            <div className="flex gap-2 overflow-x-auto pb-4 pt-4 scrollbar-hide snap-x">
+                {hotel.images.map((img, idx) => (
+                    <button 
+                        key={idx}
+                        onClick={() => setCurrentImageIndex(idx)}
+                        className={`flex-shrink-0 w-24 h-16 md:w-32 md:h-20 rounded-lg overflow-hidden border-2 transition-all shadow-md snap-start ${idx === currentImageIndex ? 'border-orange-500 scale-105 ring-2 ring-orange-200' : 'border-white opacity-80 hover:opacity-100'}`}
+                    >
+                        <img src={img} className="w-full h-full object-cover" alt={`View ${idx}`} />
+                    </button>
+                ))}
+            </div>
+        </div>
+      )}
+
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${hotel.images.length > 1 ? '' : '-mt-10 relative z-10'} grid grid-cols-1 lg:grid-cols-3 gap-8`}>
         {/* Left Content */}
         <div className="lg:col-span-2 space-y-8">
           <div className="bg-white rounded-xl shadow-md p-8 border border-gray-100">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">Acerca del Alojamiento</h2>
-            <p className="text-gray-600 leading-relaxed text-lg mb-8">{hotel.description}</p>
+            <p className="text-gray-600 leading-relaxed text-lg mb-8 whitespace-pre-line">{hotel.description}</p>
             
-            <h3 className="text-lg font-bold text-gray-800 mb-4">Servicios y Comodidades</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                <svg className="w-6 h-6 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
+                Servicios y Comodidades
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-8">
                 {hotel.amenities.map((amenity, idx) => (
-                    <div key={idx} className="flex items-center text-gray-600 bg-gray-50 p-3 rounded-lg">
-                        <svg className="w-5 h-5 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                    <div key={idx} className="flex items-start text-gray-700">
+                        <svg className="w-5 h-5 mr-3 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                         <span className="text-sm font-medium">{amenity}</span>
                     </div>
                 ))}
@@ -234,7 +254,12 @@ const HotelDetails: React.FC = () => {
           <div className="bg-white rounded-xl shadow-xl p-6 sticky top-24 border border-blue-100">
             <div className="flex justify-between items-end mb-6">
               <span className="text-gray-500 font-medium">Precio por noche</span>
-              <span className="text-3xl font-bold text-blue-700">{formatPrice(hotel.pricePerNight)}</span>
+              <div className="text-right">
+                  {hotel.discount && (
+                      <span className="text-sm text-gray-400 line-through mr-2">{formatPrice(hotel.pricePerNight / (1 - hotel.discount/100))}</span>
+                  )}
+                  <span className="text-3xl font-bold text-blue-700">{formatPrice(hotel.pricePerNight)}</span>
+              </div>
             </div>
 
             <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleInitiateBooking(); }}>
