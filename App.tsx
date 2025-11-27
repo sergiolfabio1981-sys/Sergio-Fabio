@@ -3,7 +3,7 @@ import React from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import Chatbot from './components/Chatbot';
+import WhatsAppButton from './components/WhatsAppButton';
 import Home from './pages/Home';
 import Details from './pages/Details';
 import Trips from './pages/Trips';
@@ -18,6 +18,7 @@ import Installments from './pages/Installments';
 import InstallmentDetails from './pages/InstallmentDetails';
 import WorldCup from './pages/WorldCup';
 import WorldCupDetails from './pages/WorldCupDetails';
+import Contact from './pages/Contact';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
 
@@ -43,11 +44,12 @@ const App: React.FC = () => {
                 <Route path="/installments/:id" element={<InstallmentDetails />} />
                 <Route path="/worldcup" element={<WorldCup />} />
                 <Route path="/worldcup/:id" element={<WorldCupDetails />} />
+                <Route path="/contact" element={<Contact />} />
                 <Route path="/admin" element={<Admin />} />
               </Routes>
             </main>
             <Footer />
-            <Chatbot />
+            <WhatsAppButton />
           </div>
         </Router>
       </CurrencyProvider>
