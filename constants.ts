@@ -1,8 +1,47 @@
 
-import { Trip, Apartment, Excursion, Hotel, InstallmentTrip, WorldCupTrip } from './types';
+import { Trip, Apartment, Excursion, Hotel, InstallmentTrip, WorldCupTrip, HeroSlide } from './types';
 
 export const ADMIN_EMAIL = "sergiolfabio1981@gmail.com";
 export const ADMIN_PASS = "Colo1981";
+
+export const INITIAL_HERO_SLIDES: HeroSlide[] = [
+  {
+    id: 1,
+    image: "https://images.unsplash.com/photo-1522778119026-d647f0565c6a?q=80&w=2070&auto=format&fit=crop", // Stadium / Excitement
+    title: "MUNDIAL 2026",
+    subtitle: "Asegurá tu lugar en USA, México y Canadá. Paquetes exclusivos con entradas garantizadas.",
+    ctaText: "Ver Paquetes Mundial",
+    ctaLink: "/worldcup",
+    highlightColor: "text-blue-400"
+  },
+  {
+    id: 2,
+    image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=2070&auto=format&fit=crop", // Planning / Installments
+    title: "ABRAS CUOTAS",
+    subtitle: "Congelá el precio hoy y pagá tu viaje mes a mes SIN INTERÉS hasta la fecha de salida.",
+    ctaText: "Ver Planes de Ahorro",
+    ctaLink: "/installments",
+    highlightColor: "text-indigo-400"
+  },
+  {
+    id: 3,
+    image: "https://images.unsplash.com/photo-1544256667-27e1f486cc4e?q=80&w=2071&auto=format&fit=crop", // Beach / Brazil
+    title: "DISFRUTÁ DEL VERANO",
+    subtitle: "Las mejores playas de Brasil te esperan. Florianópolis, Río, Buzios y el Nordeste.",
+    ctaText: "Ver Destinos de Playa",
+    ctaLink: "/trips",
+    highlightColor: "text-orange-400"
+  },
+  {
+    id: 4,
+    image: "https://images.unsplash.com/photo-1499856871940-a09627c6d7db?q=80&w=2020&auto=format&fit=crop", // Europe / Paris
+    title: "VIAJÁ A EUROPA",
+    subtitle: "Descubrí la magia del viejo continente. Circuitos por España, Francia, Italia y más.",
+    ctaText: "Explorar Europa",
+    ctaLink: "/trips",
+    highlightColor: "text-emerald-400"
+  }
+];
 
 // --- PAQUETES (Estilo Despegar: Aéreos + Hotel Internacionales) ---
 export const INITIAL_TRIPS: Trip[] = [

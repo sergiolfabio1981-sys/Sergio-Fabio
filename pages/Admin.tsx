@@ -1,12 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import { Trip, Apartment, Excursion, Hotel, InstallmentTrip, WorldCupTrip } from '../types';
+import { Trip, Apartment, Excursion, Hotel, InstallmentTrip, WorldCupTrip, HeroSlide } from '../types';
 import { getTrips, saveTrip, deleteTrip, createEmptyTrip } from '../services/tripService';
 import { getRentals, saveRental, deleteRental, createEmptyRental } from '../services/rentalService';
 import { getExcursions, saveExcursion, deleteExcursion, createEmptyExcursion } from '../services/excursionService';
 import { getHotels, saveHotel, deleteHotel, createEmptyHotel } from '../services/hotelService';
 import { getInstallmentTrips, saveInstallmentTrip, deleteInstallmentTrip, createEmptyInstallmentTrip } from '../services/installmentService';
 import { getWorldCupTrips, saveWorldCupTrip, deleteWorldCupTrip, createEmptyWorldCupTrip } from '../services/worldCupService';
+import { getHeroSlides, saveHeroSlide } from '../services/heroService';
 import { ADMIN_EMAIL, ADMIN_PASS } from '../constants';
 
 const Admin: React.FC = () => {
@@ -18,7 +19,7 @@ const Admin: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [activeTab, setActiveTab] = useState<'trips' | 'rentals' | 'excursions' | 'hotels' | 'installments' | 'worldcup'>('trips');
+  const [activeTab, setActiveTab] = useState<'hero' | 'trips' | 'rentals' | 'excursions' | 'hotels' | 'installments' | 'worldcup'>('trips');
   
   // URL Input State for Images
   const [imageUrlInput, setImageUrlInput] = useState('');
@@ -51,6 +52,10 @@ const Admin: React.FC = () => {
   const [worldCupTrips, setWorldCupTrips] = useState<WorldCupTrip[]>([]);
   const [editingWorldCup, setEditingWorldCup] = useState<WorldCupTrip | null>(null);
 
+  // Hero Slides State
+  const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([]);
+  const [editingSlide, setEditingSlide] = useState<HeroSlide | null>(null);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -61,6 +66,7 @@ const Admin: React.FC = () => {
       setHotels(getHotels());
       setInstallments(getInstallmentTrips());
       setWorldCupTrips(getWorldCupTrips());
+      setHeroSlides(getHeroSlides());
     }
   }, [isAuthenticated]);
 
@@ -79,7 +85,7 @@ const Admin: React.FC = () => {
       localStorage.removeItem('abras_isAdmin');
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'trip' | 'rental' | 'excursion' | 'hotel' | 'installment' | 'worldcup') => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'trip' | 'rental' | 'excursion' | 'hotel' | 'installment' | 'worldcup' | 'hero') => {
     if (!e.target.files) return;
     const files = Array.from(e.target.files);
     const newImages: string[] = [];
@@ -99,9 +105,13 @@ const Admin: React.FC = () => {
     else if (type === 'hotel' && editingHotel) setEditingHotel(prev => prev ? { ...prev, images: [...prev.images, ...newImages] } : null);
     else if (type === 'installment' && editingInstallment) setEditingInstallment(prev => prev ? { ...prev, images: [...prev.images, ...newImages] } : null);
     else if (type === 'worldcup' && editingWorldCup) setEditingWorldCup(prev => prev ? { ...prev, images: [...prev.images, ...newImages] } : null);
+    else if (type === 'hero' && editingSlide) {
+        // Hero slide only has 1 image, so we replace it
+        if(newImages.length > 0) setEditingSlide(prev => prev ? { ...prev, image: newImages[0] } : null);
+    }
   };
 
-  const handleAddImageUrl = (type: 'trip' | 'rental' | 'excursion' | 'hotel' | 'installment' | 'worldcup') => {
+  const handleAddImageUrl = (type: 'trip' | 'rental' | 'excursion' | 'hotel' | 'installment' | 'worldcup' | 'hero') => {
       if (!imageUrlInput.trim()) return;
 
       if (type === 'rental' && editingRental) setEditingRental(prev => prev ? { ...prev, images: [...prev.images, imageUrlInput] } : null);
@@ -110,46 +120,50 @@ const Admin: React.FC = () => {
       else if (type === 'hotel' && editingHotel) setEditingHotel(prev => prev ? { ...prev, images: [...prev.images, imageUrlInput] } : null);
       else if (type === 'installment' && editingInstallment) setEditingInstallment(prev => prev ? { ...prev, images: [...prev.images, imageUrlInput] } : null);
       else if (type === 'worldcup' && editingWorldCup) setEditingWorldCup(prev => prev ? { ...prev, images: [...prev.images, imageUrlInput] } : null);
+      else if (type === 'hero' && editingSlide) setEditingSlide(prev => prev ? { ...prev, image: imageUrlInput } : null);
       
       setImageUrlInput(''); // Clear input after adding
   };
 
   // TRIP Handlers
-  const openEditTrip = (t: Trip) => { setEditingTrip({...t}); setTripDatesInput(t.availableDates.join('\n')); setImageUrlInput(''); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setEditingWorldCup(null); setIsModalOpen(true); };
-  const openCreateTrip = () => { setEditingTrip(createEmptyTrip()); setTripDatesInput(''); setImageUrlInput(''); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setEditingWorldCup(null); setIsModalOpen(true); };
+  const openEditTrip = (t: Trip) => { setEditingTrip({...t}); setTripDatesInput(t.availableDates.join('\n')); setImageUrlInput(''); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setEditingWorldCup(null); setEditingSlide(null); setIsModalOpen(true); };
+  const openCreateTrip = () => { setEditingTrip(createEmptyTrip()); setTripDatesInput(''); setImageUrlInput(''); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setEditingWorldCup(null); setEditingSlide(null); setIsModalOpen(true); };
   const saveCurrentTrip = (e: any) => { e.preventDefault(); if(!editingTrip) return; saveTrip({...editingTrip, availableDates: tripDatesInput.split('\n').filter(d=>d.trim()!=='')}); setTrips(getTrips()); setIsModalOpen(false); };
   const deleteCurrentTrip = (id: string) => { if(window.confirm("¿Eliminar?")) { deleteTrip(id); setTrips(getTrips()); }};
 
   // RENTAL Handlers
-  const openEditRental = (r: Apartment) => { setEditingRental({...r}); setRentalAmenitiesInput(r.amenities.join('\n')); setImageUrlInput(''); setEditingTrip(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setEditingWorldCup(null); setIsModalOpen(true); };
-  const openCreateRental = () => { setEditingRental(createEmptyRental()); setRentalAmenitiesInput(''); setImageUrlInput(''); setEditingTrip(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setEditingWorldCup(null); setIsModalOpen(true); };
+  const openEditRental = (r: Apartment) => { setEditingRental({...r}); setRentalAmenitiesInput(r.amenities.join('\n')); setImageUrlInput(''); setEditingTrip(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setEditingWorldCup(null); setEditingSlide(null); setIsModalOpen(true); };
+  const openCreateRental = () => { setEditingRental(createEmptyRental()); setRentalAmenitiesInput(''); setImageUrlInput(''); setEditingTrip(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setEditingWorldCup(null); setEditingSlide(null); setIsModalOpen(true); };
   const saveCurrentRental = (e: any) => { e.preventDefault(); if(!editingRental) return; saveRental({...editingRental, amenities: rentalAmenitiesInput.split('\n').filter(a=>a.trim()!=='')}); setRentals(getRentals()); setIsModalOpen(false); };
   const deleteCurrentRental = (id: string) => { if(window.confirm("¿Eliminar?")) { deleteRental(id); setRentals(getRentals()); }};
 
   // HOTEL Handlers
-  const openEditHotel = (h: Hotel) => { setEditingHotel({...h}); setHotelAmenitiesInput(h.amenities.join('\n')); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingInstallment(null); setEditingWorldCup(null); setIsModalOpen(true); };
-  const openCreateHotel = () => { setEditingHotel(createEmptyHotel()); setHotelAmenitiesInput(''); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingInstallment(null); setEditingWorldCup(null); setIsModalOpen(true); };
+  const openEditHotel = (h: Hotel) => { setEditingHotel({...h}); setHotelAmenitiesInput(h.amenities.join('\n')); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingInstallment(null); setEditingWorldCup(null); setEditingSlide(null); setIsModalOpen(true); };
+  const openCreateHotel = () => { setEditingHotel(createEmptyHotel()); setHotelAmenitiesInput(''); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingInstallment(null); setEditingWorldCup(null); setEditingSlide(null); setIsModalOpen(true); };
   const saveCurrentHotel = (e: any) => { e.preventDefault(); if(!editingHotel) return; saveHotel({...editingHotel, amenities: hotelAmenitiesInput.split('\n').filter(a=>a.trim()!=='')}); setHotels(getHotels()); setIsModalOpen(false); };
   const deleteCurrentHotel = (id: string) => { if(window.confirm("¿Eliminar?")) { deleteHotel(id); setHotels(getHotels()); }};
 
   // EXCURSION Handlers
-  const openEditExcursion = (exc: Excursion) => { setEditingExcursion({...exc}); setExcursionDatesInput(exc.availableDates.join('\n')); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingHotel(null); setEditingInstallment(null); setEditingWorldCup(null); setIsModalOpen(true); };
-  const openCreateExcursion = () => { setEditingExcursion(createEmptyExcursion()); setExcursionDatesInput(''); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingHotel(null); setEditingInstallment(null); setEditingWorldCup(null); setIsModalOpen(true); };
+  const openEditExcursion = (exc: Excursion) => { setEditingExcursion({...exc}); setExcursionDatesInput(exc.availableDates.join('\n')); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingHotel(null); setEditingInstallment(null); setEditingWorldCup(null); setEditingSlide(null); setIsModalOpen(true); };
+  const openCreateExcursion = () => { setEditingExcursion(createEmptyExcursion()); setExcursionDatesInput(''); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingHotel(null); setEditingInstallment(null); setEditingWorldCup(null); setEditingSlide(null); setIsModalOpen(true); };
   const saveCurrentExcursion = (e: any) => { e.preventDefault(); if(!editingExcursion) return; saveExcursion({...editingExcursion, availableDates: excursionDatesInput.split('\n').filter(d=>d.trim()!=='')}); setExcursions(getExcursions()); setIsModalOpen(false); };
   const deleteCurrentExcursion = (id: string) => { if(window.confirm("¿Eliminar?")) { deleteExcursion(id); setExcursions(getExcursions()); }};
 
   // INSTALLMENT Handlers
-  const openEditInstallment = (item: InstallmentTrip) => { setEditingInstallment({...item}); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setEditingWorldCup(null); setIsModalOpen(true); };
-  const openCreateInstallment = () => { setEditingInstallment(createEmptyInstallmentTrip()); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setEditingWorldCup(null); setIsModalOpen(true); };
+  const openEditInstallment = (item: InstallmentTrip) => { setEditingInstallment({...item}); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setEditingWorldCup(null); setEditingSlide(null); setIsModalOpen(true); };
+  const openCreateInstallment = () => { setEditingInstallment(createEmptyInstallmentTrip()); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setEditingWorldCup(null); setEditingSlide(null); setIsModalOpen(true); };
   const saveCurrentInstallment = (e: React.FormEvent) => { e.preventDefault(); if (!editingInstallment) return; saveInstallmentTrip(editingInstallment); setInstallments(getInstallmentTrips()); setIsModalOpen(false); };
   const deleteCurrentInstallment = (id: string) => { if(window.confirm("¿Eliminar plan?")) { deleteInstallmentTrip(id); setInstallments(getInstallmentTrips()); }};
 
   // WORLD CUP Handlers
-  const openEditWorldCup = (item: WorldCupTrip) => { setEditingWorldCup({...item}); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setIsModalOpen(true); };
-  const openCreateWorldCup = () => { setEditingWorldCup(createEmptyWorldCupTrip()); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setIsModalOpen(true); };
+  const openEditWorldCup = (item: WorldCupTrip) => { setEditingWorldCup({...item}); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setEditingSlide(null); setIsModalOpen(true); };
+  const openCreateWorldCup = () => { setEditingWorldCup(createEmptyWorldCupTrip()); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setEditingSlide(null); setIsModalOpen(true); };
   const saveCurrentWorldCup = (e: React.FormEvent) => { e.preventDefault(); if (!editingWorldCup) return; saveWorldCupTrip(editingWorldCup); setWorldCupTrips(getWorldCupTrips()); setIsModalOpen(false); };
   const deleteCurrentWorldCup = (id: string) => { if(window.confirm("¿Eliminar Paquete Mundial?")) { deleteWorldCupTrip(id); setWorldCupTrips(getWorldCupTrips()); }};
 
+  // HERO SLIDE Handlers
+  const openEditSlide = (slide: HeroSlide) => { setEditingSlide({...slide}); setImageUrlInput(''); setEditingTrip(null); setEditingRental(null); setEditingExcursion(null); setEditingHotel(null); setEditingInstallment(null); setEditingWorldCup(null); setIsModalOpen(true); };
+  const saveCurrentSlide = (e: React.FormEvent) => { e.preventDefault(); if (!editingSlide) return; saveHeroSlide(editingSlide); setHeroSlides(getHeroSlides()); setIsModalOpen(false); };
 
   if (!isAuthenticated) {
      return (
@@ -174,6 +188,7 @@ const Admin: React.FC = () => {
             <h1 className="text-3xl font-bold text-gray-800">Panel de Administración</h1>
             <div className="flex items-center gap-4">
                 <div className="flex space-x-2 bg-white rounded-lg p-1 shadow-sm overflow-x-auto">
+                    <button onClick={() => setActiveTab('hero')} className={`px-4 py-2 rounded-md ${activeTab === 'hero' ? 'bg-orange-600 text-white' : 'hover:bg-gray-100'}`}>Portada Home</button>
                     <button onClick={() => setActiveTab('trips')} className={`px-4 py-2 rounded-md ${activeTab === 'trips' ? 'bg-cyan-600 text-white' : 'hover:bg-gray-100'}`}>Viajes</button>
                     <button onClick={() => setActiveTab('rentals')} className={`px-4 py-2 rounded-md ${activeTab === 'rentals' ? 'bg-cyan-600 text-white' : 'hover:bg-gray-100'}`}>Alquileres</button>
                     <button onClick={() => setActiveTab('hotels')} className={`px-4 py-2 rounded-md ${activeTab === 'hotels' ? 'bg-cyan-600 text-white' : 'hover:bg-gray-100'}`}>Hoteles</button>
@@ -184,6 +199,26 @@ const Admin: React.FC = () => {
                 <button onClick={handleLogout} className="bg-red-100 text-red-600 px-4 py-2 rounded-lg font-bold hover:bg-red-200">Salir</button>
             </div>
         </div>
+
+        {activeTab === 'hero' && (
+            <div className="bg-white rounded-xl shadow-sm p-6">
+                <h2 className="text-xl font-bold mb-4 text-orange-600">Editar Carrusel de Inicio</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {heroSlides.map(slide => (
+                        <div key={slide.id} className="border rounded-lg overflow-hidden flex flex-col">
+                             <div className="h-32 bg-gray-200 relative">
+                                 <img src={slide.image} alt={slide.title} className="w-full h-full object-cover" />
+                             </div>
+                             <div className="p-4 flex-1">
+                                 <h3 className="font-bold">{slide.title}</h3>
+                                 <p className="text-xs text-gray-500 mb-2 truncate">{slide.subtitle}</p>
+                                 <button onClick={() => openEditSlide(slide)} className="w-full bg-orange-500 text-white text-sm py-2 rounded hover:bg-orange-600">Editar Imagen/Texto</button>
+                             </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )}
 
         {activeTab === 'trips' && (
              <div className="bg-white p-6 rounded-xl shadow-sm">
@@ -254,6 +289,55 @@ const Admin: React.FC = () => {
           <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 overflow-y-auto">
               <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl p-6 max-h-[90vh] overflow-y-auto">
                   
+                  {editingSlide && (
+                      <form onSubmit={saveCurrentSlide} className="space-y-4">
+                          <h2 className="text-xl font-bold mb-4 border-b pb-2">Editar Diapositiva: {editingSlide.title}</h2>
+                          
+                          <div>
+                              <label className="text-sm font-bold text-gray-500">Título Principal</label>
+                              <input className="w-full border p-2 rounded" value={editingSlide.title} onChange={e=>setEditingSlide({...editingSlide, title: e.target.value})} />
+                          </div>
+                          <div>
+                              <label className="text-sm font-bold text-gray-500">Subtítulo</label>
+                              <textarea rows={2} className="w-full border p-2 rounded" value={editingSlide.subtitle} onChange={e=>setEditingSlide({...editingSlide, subtitle: e.target.value})} />
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                               <div>
+                                  <label className="text-sm font-bold text-gray-500">Texto Botón</label>
+                                  <input className="w-full border p-2 rounded" value={editingSlide.ctaText} onChange={e=>setEditingSlide({...editingSlide, ctaText: e.target.value})} />
+                               </div>
+                               <div>
+                                  <label className="text-sm font-bold text-gray-500">Enlace Botón</label>
+                                  <input className="w-full border p-2 rounded" value={editingSlide.ctaLink} onChange={e=>setEditingSlide({...editingSlide, ctaLink: e.target.value})} />
+                               </div>
+                          </div>
+
+                          <div className="bg-orange-50 p-4 rounded border border-orange-100">
+                              <label className="block text-sm font-bold mb-2">Imagen de Fondo (Home)</label>
+                              <div className="flex flex-col gap-2">
+                                  <div className="flex gap-2">
+                                      <input type="text" placeholder="Pegar URL de imagen..." className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} />
+                                      <button type="button" onClick={()=>handleAddImageUrl('hero')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm whitespace-nowrap">Usar URL</button>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                      <span className="text-xs text-gray-500">O subir desde PC:</span>
+                                      <input type="file" onChange={(e)=>handleFileUpload(e, 'hero')} className="text-sm" />
+                                  </div>
+                              </div>
+                              <div className="mt-2 h-40 bg-gray-200 rounded overflow-hidden relative">
+                                  <img src={editingSlide.image} className="w-full h-full object-cover" alt="Preview" />
+                                  <div className="absolute bottom-0 left-0 bg-black/50 text-white text-xs p-1 w-full text-center">Vista Previa</div>
+                              </div>
+                          </div>
+
+                          <div className="flex justify-end gap-2 pt-4">
+                              <button type="button" onClick={()=>setIsModalOpen(false)} className="px-4 py-2 border rounded">Cancelar</button>
+                              <button type="submit" className="px-4 py-2 bg-orange-600 text-white rounded font-bold">Guardar Cambios</button>
+                          </div>
+                      </form>
+                  )}
+
                   {editingTrip && (
                       <form onSubmit={saveCurrentTrip} className="space-y-4">
                            <h3 className="text-xl font-bold mb-4">Editar Viaje</h3>
@@ -288,7 +372,6 @@ const Admin: React.FC = () => {
                       </form>
                   )}
 
-                  {/* ... Existing Forms for Rentals, Hotels, Excursions, Installments ... */}
                   {editingRental && (
                       <form onSubmit={saveCurrentRental} className="space-y-4">
                           <h3 className="text-xl font-bold mb-4">Editar Alquiler</h3>

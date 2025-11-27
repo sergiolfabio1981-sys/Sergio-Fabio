@@ -105,6 +105,16 @@ export interface WorldCupTrip {
   type?: 'worldcup';
 }
 
+export interface HeroSlide {
+  id: number;
+  image: string;
+  title: string;
+  subtitle: string;
+  ctaText: string;
+  ctaLink: string;
+  highlightColor: string; // Tailwind color class for accents
+}
+
 export type ListingItem = Trip | Apartment | Excursion | Hotel | InstallmentTrip | WorldCupTrip;
 
 export interface ChatMessage {

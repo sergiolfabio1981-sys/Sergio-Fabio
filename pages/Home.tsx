@@ -1,62 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Trip, ListingItem } from '../types';
+import { Trip, ListingItem, HeroSlide } from '../types';
 import { getTrips } from '../services/tripService';
 import { getRentals } from '../services/rentalService';
 import { getExcursions } from '../services/excursionService';
 import { getHotels } from '../services/hotelService';
+import { getHeroSlides } from '../services/heroService';
 import TripCard from '../components/TripCard';
-
-// Define the structure for the Hero Slides
-interface HeroSlide {
-  id: number;
-  image: string;
-  title: string;
-  subtitle: string;
-  ctaText: string;
-  ctaLink: string;
-  highlightColor: string; // Tailwind color class for accents
-}
-
-const HERO_SLIDES: HeroSlide[] = [
-  {
-    id: 1,
-    image: "https://images.unsplash.com/photo-1522778119026-d647f0565c6a?q=80&w=2070&auto=format&fit=crop", // Stadium / Excitement
-    title: "MUNDIAL 2026",
-    subtitle: "Asegurá tu lugar en USA, México y Canadá. Paquetes exclusivos con entradas garantizadas.",
-    ctaText: "Ver Paquetes Mundial",
-    ctaLink: "/worldcup",
-    highlightColor: "text-blue-400"
-  },
-  {
-    id: 2,
-    image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=2070&auto=format&fit=crop", // Relax / Planning
-    title: "ABRAS CUOTAS",
-    subtitle: "Congelá el precio hoy y pagá tu viaje mes a mes SIN INTERÉS hasta la fecha de salida.",
-    ctaText: "Ver Planes de Ahorro",
-    ctaLink: "/installments",
-    highlightColor: "text-indigo-400"
-  },
-  {
-    id: 3,
-    image: "https://images.unsplash.com/photo-1544256667-27e1f486cc4e?q=80&w=2071&auto=format&fit=crop", // Beach / Brazil
-    title: "DISFRUTÁ DEL VERANO",
-    subtitle: "Las mejores playas de Brasil te esperan. Florianópolis, Río, Buzios y el Nordeste.",
-    ctaText: "Ver Destinos de Playa",
-    ctaLink: "/trips",
-    highlightColor: "text-orange-400"
-  },
-  {
-    id: 4,
-    image: "https://images.unsplash.com/photo-1499856871940-a09627c6d7db?q=80&w=2020&auto=format&fit=crop", // Europe / Paris
-    title: "VIAJÁ A EUROPA",
-    subtitle: "Descubrí la magia del viejo continente. Circuitos por España, Francia, Italia y más.",
-    ctaText: "Explorar Europa",
-    ctaLink: "/trips",
-    highlightColor: "text-emerald-400"
-  }
-];
 
 const Home: React.FC = () => {
   const [trips, setTrips] = useState<Trip[]>([]);
@@ -65,9 +16,13 @@ const Home: React.FC = () => {
   const [showImportToast, setShowImportToast] = useState(false);
   
   // Carousel State
+  const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
+    // Load Hero Slides
+    setHeroSlides(getHeroSlides());
+
     const allTrips = getTrips();
     const allRentals = getRentals();
     const allExcursions = getExcursions();
@@ -100,14 +55,15 @@ const Home: React.FC = () => {
 
   // Auto-rotate slides
   useEffect(() => {
+    if (heroSlides.length === 0) return;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     }, 6000); // 6 seconds per slide
     return () => clearInterval(timer);
-  }, []);
+  }, [heroSlides.length]);
 
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
 
   const filteredTrips = trips.filter(trip => 
     trip.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -143,17 +99,18 @@ const Home: React.FC = () => {
       <div className="relative h-[650px] w-full overflow-hidden bg-gray-900">
         
         {/* Slides */}
-        {HERO_SLIDES.map((slide, index) => (
+        {heroSlides.map((slide, index) => (
             <div 
                 key={slide.id}
                 className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
             >
-                {/* Image Background using img tag for better reliability */}
-                <div className="absolute inset-0 overflow-hidden">
+                {/* Image Background */}
+                <div className="absolute inset-0 overflow-hidden bg-gray-800">
                     <img 
                         src={slide.image} 
                         alt={slide.title}
                         className={`w-full h-full object-cover transform transition-transform duration-[6000ms] ease-linear ${index === currentSlide ? 'scale-110' : 'scale-100'}`}
+                        loading={index === 0 ? "eager" : "lazy"}
                     />
                 </div>
                 
@@ -162,7 +119,7 @@ const Home: React.FC = () => {
 
                 {/* Content */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pt-10">
-                    <h2 className={`text-5xl md:text-7xl font-black text-white mb-4 drop-shadow-2xl animate-fade-in-up tracking-tight`}>
+                    <h2 className={`text-5xl md:text-7xl font-black text-white mb-4 drop-shadow-2xl animate-fade-in-up tracking-tight uppercase`}>
                         {slide.title}
                     </h2>
                     <p className="text-xl md:text-2xl text-gray-200 mb-8 max-w-3xl font-light drop-shadow-lg animate-fade-in-up" style={{animationDelay: '0.2s'}}>
@@ -174,7 +131,7 @@ const Home: React.FC = () => {
                             px-8 py-4 rounded-full font-bold text-lg text-white shadow-2xl 
                             transition-transform transform hover:scale-105 hover:shadow-orange-500/50 
                             animate-fade-in-up
-                            bg-gradient-to-r from-orange-500 to-red-600
+                            bg-gradient-to-r from-orange-500 to-red-600 border border-white/20
                         `}
                         style={{animationDelay: '0.4s'}}
                     >
@@ -185,20 +142,20 @@ const Home: React.FC = () => {
         ))}
 
         {/* Carousel Controls (Arrows) */}
-        <button onClick={prevSlide} className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-sm transition-all hidden md:block">
+        <button onClick={prevSlide} className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-sm transition-all hidden md:block border border-white/10">
             <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
         </button>
-        <button onClick={nextSlide} className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-sm transition-all hidden md:block">
+        <button onClick={nextSlide} className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-sm transition-all hidden md:block border border-white/10">
              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
         </button>
 
         {/* Carousel Indicators (Dots) */}
         <div className="absolute bottom-32 left-0 right-0 z-20 flex justify-center gap-3">
-            {HERO_SLIDES.map((_, idx) => (
+            {heroSlides.map((_, idx) => (
                 <button 
                     key={idx}
                     onClick={() => setCurrentSlide(idx)}
-                    className={`w-3 h-3 rounded-full transition-all duration-300 ${idx === currentSlide ? 'bg-white w-8' : 'bg-white/40 hover:bg-white/70'}`}
+                    className={`w-3 h-3 rounded-full transition-all duration-300 shadow ${idx === currentSlide ? 'bg-white w-8' : 'bg-white/40 hover:bg-white/70'}`}
                 />
             ))}
         </div>
