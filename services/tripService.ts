@@ -2,8 +2,8 @@
 import { Trip } from '../types';
 import { INITIAL_TRIPS } from '../constants';
 
-// Bump version to force fresh data load for duration fields
-const STORAGE_KEY = 'abras_travel_trips_v12';
+// Bump version to force fresh data load for pricing fix
+const STORAGE_KEY = 'abras_travel_trips_v11';
 
 export const getTrips = (): Trip[] => {
   const stored = localStorage.getItem(STORAGE_KEY);
@@ -49,6 +49,5 @@ export const createEmptyTrip = (): Trip => ({
   availableDates: [],
   discount: 0,
   includesFlight: false,
-  rating: undefined,
-  duration: ''
+  rating: undefined
 });

@@ -13,7 +13,6 @@ export interface Trip {
   includesFlight?: boolean; // New: mimic package feature
   rating?: number; // New: mimic user rating
   reviewsCount?: number; // New
-  duration?: string; // e.g. "6 DÍAS / 5 NOCHES"
   baseCurrency?: 'ARS' | 'USD';
   type?: 'trip';
 }
@@ -87,7 +86,6 @@ export interface InstallmentTrip {
   departureDate: string; // ISO string or "YYYY-MM-DD"
   isOffer: boolean; // Just for highlighting
   discount?: number;
-  duration?: string;
   baseCurrency?: 'ARS' | 'USD';
   type?: 'installment';
 }
@@ -103,7 +101,6 @@ export interface WorldCupTrip {
   originCountry: string; // e.g. "Salida desde Argentina"
   isOffer: boolean;
   discount?: number;
-  duration?: string;
   baseCurrency?: 'ARS' | 'USD'; // Force USD for World Cup
   type?: 'worldcup';
 }

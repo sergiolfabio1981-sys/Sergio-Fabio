@@ -82,7 +82,6 @@ export const INITIAL_TRIPS: Trip[] = [
     includesFlight: true,
     rating: 9.2,
     reviewsCount: 1250,
-    duration: '8 DÍAS / 7 NOCHES',
     baseCurrency: 'ARS',
     type: 'trip'
   },
@@ -102,7 +101,6 @@ export const INITIAL_TRIPS: Trip[] = [
     includesFlight: true,
     rating: 9.5,
     reviewsCount: 840,
-    duration: '8 DÍAS / 7 NOCHES',
     baseCurrency: 'ARS',
     type: 'trip'
   },
@@ -121,7 +119,6 @@ export const INITIAL_TRIPS: Trip[] = [
     includesFlight: true,
     rating: 9.8,
     reviewsCount: 3200,
-    duration: '5 DÍAS / 4 NOCHES',
     baseCurrency: 'ARS',
     type: 'trip'
   },
@@ -140,7 +137,6 @@ export const INITIAL_TRIPS: Trip[] = [
     includesFlight: true,
     rating: 8.9,
     reviewsCount: 510,
-    duration: '7 DÍAS / 6 NOCHES',
     baseCurrency: 'ARS',
     type: 'trip'
   },
@@ -160,7 +156,6 @@ export const INITIAL_TRIPS: Trip[] = [
     includesFlight: true,
     rating: 8.7,
     reviewsCount: 1100,
-    duration: '7 DÍAS / 6 NOCHES',
     baseCurrency: 'ARS',
     type: 'trip'
   }
@@ -464,7 +459,6 @@ export const INITIAL_INSTALLMENT_TRIPS: InstallmentTrip[] = [
         ],
         departureDate: '2027-02-15',
         isOffer: true,
-        duration: '15 DÍAS / 14 NOCHES',
         baseCurrency: 'ARS',
         type: 'installment'
     },
@@ -480,7 +474,6 @@ export const INITIAL_INSTALLMENT_TRIPS: InstallmentTrip[] = [
         ],
         departureDate: '2026-01-15',
         isOffer: true,
-        duration: '8 DÍAS / 7 NOCHES',
         baseCurrency: 'ARS',
         type: 'installment'
     }
@@ -501,7 +494,6 @@ export const INITIAL_WORLDCUP_TRIPS: WorldCupTrip[] = [
         departureDate: '2026-06-10',
         originCountry: 'Salida desde Argentina',
         isOffer: true,
-        duration: '16 DÍAS / 15 NOCHES',
         baseCurrency: 'USD',
         type: 'worldcup'
     },
@@ -518,7 +510,6 @@ export const INITIAL_WORLDCUP_TRIPS: WorldCupTrip[] = [
         departureDate: '2026-06-10',
         originCountry: 'Salida desde Brasil',
         isOffer: true,
-        duration: '16 DÍAS / 15 NOCHES',
         baseCurrency: 'USD',
         type: 'worldcup'
     },
@@ -535,7 +526,6 @@ export const INITIAL_WORLDCUP_TRIPS: WorldCupTrip[] = [
         departureDate: '2026-06-10',
         originCountry: 'Salida desde Colombia',
         isOffer: true,
-        duration: '16 DÍAS / 15 NOCHES',
         baseCurrency: 'USD',
         type: 'worldcup'
     },
@@ -552,7 +542,6 @@ export const INITIAL_WORLDCUP_TRIPS: WorldCupTrip[] = [
         departureDate: '2026-06-10',
         originCountry: 'Salida desde Bolivia',
         isOffer: false,
-        duration: '16 DÍAS / 15 NOCHES',
         baseCurrency: 'USD',
         type: 'worldcup'
     },
@@ -569,7 +558,6 @@ export const INITIAL_WORLDCUP_TRIPS: WorldCupTrip[] = [
         departureDate: '2026-06-10',
         originCountry: 'Salida desde Ecuador',
         isOffer: false,
-        duration: '16 DÍAS / 15 NOCHES',
         baseCurrency: 'USD',
         type: 'worldcup'
     },
@@ -586,7 +574,6 @@ export const INITIAL_WORLDCUP_TRIPS: WorldCupTrip[] = [
         departureDate: '2026-06-10',
         originCountry: 'Salida desde Uruguay',
         isOffer: false,
-        duration: '16 DÍAS / 15 NOCHES',
         baseCurrency: 'USD',
         type: 'worldcup'
     }
