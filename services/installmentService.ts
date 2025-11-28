@@ -2,15 +2,23 @@
 import { InstallmentTrip } from '../types';
 import { INITIAL_INSTALLMENT_TRIPS } from '../constants';
 
-const INSTALLMENT_STORAGE_KEY = 'abras_travel_installments_v8';
+const CURRENT_KEY = 'abras_travel_installments_main';
+const LEGACY_KEYS = ['abras_travel_installments_v8', 'abras_travel_installments_v7'];
 
 export const getInstallmentTrips = (): InstallmentTrip[] => {
-  const stored = localStorage.getItem(INSTALLMENT_STORAGE_KEY);
-  if (!stored) {
-    localStorage.setItem(INSTALLMENT_STORAGE_KEY, JSON.stringify(INITIAL_INSTALLMENT_TRIPS));
-    return INITIAL_INSTALLMENT_TRIPS;
+  const stored = localStorage.getItem(CURRENT_KEY);
+  if (stored) return JSON.parse(stored);
+
+  for (const key of LEGACY_KEYS) {
+      const legacyData = localStorage.getItem(key);
+      if (legacyData) {
+          localStorage.setItem(CURRENT_KEY, legacyData);
+          return JSON.parse(legacyData);
+      }
   }
-  return JSON.parse(stored);
+
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(INITIAL_INSTALLMENT_TRIPS));
+  return INITIAL_INSTALLMENT_TRIPS;
 };
 
 export const getInstallmentTripById = (id: string): InstallmentTrip | undefined => {
@@ -28,13 +36,13 @@ export const saveInstallmentTrip = (trip: InstallmentTrip): void => {
     trips.push(trip);
   }
   
-  localStorage.setItem(INSTALLMENT_STORAGE_KEY, JSON.stringify(trips));
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(trips));
 };
 
 export const deleteInstallmentTrip = (id: string): void => {
   const trips = getInstallmentTrips();
   const filtered = trips.filter((t) => t.id !== id);
-  localStorage.setItem(INSTALLMENT_STORAGE_KEY, JSON.stringify(filtered));
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(filtered));
 };
 
 export const createEmptyInstallmentTrip = (): InstallmentTrip => ({

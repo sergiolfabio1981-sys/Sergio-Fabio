@@ -2,16 +2,31 @@
 import { Trip } from '../types';
 import { INITIAL_TRIPS } from '../constants';
 
-// Bump version to force fresh data load
-const STORAGE_KEY = 'abras_travel_trips_v16';
+// Stable key for persistent user data
+const CURRENT_KEY = 'abras_travel_trips_main';
+// List of previous keys to migrate data from if found
+const LEGACY_KEYS = ['abras_travel_trips_v16', 'abras_travel_trips_v15', 'abras_travel_trips_v13'];
 
 export const getTrips = (): Trip[] => {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (!stored) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_TRIPS));
-    return INITIAL_TRIPS;
+  // 1. Check for stable user data
+  const stored = localStorage.getItem(CURRENT_KEY);
+  if (stored) {
+    return JSON.parse(stored);
   }
-  return JSON.parse(stored);
+
+  // 2. Migration: Check for legacy data from previous versions
+  for (const key of LEGACY_KEYS) {
+      const legacyData = localStorage.getItem(key);
+      if (legacyData) {
+          console.log(`Migrating Trips data from ${key} to ${CURRENT_KEY}`);
+          localStorage.setItem(CURRENT_KEY, legacyData);
+          return JSON.parse(legacyData);
+      }
+  }
+
+  // 3. Fallback: Load Initial Data
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(INITIAL_TRIPS));
+  return INITIAL_TRIPS;
 };
 
 export const getTripById = (id: string): Trip | undefined => {
@@ -29,13 +44,13 @@ export const saveTrip = (trip: Trip): void => {
     trips.push(trip);
   }
   
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(trips));
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(trips));
 };
 
 export const deleteTrip = (id: string): void => {
   const trips = getTrips();
   const filtered = trips.filter((t) => t.id !== id);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(filtered));
 };
 
 export const createEmptyTrip = (): Trip => ({

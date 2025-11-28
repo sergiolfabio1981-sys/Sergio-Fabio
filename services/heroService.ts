@@ -2,16 +2,26 @@
 import { HeroSlide, PromoBanner } from '../types';
 import { INITIAL_HERO_SLIDES, INITIAL_PROMO_BANNERS } from '../constants';
 
-const HERO_STORAGE_KEY = 'abras_travel_hero_v3';
-const BANNER_STORAGE_KEY = 'abras_travel_banners_v1';
+const HERO_KEY = 'abras_travel_hero_main';
+const BANNER_KEY = 'abras_travel_banners_main';
+
+const LEGACY_HERO_KEYS = ['abras_travel_hero_v3'];
+const LEGACY_BANNER_KEYS = ['abras_travel_banners_v1'];
 
 export const getHeroSlides = (): HeroSlide[] => {
-  const stored = localStorage.getItem(HERO_STORAGE_KEY);
-  if (!stored) {
-    localStorage.setItem(HERO_STORAGE_KEY, JSON.stringify(INITIAL_HERO_SLIDES));
-    return INITIAL_HERO_SLIDES;
+  const stored = localStorage.getItem(HERO_KEY);
+  if (stored) return JSON.parse(stored);
+
+  for (const key of LEGACY_HERO_KEYS) {
+      const legacy = localStorage.getItem(key);
+      if (legacy) {
+          localStorage.setItem(HERO_KEY, legacy);
+          return JSON.parse(legacy);
+      }
   }
-  return JSON.parse(stored);
+
+  localStorage.setItem(HERO_KEY, JSON.stringify(INITIAL_HERO_SLIDES));
+  return INITIAL_HERO_SLIDES;
 };
 
 export const saveHeroSlide = (slide: HeroSlide): void => {
@@ -24,18 +34,25 @@ export const saveHeroSlide = (slide: HeroSlide): void => {
     slides.push(slide);
   }
   
-  localStorage.setItem(HERO_STORAGE_KEY, JSON.stringify(slides));
+  localStorage.setItem(HERO_KEY, JSON.stringify(slides));
 };
 
 // --- PROMO BANNERS ---
 
 export const getPromoBanners = (): PromoBanner[] => {
-  const stored = localStorage.getItem(BANNER_STORAGE_KEY);
-  if (!stored) {
-    localStorage.setItem(BANNER_STORAGE_KEY, JSON.stringify(INITIAL_PROMO_BANNERS));
-    return INITIAL_PROMO_BANNERS;
+  const stored = localStorage.getItem(BANNER_KEY);
+  if (stored) return JSON.parse(stored);
+
+  for (const key of LEGACY_BANNER_KEYS) {
+      const legacy = localStorage.getItem(key);
+      if (legacy) {
+          localStorage.setItem(BANNER_KEY, legacy);
+          return JSON.parse(legacy);
+      }
   }
-  return JSON.parse(stored);
+
+  localStorage.setItem(BANNER_KEY, JSON.stringify(INITIAL_PROMO_BANNERS));
+  return INITIAL_PROMO_BANNERS;
 };
 
 export const savePromoBanner = (banner: PromoBanner): void => {
@@ -48,10 +65,10 @@ export const savePromoBanner = (banner: PromoBanner): void => {
     banners.push(banner);
   }
   
-  localStorage.setItem(BANNER_STORAGE_KEY, JSON.stringify(banners));
+  localStorage.setItem(BANNER_KEY, JSON.stringify(banners));
 };
 
 export const resetHeroData = (): void => {
-    localStorage.setItem(HERO_STORAGE_KEY, JSON.stringify(INITIAL_HERO_SLIDES));
-    localStorage.setItem(BANNER_STORAGE_KEY, JSON.stringify(INITIAL_PROMO_BANNERS));
+    localStorage.setItem(HERO_KEY, JSON.stringify(INITIAL_HERO_SLIDES));
+    localStorage.setItem(BANNER_KEY, JSON.stringify(INITIAL_PROMO_BANNERS));
 };

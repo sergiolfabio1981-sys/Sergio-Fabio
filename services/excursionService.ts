@@ -2,15 +2,23 @@
 import { Excursion } from '../types';
 import { INITIAL_EXCURSIONS } from '../constants';
 
-const EXCURSION_STORAGE_KEY = 'abras_travel_excursions_v9';
+const CURRENT_KEY = 'abras_travel_excursions_main';
+const LEGACY_KEYS = ['abras_travel_excursions_v9', 'abras_travel_excursions_v8'];
 
 export const getExcursions = (): Excursion[] => {
-  const stored = localStorage.getItem(EXCURSION_STORAGE_KEY);
-  if (!stored) {
-    localStorage.setItem(EXCURSION_STORAGE_KEY, JSON.stringify(INITIAL_EXCURSIONS));
-    return INITIAL_EXCURSIONS;
+  const stored = localStorage.getItem(CURRENT_KEY);
+  if (stored) return JSON.parse(stored);
+
+  for (const key of LEGACY_KEYS) {
+      const legacyData = localStorage.getItem(key);
+      if (legacyData) {
+          localStorage.setItem(CURRENT_KEY, legacyData);
+          return JSON.parse(legacyData);
+      }
   }
-  return JSON.parse(stored);
+
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(INITIAL_EXCURSIONS));
+  return INITIAL_EXCURSIONS;
 };
 
 export const getExcursionById = (id: string): Excursion | undefined => {
@@ -28,13 +36,13 @@ export const saveExcursion = (excursion: Excursion): void => {
     excursions.push(excursion);
   }
   
-  localStorage.setItem(EXCURSION_STORAGE_KEY, JSON.stringify(excursions));
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(excursions));
 };
 
 export const deleteExcursion = (id: string): void => {
   const excursions = getExcursions();
   const filtered = excursions.filter((e) => e.id !== id);
-  localStorage.setItem(EXCURSION_STORAGE_KEY, JSON.stringify(filtered));
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(filtered));
 };
 
 export const createEmptyExcursion = (): Excursion => ({

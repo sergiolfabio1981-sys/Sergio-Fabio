@@ -2,15 +2,25 @@
 import { Hotel } from '../types';
 import { INITIAL_HOTELS } from '../constants';
 
-const HOTEL_STORAGE_KEY = 'abras_travel_hotels_v12';
+const CURRENT_KEY = 'abras_travel_hotels_main';
+const LEGACY_KEYS = ['abras_travel_hotels_v12', 'abras_travel_hotels_v11', 'abras_travel_hotels_v9'];
 
 export const getHotels = (): Hotel[] => {
-  const stored = localStorage.getItem(HOTEL_STORAGE_KEY);
-  if (!stored) {
-    localStorage.setItem(HOTEL_STORAGE_KEY, JSON.stringify(INITIAL_HOTELS));
-    return INITIAL_HOTELS;
+  const stored = localStorage.getItem(CURRENT_KEY);
+  if (stored) {
+    return JSON.parse(stored);
   }
-  return JSON.parse(stored);
+
+  for (const key of LEGACY_KEYS) {
+      const legacyData = localStorage.getItem(key);
+      if (legacyData) {
+          localStorage.setItem(CURRENT_KEY, legacyData);
+          return JSON.parse(legacyData);
+      }
+  }
+
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(INITIAL_HOTELS));
+  return INITIAL_HOTELS;
 };
 
 export const getHotelById = (id: string): Hotel | undefined => {
@@ -28,13 +38,13 @@ export const saveHotel = (hotel: Hotel): void => {
     hotels.push(hotel);
   }
   
-  localStorage.setItem(HOTEL_STORAGE_KEY, JSON.stringify(hotels));
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(hotels));
 };
 
 export const deleteHotel = (id: string): void => {
   const hotels = getHotels();
   const filtered = hotels.filter((h) => h.id !== id);
-  localStorage.setItem(HOTEL_STORAGE_KEY, JSON.stringify(filtered));
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(filtered));
 };
 
 export const createEmptyHotel = (): Hotel => ({

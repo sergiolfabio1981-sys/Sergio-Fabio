@@ -2,15 +2,23 @@
 import { Apartment } from '../types';
 import { INITIAL_RENTALS } from '../constants';
 
-const RENTAL_STORAGE_KEY = 'abras_travel_rentals_v9';
+const CURRENT_KEY = 'abras_travel_rentals_main';
+const LEGACY_KEYS = ['abras_travel_rentals_v9', 'abras_travel_rentals_v8'];
 
 export const getRentals = (): Apartment[] => {
-  const stored = localStorage.getItem(RENTAL_STORAGE_KEY);
-  if (!stored) {
-    localStorage.setItem(RENTAL_STORAGE_KEY, JSON.stringify(INITIAL_RENTALS));
-    return INITIAL_RENTALS;
+  const stored = localStorage.getItem(CURRENT_KEY);
+  if (stored) return JSON.parse(stored);
+
+  for (const key of LEGACY_KEYS) {
+      const legacyData = localStorage.getItem(key);
+      if (legacyData) {
+          localStorage.setItem(CURRENT_KEY, legacyData);
+          return JSON.parse(legacyData);
+      }
   }
-  return JSON.parse(stored);
+
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(INITIAL_RENTALS));
+  return INITIAL_RENTALS;
 };
 
 export const getRentalById = (id: string): Apartment | undefined => {
@@ -28,13 +36,13 @@ export const saveRental = (rental: Apartment): void => {
     rentals.push(rental);
   }
   
-  localStorage.setItem(RENTAL_STORAGE_KEY, JSON.stringify(rentals));
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(rentals));
 };
 
 export const deleteRental = (id: string): void => {
   const rentals = getRentals();
   const filtered = rentals.filter((r) => r.id !== id);
-  localStorage.setItem(RENTAL_STORAGE_KEY, JSON.stringify(filtered));
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(filtered));
 };
 
 export const createEmptyRental = (): Apartment => ({

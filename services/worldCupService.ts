@@ -2,16 +2,23 @@
 import { WorldCupTrip } from '../types';
 import { INITIAL_WORLDCUP_TRIPS } from '../constants';
 
-// Bump version to v4
-const WORLDCUP_STORAGE_KEY = 'abras_travel_worldcup_v4';
+const CURRENT_KEY = 'abras_travel_worldcup_main';
+const LEGACY_KEYS = ['abras_travel_worldcup_v4'];
 
 export const getWorldCupTrips = (): WorldCupTrip[] => {
-  const stored = localStorage.getItem(WORLDCUP_STORAGE_KEY);
-  if (!stored) {
-    localStorage.setItem(WORLDCUP_STORAGE_KEY, JSON.stringify(INITIAL_WORLDCUP_TRIPS));
-    return INITIAL_WORLDCUP_TRIPS;
+  const stored = localStorage.getItem(CURRENT_KEY);
+  if (stored) return JSON.parse(stored);
+
+  for (const key of LEGACY_KEYS) {
+      const legacyData = localStorage.getItem(key);
+      if (legacyData) {
+          localStorage.setItem(CURRENT_KEY, legacyData);
+          return JSON.parse(legacyData);
+      }
   }
-  return JSON.parse(stored);
+
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(INITIAL_WORLDCUP_TRIPS));
+  return INITIAL_WORLDCUP_TRIPS;
 };
 
 export const getWorldCupTripById = (id: string): WorldCupTrip | undefined => {
@@ -29,13 +36,13 @@ export const saveWorldCupTrip = (trip: WorldCupTrip): void => {
     trips.push(trip);
   }
   
-  localStorage.setItem(WORLDCUP_STORAGE_KEY, JSON.stringify(trips));
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(trips));
 };
 
 export const deleteWorldCupTrip = (id: string): void => {
   const trips = getWorldCupTrips();
   const filtered = trips.filter((t) => t.id !== id);
-  localStorage.setItem(WORLDCUP_STORAGE_KEY, JSON.stringify(filtered));
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(filtered));
 };
 
 export const createEmptyWorldCupTrip = (): WorldCupTrip => ({

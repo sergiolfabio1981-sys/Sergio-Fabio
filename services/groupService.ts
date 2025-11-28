@@ -2,15 +2,23 @@
 import { GroupTrip } from '../types';
 import { INITIAL_GROUP_TRIPS } from '../constants';
 
-const GROUP_STORAGE_KEY = 'abras_travel_groups_v1';
+const CURRENT_KEY = 'abras_travel_groups_main';
+const LEGACY_KEYS = ['abras_travel_groups_v1'];
 
 export const getGroupTrips = (): GroupTrip[] => {
-  const stored = localStorage.getItem(GROUP_STORAGE_KEY);
-  if (!stored) {
-    localStorage.setItem(GROUP_STORAGE_KEY, JSON.stringify(INITIAL_GROUP_TRIPS));
-    return INITIAL_GROUP_TRIPS;
+  const stored = localStorage.getItem(CURRENT_KEY);
+  if (stored) return JSON.parse(stored);
+
+  for (const key of LEGACY_KEYS) {
+      const legacyData = localStorage.getItem(key);
+      if (legacyData) {
+          localStorage.setItem(CURRENT_KEY, legacyData);
+          return JSON.parse(legacyData);
+      }
   }
-  return JSON.parse(stored);
+
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(INITIAL_GROUP_TRIPS));
+  return INITIAL_GROUP_TRIPS;
 };
 
 export const getGroupTripById = (id: string): GroupTrip | undefined => {
@@ -28,13 +36,13 @@ export const saveGroupTrip = (trip: GroupTrip): void => {
     trips.push(trip);
   }
   
-  localStorage.setItem(GROUP_STORAGE_KEY, JSON.stringify(trips));
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(trips));
 };
 
 export const deleteGroupTrip = (id: string): void => {
   const trips = getGroupTrips();
   const filtered = trips.filter((t) => t.id !== id);
-  localStorage.setItem(GROUP_STORAGE_KEY, JSON.stringify(filtered));
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(filtered));
 };
 
 export const createEmptyGroupTrip = (): GroupTrip => ({
