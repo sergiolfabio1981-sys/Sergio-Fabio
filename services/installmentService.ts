@@ -2,7 +2,7 @@
 import { InstallmentTrip } from '../types';
 import { INITIAL_INSTALLMENT_TRIPS } from '../constants';
 
-const INSTALLMENT_STORAGE_KEY = 'abras_travel_installments_v6';
+const INSTALLMENT_STORAGE_KEY = 'abras_travel_installments_v7';
 
 export const getInstallmentTrips = (): InstallmentTrip[] => {
   const stored = localStorage.getItem(INSTALLMENT_STORAGE_KEY);
@@ -47,5 +47,6 @@ export const createEmptyInstallmentTrip = (): InstallmentTrip => ({
   departureDate: '2026-01-01',
   isOffer: false,
   type: 'installment',
-  discount: 0
+  discount: 0,
+  specialLabel: ''
 });

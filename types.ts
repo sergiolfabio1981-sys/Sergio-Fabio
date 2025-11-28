@@ -14,6 +14,8 @@ export interface Trip {
   rating?: number; // New: mimic user rating
   reviewsCount?: number; // New
   baseCurrency?: 'ARS' | 'USD';
+  specialLabel?: string; // e.g. "HOT SALE", "BLACK FRIDAY"
+  durationLabel?: string; // e.g. "8 DÍAS / 7 NOCHES"
   type?: 'trip';
 }
 
@@ -35,6 +37,7 @@ export interface Apartment {
   rating?: number;
   reviewsCount?: number;
   baseCurrency?: 'ARS' | 'USD';
+  specialLabel?: string;
   type?: 'rental';
 }
 
@@ -55,6 +58,7 @@ export interface Hotel {
   rating?: number;
   reviewsCount?: number;
   baseCurrency?: 'ARS' | 'USD';
+  specialLabel?: string;
   type?: 'hotel';
 }
 
@@ -73,6 +77,7 @@ export interface Excursion {
   rating?: number;
   reviewsCount?: number;
   baseCurrency?: 'ARS' | 'USD';
+  specialLabel?: string;
   type?: 'excursion';
 }
 
@@ -87,6 +92,7 @@ export interface InstallmentTrip {
   isOffer: boolean; // Just for highlighting
   discount?: number;
   baseCurrency?: 'ARS' | 'USD';
+  specialLabel?: string;
   type?: 'installment';
 }
 
@@ -102,6 +108,7 @@ export interface WorldCupTrip {
   isOffer: boolean;
   discount?: number;
   baseCurrency?: 'ARS' | 'USD'; // Force USD for World Cup
+  specialLabel?: string;
   type?: 'worldcup';
 }
 

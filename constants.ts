@@ -68,7 +68,7 @@ export const INITIAL_PROMO_BANNERS: PromoBanner[] = [
 export const INITIAL_TRIPS: Trip[] = [
   {
     id: 'pkg-rio-fly',
-    title: 'Paquete Río de Janeiro: Vuelo + Hotel 4*',
+    title: 'Paquetes a Río de Janeiro',
     location: 'Río de Janeiro, Brasil',
     price: 1250000,
     description: 'Viajá a Río con todo resuelto. Incluye aéreos directos desde Buenos Aires, traslados y 7 noches en Hotel Windsor Excelsior Copacabana con desayuno. Asistencia al viajero incluida.',
@@ -78,6 +78,8 @@ export const INITIAL_TRIPS: Trip[] = [
     ],
     isOffer: true,
     discount: 15,
+    specialLabel: 'Oferta Imbatible',
+    durationLabel: '8 DÍAS / 7 NOCHES',
     availableDates: ["Salidas diarias Enero y Febrero"],
     includesFlight: true,
     rating: 9.2,
@@ -97,6 +99,8 @@ export const INITIAL_TRIPS: Trip[] = [
     ],
     isOffer: true,
     discount: 10,
+    specialLabel: 'Semana de Locura',
+    durationLabel: '8 DÍAS / 7 NOCHES',
     availableDates: ["Salidas Domingos de Marzo"],
     includesFlight: true,
     rating: 9.5,
@@ -115,6 +119,7 @@ export const INITIAL_TRIPS: Trip[] = [
       'https://images.unsplash.com/photo-1612294069631-9a746a551842?q=80&w=1974&auto=format&fit=crop'
     ],
     isOffer: false,
+    durationLabel: '5 DÍAS / 4 NOCHES',
     availableDates: ["Fines de semana largos 2026"],
     includesFlight: true,
     rating: 9.8,
@@ -133,6 +138,7 @@ export const INITIAL_TRIPS: Trip[] = [
       'https://images.unsplash.com/photo-1583422409516-2895a77efded?q=80&w=2070&auto=format&fit=crop'
     ],
     isOffer: true,
+    durationLabel: '7 DÍAS / 6 NOCHES',
     availableDates: ["Salidas Abril y Mayo"],
     includesFlight: true,
     rating: 8.9,
@@ -152,6 +158,7 @@ export const INITIAL_TRIPS: Trip[] = [
     ],
     isOffer: true,
     discount: 5,
+    durationLabel: '7 DÍAS / 6 NOCHES',
     availableDates: ["Todo el año"],
     includesFlight: true,
     rating: 8.7,
@@ -225,6 +232,7 @@ export const INITIAL_HOTELS: Hotel[] = [
     ],
     isOffer: true,
     discount: 10,
+    specialLabel: 'OFERTA VERANO',
     rating: 8.5,
     reviewsCount: 950,
     lat: -27.427,

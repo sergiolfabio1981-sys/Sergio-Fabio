@@ -21,193 +21,180 @@ export const generateSharePDF = async (item: ListingItem, formattedPrice: string
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF('p', 'mm', 'a4');
   
-  // Colors
+  // Styles
   const cyanColor = [8, 145, 178]; // Cyan-600
   const orangeColor = [249, 115, 22]; // Orange-500
-  const darkColor = [15, 23, 42]; // Slate-900
+  const darkColor = [30, 41, 59]; // Slate-800
   const lightGray = [241, 245, 249]; // Slate-100
+  const textGray = [71, 85, 105]; // Slate-600
 
-  // --- HEADER ---
-  // Background Header
+  // 1. BRAND HEADER
+  // Background
   doc.setFillColor(...darkColor);
-  doc.rect(0, 0, 210, 40, 'F');
+  doc.rect(0, 0, 210, 30, 'F');
   
-  // Brand Name
+  // Logo Text
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(28);
+  doc.setFontSize(24);
   doc.setTextColor(...cyanColor);
   doc.text("ABRAS", 15, 20);
   doc.setTextColor(...orangeColor);
-  doc.text("Travel", 60, 20); // Offset manually based on width
+  doc.text("Travel", 55, 20);
   
-  // Tagline
-  doc.setFontSize(10);
-  doc.setTextColor(200, 200, 200);
-  doc.text("Expertos en destinos de playa y Brasil", 15, 30);
-
   // Contact Info in Header
-  doc.setFontSize(10);
+  doc.setFontSize(9);
   doc.setTextColor(255, 255, 255);
+  doc.text("www.abrastravel.com", 200, 12, { align: 'right' });
   doc.text("+54 9 11 4063 2644", 200, 18, { align: 'right' });
-  doc.text("info@abrastravel.com", 200, 26, { align: 'right' });
-  doc.text("www.abrastravel.com", 200, 34, { align: 'right' });
+  doc.text("info@abrastravel.com", 200, 24, { align: 'right' });
 
-  // --- PERSUASIVE TITLE ---
-  let persuasiveTitle = "¡TU PRÓXIMO DESTINO TE ESPERA!";
-  if (item.isOffer) persuasiveTitle = "¡OFERTA EXCLUSIVA POR TIEMPO LIMITADO!";
-  
-  if (item.type === 'hotel') persuasiveTitle = "TU DESCANSO IDEAL ESTÁ AQUÍ";
-  else if (item.type === 'worldcup') persuasiveTitle = "¡ASEGURA TU LUGAR EN EL MUNDIAL 2026!";
-  else if (item.type === 'installment') persuasiveTitle = "¡VIAJA SIN INTERÉS CON ABRAS CUOTAS!";
-  else if (item.type === 'rental') persuasiveTitle = "ALQUILER TEMPORARIO PREMIUM";
-  else if (item.type === 'excursion') persuasiveTitle = "EXPERIENCIAS INOLVIDABLES";
-
-  doc.setFillColor(...cyanColor);
-  doc.rect(0, 40, 210, 15, 'F');
-  doc.setFontSize(14);
-  doc.setTextColor(255, 255, 255);
-  doc.setFont("helvetica", "bold");
-  doc.text(persuasiveTitle, 105, 50, { align: 'center' });
-
-  // --- MAIN CONTENT ---
-  
-  // Item Title
-  doc.setTextColor(...darkColor);
-  doc.setFontSize(22);
-  const splitTitle = doc.splitTextToSize(item.title, 180);
-  doc.text(splitTitle, 15, 70);
-  
-  let currentY = 70 + (splitTitle.length * 10);
-
-  // Location
-  doc.setFontSize(12);
-  doc.setTextColor(100, 100, 100);
-  doc.text(`📍 ${item.location}`, 15, currentY);
-  currentY += 10;
-
-  // IMAGE
+  // 2. HERO IMAGE
+  let currentY = 30;
   const imageUrl = item.images[0];
   if (imageUrl) {
       try {
           const imgData = await getDataUrl(imageUrl);
           if (imgData) {
-              // A4 width is 210mm. Margins 15mm. Width = 180mm.
-              // Aspect ratio 16:9 approx height = 100mm
-              doc.addImage(imgData, 'JPEG', 15, currentY, 180, 100);
-              // Discount Badge overlay
-              if (item.discount) {
-                  doc.setFillColor(...orangeColor);
-                  doc.circle(180, currentY + 10, 12, 'F');
-                  doc.setTextColor(255, 255, 255);
-                  doc.setFontSize(10);
-                  doc.text(`${item.discount}%`, 180, currentY + 9, { align: 'center' });
-                  doc.text("OFF", 180, currentY + 13, { align: 'center' });
-              }
-              currentY += 110;
+              doc.addImage(imgData, 'JPEG', 0, 30, 210, 90); // Full width image
+              
+              // Gradient Overlay effect (Simulated with semi-transparent rect if supported, else just text box)
+              // Since standard jsPDF doesn't support transparency easily without plugins, we use a text box below.
           }
       } catch (e) {
-          currentY += 10; // Skip if fails
+          console.error(e);
       }
   }
+  currentY += 95; // Move below image
 
-  // --- DETAILS GRID ---
-  
-  // Price Box
-  doc.setFillColor(...lightGray);
-  doc.roundedRect(15, currentY, 180, 30, 3, 3, 'F');
-  
-  doc.setFontSize(12);
-  doc.setTextColor(100, 100, 100);
-  doc.text("Valor Promocional:", 25, currentY + 12);
-  
+  // 3. TITLE & PRICE BLOCK
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(26);
-  doc.setTextColor(...cyanColor);
-  doc.setFont("helvetica", "bold");
-  doc.text(formattedPrice, 25, currentY + 24);
+  doc.setTextColor(...darkColor);
   
+  // Title wrapping
+  const titleLines = doc.splitTextToSize(item.title.toUpperCase(), 130);
+  doc.text(titleLines, 15, currentY);
+  
+  // Price Tag (Right Side)
+  doc.setFillColor(...orangeColor);
+  doc.roundedRect(150, currentY - 10, 50, 25, 2, 2, 'F');
+  doc.setTextColor(255, 255, 255);
   doc.setFontSize(10);
-  doc.setTextColor(150, 150, 150);
-  // Type Label
-  let typeLabel = "";
-  if (item.type === 'hotel' || item.type === 'rental') typeLabel = "Precio por noche";
-  else if (item.type === 'installment' || item.type === 'worldcup') typeLabel = "Cuota Mensual / Plan";
-  else typeLabel = "Precio por persona";
-  
-  doc.text(`(${typeLabel})`, 190, currentY + 22, { align: 'right' });
+  doc.text("PRECIO FINAL", 175, currentY - 2, { align: 'center' });
+  doc.setFontSize(16);
+  doc.text(formattedPrice, 175, currentY + 8, { align: 'center' });
 
-  currentY += 40;
+  currentY += (titleLines.length * 10) + 10;
 
-  // Description
-  doc.setFontSize(14);
-  doc.setTextColor(...darkColor);
-  doc.setFont("helvetica", "bold");
-  doc.text("Descripción", 15, currentY);
-  currentY += 8;
-  
-  doc.setFontSize(11);
-  doc.setTextColor(80, 80, 80);
+  // Location
+  doc.setFontSize(12);
+  doc.setTextColor(...textGray);
   doc.setFont("helvetica", "normal");
-  const splitDesc = doc.splitTextToSize(item.description, 180);
-  doc.text(splitDesc, 15, currentY);
-  
-  currentY += (splitDesc.length * 6) + 10;
+  doc.text(`📍 ${item.location}`, 15, currentY - 10);
 
-  // Amenities / Details List
-  doc.setFontSize(14);
-  doc.setTextColor(...darkColor);
+  // Divider
+  doc.setDrawColor(220, 220, 220);
+  doc.line(15, currentY, 195, currentY);
+  currentY += 10;
+
+  // 4. DETAILED SECTIONS
+  
+  // -- RESUMEN --
   doc.setFont("helvetica", "bold");
-  doc.text("Detalles Incluidos", 15, currentY);
+  doc.setFontSize(14);
+  doc.setTextColor(...cyanColor);
+  doc.text("RESUMEN DEL VIAJE", 15, currentY);
   currentY += 8;
 
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+  doc.setTextColor(50, 50, 50);
+  const descLines = doc.splitTextToSize(item.description, 180);
+  doc.text(descLines, 15, currentY);
+  currentY += (descLines.length * 6) + 10;
+
+  // -- FECHAS & DETALLES --
+  // Two columns layout
+  const col1X = 15;
+  const col2X = 110;
+  
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.setTextColor(...cyanColor);
+  doc.text("FECHAS DE SALIDA", col1X, currentY);
+  doc.text("SERVICIOS INCLUIDOS", col2X, currentY);
+  currentY += 8;
+
+  const startListY = currentY;
+  let col1Y = startListY;
+  let col2Y = startListY;
+
+  // Col 1: Dates
+  doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
   doc.setTextColor(60, 60, 60);
-  doc.setFont("helvetica", "normal");
 
-  let detailsList: string[] = [];
-  
-  if ('amenities' in item) {
-      detailsList = (item as any).amenities || [];
-  } else if ('availableDates' in item && (item as any).availableDates.length > 0) {
-      detailsList = ["Fechas Disponibles:", ...(item as any).availableDates];
-  } else if (item.type === 'worldcup') {
-      detailsList = [`Salida: ${(item as any).departureDate}`, `Origen: ${(item as any).originCountry}`, "Entradas Incluidas", "Traslados", "Coordinación Permanente"];
-  } else if (item.type === 'installment') {
-      detailsList = [`Salida: ${(item as any).departureDate}`, "Plan de Ahorro", "Sin Interés", "Precio Congelado"];
+  if ('availableDates' in item && (item as any).availableDates.length > 0) {
+      (item as any).availableDates.forEach((date: string) => {
+          doc.text(`• ${date}`, col1X, col1Y);
+          col1Y += 6;
+      });
+  } else if (item.type === 'worldcup' || item.type === 'installment') {
+       doc.text(`• Salida Programada: ${(item as any).departureDate}`, col1X, col1Y);
+       col1Y += 6;
+  } else {
+      doc.text("• Consultar disponibilidad", col1X, col1Y);
+      col1Y += 6;
   }
 
-  // Render list in two columns
-  const midPoint = Math.ceil(detailsList.length / 2);
-  let col1 = detailsList.slice(0, midPoint);
-  let col2 = detailsList.slice(midPoint);
+  // Col 2: Services (Constructed logic)
+  const services = [];
+  if ((item as any).includesFlight) services.push("Aéreos Ida y Vuelta");
+  if (item.type === 'trip' || item.type === 'worldcup') {
+      services.push("Alojamiento Seleccionado");
+      services.push("Traslados In/Out");
+      services.push("Asistencia al Viajero");
+  }
+  if (item.type === 'hotel') {
+      services.push(...((item as any).amenities || []).slice(0, 5));
+  }
+  if (item.type === 'rental') {
+      services.push("Propiedad Entera");
+      services.push(...((item as any).amenities || []).slice(0, 4));
+  }
+  if (item.type === 'excursion') {
+      services.push(`Duración: ${(item as any).duration}`);
+      services.push("Guía Especializado");
+  }
 
-  col1.forEach(detail => {
-      doc.text(`• ${detail}`, 15, currentY);
-      currentY += 6;
-  });
-  
-  // Reset Y for col 2 but offset X
-  let col2Y = currentY - (col1.length * 6);
-  col2.forEach(detail => {
-      doc.text(`• ${detail}`, 110, col2Y);
+  services.forEach(svc => {
+      // Draw checkmark
+      doc.setTextColor(34, 197, 94); // Green
+      doc.text("✓", col2X, col2Y);
+      // Draw text
+      doc.setTextColor(60, 60, 60);
+      doc.text(svc, col2X + 5, col2Y);
       col2Y += 6;
   });
 
-  // Ensure currentY is below the lowest column
-  if (col2.length > 0) currentY = Math.max(currentY, col2Y);
+  currentY = Math.max(col1Y, col2Y) + 20;
 
-  // --- FOOTER CTA ---
-  const footerY = 270; // Bottom of A4
-  doc.setFillColor(...orangeColor);
-  doc.rect(0, footerY, 210, 27, 'F');
-  
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(16);
+  // 5. FOOTER CALL TO ACTION
+  // Orange Box
+  doc.setFillColor(255, 247, 237); // Very light orange background
+  doc.setDrawColor(...orangeColor);
+  doc.roundedRect(15, currentY, 180, 35, 3, 3, 'FD'); // Fill and Draw
+
+  doc.setFontSize(14);
+  doc.setTextColor(...orangeColor);
   doc.setFont("helvetica", "bold");
-  doc.text("¿Te interesa esta propuesta?", 105, footerY + 10, { align: 'center' });
-  
-  doc.setFontSize(12);
+  doc.text("¿TE INTERESA ESTA PROPUESTA?", 105, currentY + 12, { align: 'center' });
+
+  doc.setFontSize(11);
+  doc.setTextColor(80, 80, 80);
   doc.setFont("helvetica", "normal");
-  doc.text("Contáctanos por WhatsApp para reservar tu lugar ahora mismo.", 105, footerY + 18, { align: 'center' });
+  doc.text("Contáctanos ahora por WhatsApp para reservar tu lugar.", 105, currentY + 22, { align: 'center' });
+  doc.text("+54 9 11 4063 2644", 105, currentY + 28, { align: 'center' });
 
   // Save
   const cleanTitle = item.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
