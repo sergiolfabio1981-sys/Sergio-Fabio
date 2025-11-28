@@ -19,6 +19,25 @@ export interface Trip {
   type?: 'trip';
 }
 
+export interface GroupTrip {
+  id: string;
+  title: string;
+  location: string;
+  price: number;
+  description: string;
+  images: string[];
+  isOffer: boolean;
+  availableDates: string[]; // Fixed dates
+  discount?: number;
+  includesFlight?: boolean;
+  rating?: number;
+  reviewsCount?: number;
+  specialLabel?: string;
+  durationLabel?: string;
+  baseCurrency?: 'ARS' | 'USD';
+  type?: 'group';
+}
+
 export interface Apartment {
   id: string;
   title: string;
@@ -132,7 +151,7 @@ export interface PromoBanner {
   link: string;
 }
 
-export type ListingItem = Trip | Apartment | Excursion | Hotel | InstallmentTrip | WorldCupTrip;
+export type ListingItem = Trip | Apartment | Excursion | Hotel | InstallmentTrip | WorldCupTrip | GroupTrip;
 
 export interface ChatMessage {
   id: string;

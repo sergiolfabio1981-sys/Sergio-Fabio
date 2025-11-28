@@ -15,11 +15,12 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
   const { formatPrice } = useCurrency();
 
   // Determine type safely
-  const isRental = item.type === 'rental' || 'pricePerNight' in item;
-  const isHotel = item.type === 'hotel' || ('stars' in item && 'pricePerNight' in item);
+  const isRental = item.type === 'rental';
+  const isHotel = item.type === 'hotel';
   const isInstallment = item.type === 'installment';
   const isWorldCup = item.type === 'worldcup';
   const isExcursion = item.type === 'excursion';
+  const isGroup = item.type === 'group';
 
   const baseCurrency = (item as any).baseCurrency || 'ARS';
   const includesFlight = (item as any).includesFlight;
@@ -35,6 +36,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
   if (isHotel) linkUrl = `/hotels/${item.id}`;
   if (isInstallment) linkUrl = `/installments/${item.id}`;
   if (isWorldCup) linkUrl = `/worldcup/${item.id}`;
+  if (isGroup) linkUrl = `/groups/${item.id}`;
 
   // Price Logic
   let displayPrice = 0;
@@ -63,6 +65,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
   if (isExcursion) categoryLabel = "EXCURSIÓN";
   if (isWorldCup) categoryLabel = "EVENTO DEPORTIVO";
   if (isInstallment) categoryLabel = "PLAN AHORRO";
+  if (isGroup) categoryLabel = "SALIDA GRUPAL";
 
   // Manual Navigation
   const nextImage = (e: React.MouseEvent) => {
@@ -124,7 +127,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
         
         {/* Category & Title */}
         <div className="mb-2">
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{categoryLabel}</span>
+            <span className={`text-[10px] font-bold uppercase tracking-wider ${isGroup ? 'text-purple-600' : 'text-gray-500'}`}>{categoryLabel}</span>
             <h3 className="text-lg font-bold text-gray-800 leading-tight mt-1 line-clamp-2">{item.title}</h3>
         </div>
 

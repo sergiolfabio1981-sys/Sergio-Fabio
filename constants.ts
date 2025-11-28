@@ -1,5 +1,5 @@
 
-import { Trip, Apartment, Excursion, Hotel, InstallmentTrip, WorldCupTrip, HeroSlide, PromoBanner } from './types';
+import { Trip, Apartment, Excursion, Hotel, InstallmentTrip, WorldCupTrip, GroupTrip, HeroSlide, PromoBanner } from './types';
 
 export const ADMIN_EMAIL = "sergiolfabio1981@gmail.com";
 export const ADMIN_PASS = "Colo1981";
@@ -92,7 +92,7 @@ export const INITIAL_TRIPS: Trip[] = [
     title: 'Verano en Florianópolis - Canasvieiras',
     location: 'Florianópolis, Brasil',
     price: 820, // USD
-    description: 'Disfruta de la playa favorita de los argentinos. Incluye vuelo directo, traslados y 7 noches de alojamiento en Posada a 200 metros del mar con desayuno. Ideal para familias.',
+    description: 'Disfruta de la playa favorita de los argentinos. Incluye vuelo directo, traslados y 7 noches en Posada a 200 metros del mar con desayuno. Ideal para familias.',
     images: [
       'https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?q=80&w=1932&auto=format&fit=crop',
       'https://images.unsplash.com/photo-1545389369-588725ae4991?q=80&w=2070&auto=format&fit=crop'
@@ -247,6 +247,70 @@ export const INITIAL_TRIPS: Trip[] = [
     reviewsCount: 1100,
     baseCurrency: 'USD',
     type: 'trip'
+  }
+];
+
+// --- GRUPALES (NUEVA SECCIÓN) ---
+export const INITIAL_GROUP_TRIPS: GroupTrip[] = [
+  {
+    id: 'grp-peru',
+    title: 'Perú Mágico - Salida Grupal',
+    location: 'Perú',
+    price: 1890,
+    description: 'Únete a nuestro grupo exclusivo para recorrer Lima, Cusco y Machu Picchu. Incluye vuelos, tren panorámico, entradas y guía coordinador permanente. Ideal para viajeros solos o acompañados.',
+    images: [
+      'https://images.unsplash.com/photo-1526392060635-9d6019884377?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1587595431973-160d0d94add1?q=80&w=2076&auto=format&fit=crop'
+    ],
+    isOffer: true,
+    discount: 5,
+    specialLabel: 'SALIDA CONFIRMADA',
+    durationLabel: '10 DÍAS / 9 NOCHES',
+    availableDates: ['Salida 15 Mayo 2026', 'Salida 10 Septiembre 2026'],
+    includesFlight: true,
+    rating: 9.6,
+    reviewsCount: 120,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  {
+    id: 'grp-europa-joven',
+    title: 'Europa Joven 2026',
+    location: 'Europa Multidestino',
+    price: 3200,
+    description: 'El viaje de tu vida con gente de tu edad (18-35 años). Madrid, París, Londres, Amsterdam y Berlín. Hoteles céntricos, fiestas exclusivas y mucha diversión.',
+    images: [
+      'https://images.unsplash.com/photo-1499856871940-a09627c6d7db?q=80&w=2020&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=2070&auto=format&fit=crop'
+    ],
+    isOffer: false,
+    specialLabel: 'SOLO JÓVENES',
+    durationLabel: '18 DÍAS / 16 NOCHES',
+    availableDates: ['Salida Enero 2026', 'Salida Julio 2026'],
+    includesFlight: true,
+    rating: 9.8,
+    reviewsCount: 350,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  {
+    id: 'grp-norte-arg',
+    title: 'Norte Argentino en Grupo',
+    location: 'Salta y Jujuy, Argentina',
+    price: 650,
+    description: 'Descubre los colores del norte. Salta, Purmamarca, Humahuaca y Salinas Grandes. Grupo reducido en combi privada con guía local. Peña folklórica de bienvenida.',
+    images: [
+      'https://images.unsplash.com/photo-1612293905096-732af2c3249f?q=80&w=2071&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?q=80&w=2070&auto=format&fit=crop'
+    ],
+    isOffer: true,
+    durationLabel: '6 DÍAS / 5 NOCHES',
+    availableDates: ['Salida 20 Abril 2026', 'Salida 12 Octubre 2026'],
+    includesFlight: true,
+    rating: 9.2,
+    reviewsCount: 85,
+    baseCurrency: 'USD',
+    type: 'group'
   }
 ];
 
