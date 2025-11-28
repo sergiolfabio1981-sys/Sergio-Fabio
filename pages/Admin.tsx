@@ -137,7 +137,6 @@ const Admin: React.FC = () => {
   };
 
   // HANDLERS
-  // ... (Existing handlers for trip, rental, etc. kept same, only adding group) ...
   const openCreateTrip = () => { resetEditState(); setEditingTrip(createEmptyTrip()); setTripDatesInput(''); setIsModalOpen(true); };
   const openEditTrip = (t: Trip) => { resetEditState(); setEditingTrip({...t}); setTripDatesInput(t.availableDates.join('\n')); setIsModalOpen(true); };
   const saveCurrentTrip = (e: any) => { e.preventDefault(); if(!editingTrip) return; saveTrip({...editingTrip, availableDates: tripDatesInput.split('\n').filter(d=>d.trim()!=='')}); setTrips(getTrips()); setIsModalOpen(false); };
@@ -148,7 +147,6 @@ const Admin: React.FC = () => {
   const saveCurrentGroup = (e: any) => { e.preventDefault(); if(!editingGroup) return; saveGroupTrip({...editingGroup, availableDates: groupDatesInput.split('\n').filter(d=>d.trim()!=='')}); setGroupTrips(getGroupTrips()); setIsModalOpen(false); };
   const deleteCurrentGroup = (id: string) => { if(window.confirm("¿Eliminar salida grupal?")) { deleteGroupTrip(id); setGroupTrips(getGroupTrips()); }};
 
-  // (Keeping other handlers summarized to avoid exceeding output limits, assuming they exist as per existing code)
   const openCreateRental = () => { resetEditState(); setEditingRental(createEmptyRental()); setRentalAmenitiesInput(''); setIsModalOpen(true); };
   const openEditRental = (r: Apartment) => { resetEditState(); setEditingRental({...r}); setRentalAmenitiesInput(r.amenities.join('\n')); setIsModalOpen(true); };
   const saveCurrentRental = (e: any) => { e.preventDefault(); if(!editingRental) return; saveRental({...editingRental, amenities: rentalAmenitiesInput.split('\n').filter(a=>a.trim()!=='')}); setRentals(getRentals()); setIsModalOpen(false); };
@@ -299,38 +297,163 @@ const Admin: React.FC = () => {
                       </form>
                   )}
 
-                  {/* ... Existing Forms (Trip, Rental, Hotel, Excursion, Installment, WorldCup, Slide, Banner) ... */}
-                  {/* Re-implementing simplified versions of existing forms to ensure they are present in the final file */}
-                  
                   {editingTrip && (
                       <form onSubmit={saveCurrentTrip} className="space-y-4">
                            <h3 className="text-xl font-bold mb-4">Editar Paquete</h3>
                            <input value={editingTrip.title} onChange={e=>setEditingTrip({...editingTrip, title:e.target.value})} className="border p-2 w-full rounded" placeholder="Título" />
                            <input value={editingTrip.location} onChange={e=>setEditingTrip({...editingTrip, location:e.target.value})} className="border p-2 w-full rounded" placeholder="Ubicación" />
                            <div className="grid grid-cols-3 gap-4">
-                                <input type="number" value={editingTrip.price} onChange={e=>setEditingTrip({...editingTrip, price:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Precio" />
+                                <input type="number" value={editingTrip.price} onChange={e=>setEditingTrip({...editingTrip, price:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Precio (USD)" />
                                 <input type="number" value={editingTrip.discount || 0} onChange={e=>setEditingTrip({...editingTrip, discount:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Desc %" />
                                 <input type="text" value={editingTrip.specialLabel || ''} onChange={e=>setEditingTrip({...editingTrip, specialLabel:e.target.value})} className="border p-2 w-full rounded" placeholder="Etiqueta" />
                            </div>
                            <textarea value={editingTrip.description} onChange={e=>setEditingTrip({...editingTrip, description:e.target.value})} className="border p-2 w-full rounded" rows={3} placeholder="Descripción" />
                            <textarea value={tripDatesInput} onChange={e=>setTripDatesInput(e.target.value)} className="border p-2 w-full rounded" rows={3} placeholder="Fechas" />
                            <label><input type="checkbox" checked={editingTrip.isOffer} onChange={e=>setEditingTrip({...editingTrip, isOffer:e.target.checked})} /> Oferta</label>
-                           {/* Image Upload Simplified */}
-                           <div className="border p-2 rounded"><input type="file" multiple onChange={(e)=>handleFileUpload(e, 'trip')} /><div className="flex gap-1 mt-1">{editingTrip.images.map((img,i)=><img key={i} src={img} className="w-10 h-10 object-cover" />)}</div></div>
+                           <div>
+                              <label className="block text-sm font-bold mb-1">Imágenes</label>
+                              <div className="flex gap-2 mb-2 overflow-x-auto">{editingTrip.images.map((img,i)=><div key={i} className="relative group min-w-[64px]"><img src={img} className="w-16 h-16 object-cover rounded" /><button type="button" onClick={()=>{const newImages = [...editingTrip.images]; newImages.splice(i,1); setEditingTrip({...editingTrip, images: newImages})}} className="absolute top-0 right-0 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100">x</button></div>)}</div>
+                              <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border"><div className="flex gap-2"><input type="text" placeholder="URL Imagen" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('trip')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm whitespace-nowrap">URL</button></div><input type="file" multiple onChange={(e)=>handleFileUpload(e, 'trip')} className="text-sm" /></div>
+                           </div>
                            <div className="flex justify-end gap-2"><button type="button" onClick={()=>setIsModalOpen(false)} className="border px-3 py-1 rounded">Cancelar</button><button className="bg-blue-600 text-white px-3 py-1 rounded">Guardar</button></div>
                       </form>
                   )}
-                  {/* ... Similar simplified forms for Rental, Hotel, Excursion, Installment, WorldCup would go here ... */}
-                  {/* For brevity in output, ensuring the file is valid and complete with logic */}
-                  {/* Assuming the user wants the file to be functional, I'll allow the existing logic to be implied or copy the relevant parts if space permits. Given the complexity, I'm focusing on the new Group logic and tab switching. */}
-                  
-                  {editingRental && <div className="text-center p-4">Formulario de Alquileres (Funcionalidad Preservada) <button onClick={saveCurrentRental} className="block w-full bg-blue-500 text-white mt-2 p-2 rounded">Guardar (Simulado)</button></div>} 
-                  {editingHotel && <div className="text-center p-4">Formulario de Hoteles (Funcionalidad Preservada) <button onClick={saveCurrentHotel} className="block w-full bg-blue-500 text-white mt-2 p-2 rounded">Guardar (Simulado)</button></div>}
-                  {editingExcursion && <div className="text-center p-4">Formulario de Excursiones (Funcionalidad Preservada) <button onClick={saveCurrentExcursion} className="block w-full bg-blue-500 text-white mt-2 p-2 rounded">Guardar (Simulado)</button></div>}
-                  {editingInstallment && <div className="text-center p-4">Formulario de Cuotas (Funcionalidad Preservada) <button onClick={(e)=>saveCurrentInstallment(e)} className="block w-full bg-blue-500 text-white mt-2 p-2 rounded">Guardar (Simulado)</button></div>}
-                  {editingWorldCup && <div className="text-center p-4">Formulario de Mundial (Funcionalidad Preservada) <button onClick={(e)=>saveCurrentWorldCup(e)} className="block w-full bg-blue-500 text-white mt-2 p-2 rounded">Guardar (Simulado)</button></div>}
-                  {editingSlide && <div className="text-center p-4">Formulario de Portada (Funcionalidad Preservada) <button onClick={(e)=>saveCurrentSlide(e)} className="block w-full bg-blue-500 text-white mt-2 p-2 rounded">Guardar (Simulado)</button></div>}
-                  {editingBanner && <div className="text-center p-4">Formulario de Banner (Funcionalidad Preservada) <button onClick={(e)=>saveCurrentBanner(e)} className="block w-full bg-blue-500 text-white mt-2 p-2 rounded">Guardar (Simulado)</button></div>}
+
+                  {editingRental && (
+                      <form onSubmit={saveCurrentRental} className="space-y-4">
+                           <h3 className="text-xl font-bold mb-4">Editar Alquiler</h3>
+                           <input value={editingRental.title} onChange={e=>setEditingRental({...editingRental, title:e.target.value})} className="border p-2 w-full rounded" placeholder="Título" />
+                           <input value={editingRental.location} onChange={e=>setEditingRental({...editingRental, location:e.target.value})} className="border p-2 w-full rounded" placeholder="Ubicación" />
+                           <div className="grid grid-cols-4 gap-4">
+                                <input type="number" value={editingRental.pricePerNight} onChange={e=>setEditingRental({...editingRental, pricePerNight:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Precio x Noche" />
+                                <input type="number" value={editingRental.bedrooms} onChange={e=>setEditingRental({...editingRental, bedrooms:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Habitaciones" />
+                                <input type="number" value={editingRental.maxGuests} onChange={e=>setEditingRental({...editingRental, maxGuests:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Huéspedes" />
+                                <input type="number" value={editingRental.discount || 0} onChange={e=>setEditingRental({...editingRental, discount:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Desc %" />
+                           </div>
+                           <textarea value={editingRental.description} onChange={e=>setEditingRental({...editingRental, description:e.target.value})} className="border p-2 w-full rounded" rows={3} placeholder="Descripción" />
+                           <textarea value={rentalAmenitiesInput} onChange={e=>setRentalAmenitiesInput(e.target.value)} className="border p-2 w-full rounded" rows={3} placeholder="Comodidades (una por línea)" />
+                           <div>
+                              <label className="block text-sm font-bold mb-1">Imágenes</label>
+                              <div className="flex gap-2 mb-2 overflow-x-auto">{editingRental.images.map((img,i)=><div key={i} className="relative group min-w-[64px]"><img src={img} className="w-16 h-16 object-cover rounded" /><button type="button" onClick={()=>{const newImages = [...editingRental.images]; newImages.splice(i,1); setEditingRental({...editingRental, images: newImages})}} className="absolute top-0 right-0 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100">x</button></div>)}</div>
+                              <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border"><div className="flex gap-2"><input type="text" placeholder="URL Imagen" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('rental')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm whitespace-nowrap">URL</button></div><input type="file" multiple onChange={(e)=>handleFileUpload(e, 'rental')} className="text-sm" /></div>
+                           </div>
+                           <div className="flex justify-end gap-2"><button type="button" onClick={()=>setIsModalOpen(false)} className="border px-3 py-1 rounded">Cancelar</button><button className="bg-blue-600 text-white px-3 py-1 rounded">Guardar</button></div>
+                      </form>
+                  )}
+
+                  {editingHotel && (
+                      <form onSubmit={saveCurrentHotel} className="space-y-4">
+                           <h3 className="text-xl font-bold mb-4">Editar Hotel</h3>
+                           <input value={editingHotel.title} onChange={e=>setEditingHotel({...editingHotel, title:e.target.value})} className="border p-2 w-full rounded" placeholder="Título" />
+                           <input value={editingHotel.location} onChange={e=>setEditingHotel({...editingHotel, location:e.target.value})} className="border p-2 w-full rounded" placeholder="Ubicación" />
+                           <div className="grid grid-cols-4 gap-4">
+                                <input type="number" value={editingHotel.pricePerNight} onChange={e=>setEditingHotel({...editingHotel, pricePerNight:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Precio x Noche" />
+                                <input type="number" value={editingHotel.stars} onChange={e=>setEditingHotel({...editingHotel, stars:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Estrellas (1-5)" />
+                                <input type="number" value={editingHotel.discount || 0} onChange={e=>setEditingHotel({...editingHotel, discount:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Desc %" />
+                                <input type="text" value={editingHotel.specialLabel || ''} onChange={e=>setEditingHotel({...editingHotel, specialLabel:e.target.value})} className="border p-2 w-full rounded" placeholder="Etiqueta" />
+                           </div>
+                           <textarea value={editingHotel.description} onChange={e=>setEditingHotel({...editingHotel, description:e.target.value})} className="border p-2 w-full rounded" rows={3} placeholder="Descripción" />
+                           <textarea value={hotelAmenitiesInput} onChange={e=>setHotelAmenitiesInput(e.target.value)} className="border p-2 w-full rounded" rows={3} placeholder="Servicios (uno por línea)" />
+                           <div>
+                              <label className="block text-sm font-bold mb-1">Imágenes</label>
+                              <div className="flex gap-2 mb-2 overflow-x-auto">{editingHotel.images.map((img,i)=><div key={i} className="relative group min-w-[64px]"><img src={img} className="w-16 h-16 object-cover rounded" /><button type="button" onClick={()=>{const newImages = [...editingHotel.images]; newImages.splice(i,1); setEditingHotel({...editingHotel, images: newImages})}} className="absolute top-0 right-0 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100">x</button></div>)}</div>
+                              <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border"><div className="flex gap-2"><input type="text" placeholder="URL Imagen" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('hotel')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm whitespace-nowrap">URL</button></div><input type="file" multiple onChange={(e)=>handleFileUpload(e, 'hotel')} className="text-sm" /></div>
+                           </div>
+                           <div className="flex justify-end gap-2"><button type="button" onClick={()=>setIsModalOpen(false)} className="border px-3 py-1 rounded">Cancelar</button><button className="bg-blue-600 text-white px-3 py-1 rounded">Guardar</button></div>
+                      </form>
+                  )}
+
+                  {editingExcursion && (
+                      <form onSubmit={saveCurrentExcursion} className="space-y-4">
+                           <h3 className="text-xl font-bold mb-4">Editar Excursión</h3>
+                           <input value={editingExcursion.title} onChange={e=>setEditingExcursion({...editingExcursion, title:e.target.value})} className="border p-2 w-full rounded" placeholder="Título" />
+                           <input value={editingExcursion.location} onChange={e=>setEditingExcursion({...editingExcursion, location:e.target.value})} className="border p-2 w-full rounded" placeholder="Ubicación" />
+                           <div className="grid grid-cols-3 gap-4">
+                                <input type="number" value={editingExcursion.price} onChange={e=>setEditingExcursion({...editingExcursion, price:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Precio" />
+                                <input type="number" value={editingExcursion.discount || 0} onChange={e=>setEditingExcursion({...editingExcursion, discount:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Desc %" />
+                                <input value={editingExcursion.duration} onChange={e=>setEditingExcursion({...editingExcursion, duration:e.target.value})} className="border p-2 w-full rounded" placeholder="Duración" />
+                           </div>
+                           <textarea value={editingExcursion.description} onChange={e=>setEditingExcursion({...editingExcursion, description:e.target.value})} className="border p-2 w-full rounded" rows={3} placeholder="Descripción" />
+                           <textarea value={excursionDatesInput} onChange={e=>setExcursionDatesInput(e.target.value)} className="border p-2 w-full rounded" rows={3} placeholder="Días disponibles (uno por línea)" />
+                           <div>
+                              <label className="block text-sm font-bold mb-1">Imágenes</label>
+                              <div className="flex gap-2 mb-2 overflow-x-auto">{editingExcursion.images.map((img,i)=><div key={i} className="relative group min-w-[64px]"><img src={img} className="w-16 h-16 object-cover rounded" /><button type="button" onClick={()=>{const newImages = [...editingExcursion.images]; newImages.splice(i,1); setEditingExcursion({...editingExcursion, images: newImages})}} className="absolute top-0 right-0 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100">x</button></div>)}</div>
+                              <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border"><div className="flex gap-2"><input type="text" placeholder="URL Imagen" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('excursion')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm whitespace-nowrap">URL</button></div><input type="file" multiple onChange={(e)=>handleFileUpload(e, 'excursion')} className="text-sm" /></div>
+                           </div>
+                           <div className="flex justify-end gap-2"><button type="button" onClick={()=>setIsModalOpen(false)} className="border px-3 py-1 rounded">Cancelar</button><button className="bg-blue-600 text-white px-3 py-1 rounded">Guardar</button></div>
+                      </form>
+                  )}
+
+                  {editingInstallment && (
+                      <form onSubmit={saveCurrentInstallment} className="space-y-4">
+                           <h3 className="text-xl font-bold mb-4">Editar Plan Cuotas</h3>
+                           <input value={editingInstallment.title} onChange={e=>setEditingInstallment({...editingInstallment, title:e.target.value})} className="border p-2 w-full rounded" placeholder="Título" />
+                           <input value={editingInstallment.location} onChange={e=>setEditingInstallment({...editingInstallment, location:e.target.value})} className="border p-2 w-full rounded" placeholder="Ubicación" />
+                           <div className="grid grid-cols-2 gap-4">
+                                <input type="number" value={editingInstallment.totalPrice} onChange={e=>setEditingInstallment({...editingInstallment, totalPrice:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Precio Total" />
+                                <input type="date" value={editingInstallment.departureDate} onChange={e=>setEditingInstallment({...editingInstallment, departureDate:e.target.value})} className="border p-2 w-full rounded" />
+                           </div>
+                           <textarea value={editingInstallment.description} onChange={e=>setEditingInstallment({...editingInstallment, description:e.target.value})} className="border p-2 w-full rounded" rows={3} placeholder="Descripción" />
+                           <div>
+                              <label className="block text-sm font-bold mb-1">Imágenes</label>
+                              <div className="flex gap-2 mb-2 overflow-x-auto">{editingInstallment.images.map((img,i)=><div key={i} className="relative group min-w-[64px]"><img src={img} className="w-16 h-16 object-cover rounded" /><button type="button" onClick={()=>{const newImages = [...editingInstallment.images]; newImages.splice(i,1); setEditingInstallment({...editingInstallment, images: newImages})}} className="absolute top-0 right-0 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100">x</button></div>)}</div>
+                              <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border"><div className="flex gap-2"><input type="text" placeholder="URL Imagen" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('installment')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm whitespace-nowrap">URL</button></div><input type="file" multiple onChange={(e)=>handleFileUpload(e, 'installment')} className="text-sm" /></div>
+                           </div>
+                           <div className="flex justify-end gap-2"><button type="button" onClick={()=>setIsModalOpen(false)} className="border px-3 py-1 rounded">Cancelar</button><button className="bg-blue-600 text-white px-3 py-1 rounded">Guardar</button></div>
+                      </form>
+                  )}
+
+                  {editingWorldCup && (
+                      <form onSubmit={saveCurrentWorldCup} className="space-y-4">
+                           <h3 className="text-xl font-bold mb-4">Editar Paquete Mundial</h3>
+                           <input value={editingWorldCup.title} onChange={e=>setEditingWorldCup({...editingWorldCup, title:e.target.value})} className="border p-2 w-full rounded" placeholder="Título" />
+                           <input value={editingWorldCup.originCountry} onChange={e=>setEditingWorldCup({...editingWorldCup, originCountry:e.target.value})} className="border p-2 w-full rounded" placeholder="País de Origen" />
+                           <div className="grid grid-cols-2 gap-4">
+                                <input type="number" value={editingWorldCup.totalPrice} onChange={e=>setEditingWorldCup({...editingWorldCup, totalPrice:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Precio Total" />
+                                <input type="date" value={editingWorldCup.departureDate} onChange={e=>setEditingWorldCup({...editingWorldCup, departureDate:e.target.value})} className="border p-2 w-full rounded" />
+                           </div>
+                           <textarea value={editingWorldCup.description} onChange={e=>setEditingWorldCup({...editingWorldCup, description:e.target.value})} className="border p-2 w-full rounded" rows={3} placeholder="Descripción" />
+                           <div>
+                              <label className="block text-sm font-bold mb-1">Imágenes</label>
+                              <div className="flex gap-2 mb-2 overflow-x-auto">{editingWorldCup.images.map((img,i)=><div key={i} className="relative group min-w-[64px]"><img src={img} className="w-16 h-16 object-cover rounded" /><button type="button" onClick={()=>{const newImages = [...editingWorldCup.images]; newImages.splice(i,1); setEditingWorldCup({...editingWorldCup, images: newImages})}} className="absolute top-0 right-0 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100">x</button></div>)}</div>
+                              <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border"><div className="flex gap-2"><input type="text" placeholder="URL Imagen" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('worldcup')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm whitespace-nowrap">URL</button></div><input type="file" multiple onChange={(e)=>handleFileUpload(e, 'worldcup')} className="text-sm" /></div>
+                           </div>
+                           <div className="flex justify-end gap-2"><button type="button" onClick={()=>setIsModalOpen(false)} className="border px-3 py-1 rounded">Cancelar</button><button className="bg-blue-600 text-white px-3 py-1 rounded">Guardar</button></div>
+                      </form>
+                  )}
+
+                  {editingSlide && (
+                      <form onSubmit={saveCurrentSlide} className="space-y-4">
+                           <h3 className="text-xl font-bold mb-4">Editar Diapositiva</h3>
+                           <input value={editingSlide.title} onChange={e=>setEditingSlide({...editingSlide, title:e.target.value})} className="border p-2 w-full rounded" placeholder="Título Principal" />
+                           <input value={editingSlide.subtitle} onChange={e=>setEditingSlide({...editingSlide, subtitle:e.target.value})} className="border p-2 w-full rounded" placeholder="Subtítulo" />
+                           <div className="grid grid-cols-2 gap-4">
+                                <input value={editingSlide.ctaText} onChange={e=>setEditingSlide({...editingSlide, ctaText:e.target.value})} className="border p-2 w-full rounded" placeholder="Texto Botón" />
+                                <input value={editingSlide.ctaLink} onChange={e=>setEditingSlide({...editingSlide, ctaLink:e.target.value})} className="border p-2 w-full rounded" placeholder="Enlace Botón" />
+                           </div>
+                           <div>
+                              <label className="block text-sm font-bold mb-1">Imagen de Fondo</label>
+                              <div className="mb-2"><img src={editingSlide.image} className="h-32 w-full object-cover rounded" /></div>
+                              <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border"><div className="flex gap-2"><input type="text" placeholder="URL Imagen" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('hero')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm whitespace-nowrap">URL</button></div><input type="file" onChange={(e)=>handleFileUpload(e, 'hero')} className="text-sm" /></div>
+                           </div>
+                           <div className="flex justify-end gap-2"><button type="button" onClick={()=>setIsModalOpen(false)} className="border px-3 py-1 rounded">Cancelar</button><button className="bg-blue-600 text-white px-3 py-1 rounded">Guardar</button></div>
+                      </form>
+                  )}
+
+                  {editingBanner && (
+                      <form onSubmit={saveCurrentBanner} className="space-y-4">
+                           <h3 className="text-xl font-bold mb-4">Editar Banner</h3>
+                           <input value={editingBanner.title} onChange={e=>setEditingBanner({...editingBanner, title:e.target.value})} className="border p-2 w-full rounded" placeholder="Título" />
+                           <input value={editingBanner.subtitle} onChange={e=>setEditingBanner({...editingBanner, subtitle:e.target.value})} className="border p-2 w-full rounded" placeholder="Subtítulo" />
+                           <input value={editingBanner.badge} onChange={e=>setEditingBanner({...editingBanner, badge:e.target.value})} className="border p-2 w-full rounded" placeholder="Etiqueta (Badge)" />
+                           <div>
+                              <label className="block text-sm font-bold mb-1">Imagen de Fondo</label>
+                              <div className="mb-2"><img src={editingBanner.image} className="h-32 w-full object-cover rounded" /></div>
+                              <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border"><div className="flex gap-2"><input type="text" placeholder="URL Imagen" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('banner')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm whitespace-nowrap">URL</button></div><input type="file" onChange={(e)=>handleFileUpload(e, 'banner')} className="text-sm" /></div>
+                           </div>
+                           <div className="flex justify-end gap-2"><button type="button" onClick={()=>setIsModalOpen(false)} className="border px-3 py-1 rounded">Cancelar</button><button className="bg-blue-600 text-white px-3 py-1 rounded">Guardar</button></div>
+                      </form>
+                  )}
 
               </div>
           </div>
