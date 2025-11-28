@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -62,7 +63,7 @@ const Navbar: React.FC = () => {
       )
     },
     { 
-      name: 'ABRAS Cuotas', 
+      name: 'Cuotas', 
       path: '/installments',
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -71,7 +72,7 @@ const Navbar: React.FC = () => {
       )
     },
     { 
-      name: 'Mundial 2026', 
+      name: 'Mundial', 
       path: '/worldcup',
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -112,32 +113,54 @@ const Navbar: React.FC = () => {
   const currentCurr = currencies.find(c => c.code === currency) || currencies[0];
 
   return (
-    <nav className="bg-white shadow-lg sticky top-0 z-50">
+    <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* DESKTOP LAYOUT (Stacked - Compact) */}
-        <div className="hidden md:flex flex-col">
+        {/* SINGLE ROW HORIZONTAL LAYOUT */}
+        <div className="flex justify-between items-center h-16">
             
-            {/* TOP ROW: Logo & Config */}
-            <div className="relative flex justify-center items-center py-1 border-b border-gray-100/50">
-                
-                {/* Centered Logo ONLY (Reduced Size) */}
-                <Link to="/" className="flex items-center justify-center group">
+            {/* LEFT: Logo */}
+            <div className="flex-shrink-0 flex items-center">
+                <Link to="/" className="group">
                     <img 
                         src="https://i.ibb.co/VWjb9tVp/Logo-ABRAS.png" 
                         onError={(e) => { e.currentTarget.src = "https://i.ibb.co/gFDNRMFD/Logo-ABRAS.png"; }}
                         alt="ABRAS Travel" 
-                        className="h-16 md:h-20 w-auto object-contain transform group-hover:scale-105 transition-transform duration-300" 
+                        className="h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105" 
                     />
                 </Link>
+            </div>
 
-                {/* Right: Config Buttons (Absolute) */}
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2">
+            {/* CENTER: Navigation Links (Visible on Tablet/Desktop) */}
+            <div className="hidden md:flex items-center space-x-1 lg:space-x-2">
+                {navLinks.map((link) => (
+                <Link
+                    key={link.path}
+                    to={link.path}
+                    className={`flex items-center gap-1.5 px-2 lg:px-3 py-2 rounded-lg transition-all duration-200 group ${
+                    isActive(link.path)
+                        ? 'text-cyan-700 bg-cyan-50 font-bold'
+                        : 'text-gray-500 hover:text-orange-500 hover:bg-orange-50'
+                    }`}
+                >
+                    <span className={`transition-transform group-hover:-translate-y-0.5 ${isActive(link.path) ? 'text-cyan-600' : 'text-gray-400 group-hover:text-orange-500'}`}>
+                        {link.icon}
+                    </span>
+                    <span className="text-[10px] lg:text-xs font-bold uppercase tracking-wide whitespace-nowrap">{link.name}</span>
+                </Link>
+                ))}
+            </div>
+
+            {/* RIGHT: Config & Mobile Toggle */}
+            <div className="flex items-center gap-2">
+                
+                {/* Config Buttons */}
+                <div className="flex items-center gap-2">
                     {/* Currency Dropdown */}
                     <div className="relative">
                         <button 
                         onClick={() => { setCurrencyDropdownOpen(!currencyDropdownOpen); setLanguageDropdownOpen(false); }}
-                        className="flex items-center gap-1 text-[10px] font-bold text-gray-600 hover:text-cyan-700 bg-gray-50 px-2 py-1 rounded-lg border border-gray-100 hover:border-cyan-200 transition-all min-w-[70px]"
+                        className="flex items-center gap-1 text-[10px] font-bold text-gray-600 hover:text-cyan-700 bg-gray-50 px-2 py-1 rounded-lg border border-gray-100 hover:border-cyan-200 transition-all min-w-[60px]"
                         >
                         <span className="mr-1">{(currentCurr as any).flag}</span>
                         {currentCurr.code} 
@@ -164,7 +187,7 @@ const Navbar: React.FC = () => {
                     </div>
 
                     {/* Language Dropdown */}
-                    <div className="relative">
+                    <div className="relative hidden sm:block">
                         <button 
                         onClick={() => { setLanguageDropdownOpen(!languageDropdownOpen); setCurrencyDropdownOpen(false); }}
                         className="flex items-center gap-1 text-[10px] font-bold text-gray-600 hover:text-cyan-700 bg-gray-50 px-2 py-1 rounded-lg border border-gray-100 hover:border-cyan-200 transition-all"
@@ -189,58 +212,23 @@ const Navbar: React.FC = () => {
                         )}
                     </div>
                 </div>
+
+                {/* Mobile Menu Button (Visible only on small screens) */}
+                <div className="md:hidden">
+                    <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="text-gray-600 hover:text-orange-500 focus:outline-none p-2"
+                    >
+                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        {isOpen ? (
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        ) : (
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                        )}
+                    </svg>
+                    </button>
+                </div>
             </div>
-
-            {/* BOTTOM ROW: Navigation Links (Vertical Stack: Icon Top, Text Bottom) - COMPACT */}
-            <div className="flex justify-center py-1 space-x-1 lg:space-x-4 overflow-x-auto">
-                {navLinks.map((link) => (
-                <Link
-                    key={link.path}
-                    to={link.path}
-                    className={`flex flex-col items-center justify-center px-3 py-1 rounded-lg text-[10px] font-bold transition-all duration-200 group whitespace-nowrap min-w-[80px] ${
-                    isActive(link.path)
-                        ? 'text-cyan-700 bg-cyan-50 border border-cyan-100'
-                        : 'text-gray-500 hover:text-orange-500 hover:bg-orange-50 border border-transparent'
-                    }`}
-                >
-                    <span className={`mb-0.5 transition-transform group-hover:-translate-y-0.5 ${isActive(link.path) ? 'text-cyan-600' : 'text-gray-400 group-hover:text-orange-500'}`}>
-                    {link.icon}
-                    </span>
-                    <span className="uppercase tracking-wide text-[9px] sm:text-[10px]">{link.name}</span>
-                </Link>
-                ))}
-            </div>
-        </div>
-
-        {/* MOBILE LAYOUT (Compact) */}
-        <div className="flex md:hidden justify-between items-center h-16">
-             {/* Logo Left - NO TEXT - BIGGER */}
-             <div className="flex-shrink-0 flex items-center">
-                <Link to="/" className="flex items-center gap-2">
-                    <img 
-                        src="https://i.ibb.co/VWjb9tVp/Logo-ABRAS.png" 
-                        onError={(e) => { e.currentTarget.src = "https://i.ibb.co/gFDNRMFD/Logo-ABRAS.png"; }}
-                        alt="ABRAS Travel" 
-                        className="h-10 w-auto object-contain" 
-                    />
-                </Link>
-             </div>
-
-             {/* Mobile Menu Button */}
-             <div>
-                <button
-                  onClick={() => setIsOpen(!isOpen)}
-                  className="text-gray-600 hover:text-orange-500 focus:outline-none p-2"
-                >
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    {isOpen ? (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    ) : (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                    )}
-                  </svg>
-                </button>
-             </div>
         </div>
       </div>
       
@@ -296,7 +284,7 @@ const Navbar: React.FC = () => {
                     : 'text-gray-600 hover:text-orange-500 hover:bg-orange-50 border-transparent'
                 }`}
               >
-                <span className="mr-3">{link.icon}</span>
+                <span className="mr-3 text-cyan-600">{link.icon}</span>
                 {link.name}
               </Link>
             ))}
