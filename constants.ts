@@ -67,14 +67,96 @@ export const INITIAL_PROMO_BANNERS: PromoBanner[] = [
 // --- PAQUETES (Estilo Despegar: Aéreos + Hotel Internacionales) ---
 export const INITIAL_TRIPS: Trip[] = [
   {
+    id: 'pkg-rio-buzios-combo',
+    title: 'Relax en Rio de Janeiro + Búzios',
+    location: 'Brasil',
+    price: 1550000,
+    description: 'La combinación perfecta entre la "Cidade Maravilhosa" y el encanto de Búzios. Incluye aéreos ida y vuelta, traslados entre aeropuertos y destinos, 4 noches en Rio de Janeiro (Hotel Copacabana) y 4 noches en Búzios (Pousada con encanto). Desayuno incluido en ambos destinos.',
+    images: [
+      'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1544015759-3660632906b3?q=80&w=2070&auto=format&fit=crop'
+    ],
+    isOffer: true,
+    discount: 10,
+    specialLabel: 'COMBINADO BRASIL',
+    durationLabel: '9 DÍAS / 8 NOCHES',
+    availableDates: ["Salida especial 18 de Marzo 2026", "Salidas diarias Abril 2026"],
+    includesFlight: true,
+    rating: 9.3,
+    reviewsCount: 420,
+    baseCurrency: 'ARS',
+    type: 'trip'
+  },
+  {
+    id: 'pkg-flori-canas',
+    title: 'Verano en Florianópolis - Canasvieiras',
+    location: 'Florianópolis, Brasil',
+    price: 980000,
+    description: 'Disfruta de la playa favorita de los argentinos. Incluye vuelo directo, traslados y 7 noches de alojamiento en Posada a 200 metros del mar con desayuno. Ideal para familias.',
+    images: [
+      'https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?q=80&w=1932&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1545389369-588725ae4991?q=80&w=2070&auto=format&fit=crop'
+    ],
+    isOffer: true,
+    discount: 5,
+    specialLabel: 'OFERTA VERANO',
+    durationLabel: '8 DÍAS / 7 NOCHES',
+    availableDates: ["Enero y Febrero 2026"],
+    includesFlight: true,
+    rating: 8.9,
+    reviewsCount: 1500,
+    baseCurrency: 'ARS',
+    type: 'trip'
+  },
+  {
+    id: 'pkg-natal-pipa',
+    title: 'Nordeste Mágico: Natal + Pipa',
+    location: 'Rio Grande do Norte, Brasil',
+    price: 1850000,
+    description: 'Descubre las dunas de Genipabu y los acantilados de Pipa. Paquete combinado: 3 noches en Natal y 4 noches en Pipa. Hoteles con piscina. Vuelos con equipaje incluido.',
+    images: [
+      'https://images.unsplash.com/photo-1518182170546-0766aaef3129?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1591739266746-9907b22a009c?q=80&w=2070&auto=format&fit=crop'
+    ],
+    isOffer: false,
+    durationLabel: '8 DÍAS / 7 NOCHES',
+    availableDates: ["Salidas Marzo y Abril"],
+    includesFlight: true,
+    rating: 9.4,
+    reviewsCount: 320,
+    baseCurrency: 'ARS',
+    type: 'trip'
+  },
+  {
+    id: 'pkg-porto-seguro',
+    title: 'Porto Seguro All Inclusive',
+    location: 'Bahía, Brasil',
+    price: 1650000,
+    description: 'Relax total en Bahía. Vuelos + 7 noches en Resort All Inclusive frente al mar. Comidas, bebidas y entretenimiento diario incluido. La mejor relación precio-calidad.',
+    images: [
+      'https://images.unsplash.com/photo-1596766782290-7591440786ba?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=2070&auto=format&fit=crop'
+    ],
+    isOffer: true,
+    discount: 15,
+    specialLabel: 'ALL INCLUSIVE',
+    durationLabel: '8 DÍAS / 7 NOCHES',
+    availableDates: ["Todo el año"],
+    includesFlight: true,
+    rating: 9.0,
+    reviewsCount: 850,
+    baseCurrency: 'ARS',
+    type: 'trip'
+  },
+  {
     id: 'pkg-rio-fly',
     title: 'Paquetes a Río de Janeiro',
     location: 'Río de Janeiro, Brasil',
     price: 1250000,
     description: 'Viajá a Río con todo resuelto. Incluye aéreos directos desde Buenos Aires, traslados y 7 noches en Hotel Windsor Excelsior Copacabana con desayuno. Asistencia al viajero incluida.',
     images: [
-      'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?q=80&w=2070&auto=format&fit=crop', 
-      'https://images.unsplash.com/photo-1516306580123-e6e52b1b7b5f?q=80&w=2026&auto=format&fit=crop'
+      'https://images.unsplash.com/photo-1516306580123-e6e52b1b7b5f?q=80&w=2026&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1621287959062-09418934444d?q=80&w=2070&auto=format&fit=crop'
     ],
     isOffer: true,
     discount: 15,
