@@ -26,6 +26,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
   const rating = (item as any).rating;
   const specialLabel = (item as any).specialLabel;
   const durationLabel = (item as any).durationLabel; 
+  const isOffer = (item as any).isOffer;
 
   // Determine Link URL
   let linkUrl = `/trip/${item.id}`;
@@ -74,8 +75,22 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
   };
 
   return (
-    <Link to={linkUrl} className="block group bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 border border-gray-200 overflow-hidden">
+    <Link 
+      to={linkUrl} 
+      className={`block group bg-white rounded-xl overflow-hidden transition-all duration-300 relative ${
+        isOffer 
+          ? 'border-2 border-orange-400 shadow-xl transform hover:-translate-y-1' 
+          : 'border border-gray-200 shadow-sm hover:shadow-lg'
+      }`}
+    >
       
+      {/* BRAND HEADER FOR OFFERS */}
+      {isOffer && (
+        <div className="bg-gradient-to-r from-orange-500 to-cyan-600 text-white text-[10px] font-bold text-center py-1 tracking-widest uppercase shadow-sm">
+           ★ Recomendado ABRAS Travel ★
+        </div>
+      )}
+
       {/* IMAGE SECTION */}
       <div className="relative h-48 overflow-hidden">
         <img 
@@ -124,23 +139,28 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
         )}
 
         {/* Location / Details */}
-        <p className="text-xs text-gray-500 mb-2">Saliendo desde Buenos Aires</p> {/* Static for style match or dynamic if avail */}
+        <p className="text-xs text-gray-500 mb-2 truncate flex items-center">
+            <svg className="w-3 h-3 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+            {item.location}
+        </p>
         
         {includesFlight && (
             <p className="text-xs text-gray-500 flex items-center gap-1 mb-3">
-                <span className="text-gray-400">Hotel + Vuelo</span>
+                <span className="bg-green-100 text-green-700 px-1.5 py-0.5 rounded flex items-center gap-1 font-semibold">
+                    ✈️ Hotel + Vuelo
+                </span>
             </p>
         )}
 
         {/* BADGES (Purple / Green) */}
-        <div className="space-y-1 mb-4">
+        <div className="space-y-1 mb-4 min-h-[48px]">
             {specialLabel && (
-                <div className="inline-block bg-[#4c1d95] text-white text-xs font-bold px-2 py-0.5 rounded-md">
+                <div className="inline-block bg-[#4c1d95] text-white text-xs font-bold px-2 py-0.5 rounded-md shadow-sm">
                     {specialLabel}
                 </div>
             )}
             {hasDiscount && (
-                <div className="inline-block bg-[#ccfbf1] text-[#0f766e] text-xs font-bold px-2 py-0.5 rounded-md ml-0 block w-fit">
+                <div className="bg-[#ccfbf1] text-[#0f766e] text-xs font-bold px-2 py-0.5 rounded-md w-fit mt-1 shadow-sm">
                     Ahorrás {formatPrice(savingAmount, baseCurrency)}
                 </div>
             )}
@@ -148,7 +168,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
 
         {/* PRICE SECTION */}
         <div className="pt-2 border-t border-gray-100">
-            <p className="text-[10px] text-gray-500">{priceLabel}</p>
+            <p className="text-[10px] text-gray-500 uppercase font-semibold">{priceLabel}</p>
             {hasDiscount && (
                 <p className="text-xs text-gray-400 line-through decoration-gray-400">
                     {formatPrice(originalPrice, baseCurrency)}
@@ -156,7 +176,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
             )}
             <div className="flex items-baseline gap-1">
                 <span className="text-xs text-gray-500">$</span>
-                <span className="text-2xl font-bold text-gray-900">
+                <span className={`text-2xl font-bold ${isOffer ? 'text-orange-600' : 'text-gray-900'}`}>
                     {formatPrice(displayPrice, baseCurrency).replace(/[^0-9.,]/g, '')}
                 </span>
             </div>

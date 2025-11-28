@@ -114,6 +114,9 @@ const Admin: React.FC = () => {
     else if (type === 'banner' && editingBanner) {
         if(newImages.length > 0) setEditingBanner(prev => prev ? { ...prev, image: newImages[0] } : null);
     }
+
+    // Reset input value to allow re-uploading same file
+    e.target.value = '';
   };
 
   const handleAddImageUrl = (type: 'trip' | 'rental' | 'excursion' | 'hotel' | 'installment' | 'worldcup' | 'hero' | 'banner') => {
@@ -210,7 +213,7 @@ const Admin: React.FC = () => {
             </div>
         </div>
 
-        {/* ... (Hero tab code unchanged) ... */}
+        {/* ... (Hero tab code) ... */}
         {activeTab === 'hero' && (
             <div className="space-y-8">
                 {/* Hero Slides */}
@@ -261,7 +264,6 @@ const Admin: React.FC = () => {
                  {trips.map(t=><div key={t.id} className="flex justify-between border-b py-2 items-center"><span>{t.title}</span><div><button onClick={()=>openEditTrip(t)} className="text-blue-500 mr-4">Editar</button><button onClick={()=>deleteCurrentTrip(t.id)} className="text-red-500">Eliminar</button></div></div>)}
              </div>
         )}
-        {/* ... (Other list views - rentals, hotels, etc. - remain unchanged structurally, but handlers use new forms) ... */}
         {activeTab === 'rentals' && (
              <div className="bg-white p-6 rounded-xl shadow-sm">
                  <div className="flex justify-between mb-4"><h2 className="font-bold text-xl">Alquileres</h2><button onClick={openCreateRental} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo</button></div>
@@ -298,8 +300,8 @@ const Admin: React.FC = () => {
           <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 overflow-y-auto">
               <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl p-6 max-h-[90vh] overflow-y-auto">
                   
-                  {/* ... (Hero Slides & Banners edit forms unchanged) ... */}
-                  {editingSlide && (<form onSubmit={saveCurrentSlide} className="space-y-4"> {/* ... same as before ... */ }
+                  {/* HERO SLIDE EDIT */}
+                  {editingSlide && (<form onSubmit={saveCurrentSlide} className="space-y-4"> 
                           <h2 className="text-xl font-bold mb-4 border-b pb-2">Editar Diapositiva</h2>
                           <input className="w-full border p-2 rounded" value={editingSlide.title} onChange={e=>setEditingSlide({...editingSlide, title: e.target.value})} placeholder="Título" />
                           <textarea rows={2} className="w-full border p-2 rounded" value={editingSlide.subtitle} onChange={e=>setEditingSlide({...editingSlide, subtitle: e.target.value})} placeholder="Subtítulo" />
@@ -307,11 +309,17 @@ const Admin: React.FC = () => {
                                <input className="w-full border p-2 rounded" value={editingSlide.ctaText} onChange={e=>setEditingSlide({...editingSlide, ctaText: e.target.value})} placeholder="Texto Botón" />
                                <input className="w-full border p-2 rounded" value={editingSlide.ctaLink} onChange={e=>setEditingSlide({...editingSlide, ctaLink: e.target.value})} placeholder="Link Botón" />
                           </div>
-                          <div className="bg-orange-50 p-4 rounded border border-orange-100"><input type="text" placeholder="URL Imagen" className="border p-2 rounded w-full mb-2" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('hero')} className="bg-blue-500 text-white px-3 py-1 rounded">Usar URL</button></div>
+                          <div>
+                              <label className="block text-sm font-bold mb-1">Imagen Actual</label>
+                              {editingSlide.image && <img src={editingSlide.image} alt="Preview" className="h-32 w-full object-cover rounded mb-2 border" />}
+                              <div className="bg-orange-50 p-4 rounded border border-orange-100"><input type="text" placeholder="URL Imagen" className="border p-2 rounded w-full mb-2" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('hero')} className="bg-blue-500 text-white px-3 py-1 rounded">Usar URL</button></div>
+                              <input type="file" onChange={(e)=>handleFileUpload(e, 'hero')} className="text-sm mt-2" />
+                          </div>
                           <div className="flex justify-end gap-2"><button type="button" onClick={()=>setIsModalOpen(false)} className="px-4 py-2 border rounded">Cancelar</button><button type="submit" className="px-4 py-2 bg-orange-600 text-white rounded font-bold">Guardar</button></div>
                   </form>)}
 
-                  {editingBanner && (<form onSubmit={saveCurrentBanner} className="space-y-4"> {/* ... same ... */ }
+                  {/* BANNER EDIT */}
+                  {editingBanner && (<form onSubmit={saveCurrentBanner} className="space-y-4">
                           <h2 className="text-xl font-bold mb-4 border-b pb-2 text-blue-600">Editar Banner</h2>
                           <input className="w-full border p-2 rounded" value={editingBanner.title} onChange={e=>setEditingBanner({...editingBanner, title: e.target.value})} placeholder="Título" />
                           <input className="w-full border p-2 rounded" value={editingBanner.badge} onChange={e=>setEditingBanner({...editingBanner, badge: e.target.value})} placeholder="Badge" />
@@ -320,11 +328,16 @@ const Admin: React.FC = () => {
                                <input className="w-full border p-2 rounded" value={editingBanner.ctaText} onChange={e=>setEditingBanner({...editingBanner, ctaText: e.target.value})} placeholder="Texto Botón" />
                                <input className="w-full border p-2 rounded" value={editingBanner.link} onChange={e=>setEditingBanner({...editingBanner, link: e.target.value})} placeholder="Link" />
                           </div>
-                          <div className="bg-blue-50 p-4 rounded border border-blue-100"><input type="text" placeholder="URL Imagen" className="border p-2 rounded w-full mb-2" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('banner')} className="bg-blue-500 text-white px-3 py-1 rounded">Usar URL</button></div>
+                          <div>
+                              <label className="block text-sm font-bold mb-1">Imagen Actual</label>
+                              {editingBanner.image && <img src={editingBanner.image} alt="Preview" className="h-32 w-full object-cover rounded mb-2 border" />}
+                              <div className="bg-blue-50 p-4 rounded border border-blue-100"><input type="text" placeholder="URL Imagen" className="border p-2 rounded w-full mb-2" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('banner')} className="bg-blue-500 text-white px-3 py-1 rounded">Usar URL</button></div>
+                              <input type="file" onChange={(e)=>handleFileUpload(e, 'banner')} className="text-sm mt-2" />
+                          </div>
                           <div className="flex justify-end gap-2"><button type="button" onClick={()=>setIsModalOpen(false)} className="px-4 py-2 border rounded">Cancelar</button><button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded font-bold">Guardar</button></div>
                   </form>)}
 
-                  {/* UPDATED EDIT FORMS WITH SPECIAL LABEL */}
+                  {/* TRIP EDIT */}
                   {editingTrip && (
                       <form onSubmit={saveCurrentTrip} className="space-y-4">
                            <h3 className="text-xl font-bold mb-4">Editar Viaje</h3>
@@ -353,6 +366,7 @@ const Admin: React.FC = () => {
                       </form>
                   )}
 
+                  {/* RENTAL EDIT */}
                   {editingRental && (
                       <form onSubmit={saveCurrentRental} className="space-y-4">
                           <h3 className="text-xl font-bold mb-4">Editar Alquiler</h3>
@@ -370,15 +384,36 @@ const Admin: React.FC = () => {
                                 <input type="text" value={editingRental.specialLabel || ''} onChange={e=>setEditingRental({...editingRental, specialLabel:e.target.value})} className="border p-2 w-full rounded" placeholder="Ej: Black Friday" />
                               </div>
                           </div>
-                          {/* ... rest of rental form ... */}
                           <textarea value={editingRental.description} onChange={e=>setEditingRental({...editingRental, description:e.target.value})} className="border p-2 w-full rounded" placeholder="Descripción" rows={3}></textarea>
                           <textarea value={rentalAmenitiesInput} onChange={e=>setRentalAmenitiesInput(e.target.value)} className="border p-2 w-full rounded" placeholder="Comodidades (una por línea)" rows={4}></textarea>
                           <label className="flex items-center gap-2"><input type="checkbox" checked={editingRental.isOffer || false} onChange={e=>setEditingRental({...editingRental, isOffer:e.target.checked})} /> Es Oferta Destacada</label>
-                          <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border"><div className="flex gap-2"><input type="text" placeholder="URL Imagen" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('rental')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm">URL</button></div><input type="file" multiple onChange={(e)=>handleFileUpload(e, 'rental')} className="text-sm" /></div>
+                          <div>
+                              <label className="block text-sm font-bold mb-1">Imágenes</label>
+                              <div className="flex gap-2 mb-2 overflow-x-auto">
+                                  {editingRental.images.map((img, i) => (
+                                      <div key={i} className="relative group min-w-[64px]">
+                                          <img src={img} className="w-16 h-16 object-cover rounded" />
+                                          <button 
+                                              type="button" 
+                                              onClick={() => {
+                                                  const newImages = [...editingRental.images]; 
+                                                  newImages.splice(i, 1); 
+                                                  setEditingRental({ ...editingRental, images: newImages });
+                                              }} 
+                                              className="absolute top-0 right-0 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100"
+                                          >
+                                              x
+                                          </button>
+                                      </div>
+                                  ))}
+                              </div>
+                              <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border"><div className="flex gap-2"><input type="text" placeholder="URL Imagen" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('rental')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm">URL</button></div><input type="file" multiple onChange={(e)=>handleFileUpload(e, 'rental')} className="text-sm" /></div>
+                          </div>
                           <div className="flex justify-end gap-2"><button type="button" onClick={()=>setIsModalOpen(false)} className="px-4 py-2 border rounded">Cancelar</button><button type="submit" className="bg-cyan-600 text-white px-4 py-2 rounded">Guardar</button></div>
                       </form>
                   )}
 
+                  {/* HOTEL EDIT */}
                   {editingHotel && (
                       <form onSubmit={saveCurrentHotel} className="space-y-4">
                           <h3 className="text-xl font-bold mb-4">Editar Hotel</h3>
@@ -394,15 +429,36 @@ const Admin: React.FC = () => {
                                 <input type="text" value={editingHotel.specialLabel || ''} onChange={e=>setEditingHotel({...editingHotel, specialLabel:e.target.value})} className="border p-2 w-full rounded" placeholder="Ej: Hot Sale" />
                               </div>
                           </div>
-                          {/* ... rest of hotel form ... */}
                           <textarea value={editingHotel.description} onChange={e=>setEditingHotel({...editingHotel, description:e.target.value})} className="border p-2 w-full rounded" placeholder="Descripción" rows={3}></textarea>
                           <textarea value={hotelAmenitiesInput} onChange={e=>setHotelAmenitiesInput(e.target.value)} className="border p-2 w-full rounded" placeholder="Amenidades (una por línea)" rows={4}></textarea>
                           <label className="flex items-center gap-2"><input type="checkbox" checked={editingHotel.isOffer} onChange={e=>setEditingHotel({...editingHotel, isOffer:e.target.checked})} /> Es Oferta Destacada</label>
-                          <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border"><div className="flex gap-2"><input type="text" placeholder="URL Imagen" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('hotel')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm">URL</button></div><input type="file" multiple onChange={(e)=>handleFileUpload(e, 'hotel')} className="text-sm" /></div>
+                          <div>
+                              <label className="block text-sm font-bold mb-1">Imágenes</label>
+                              <div className="flex gap-2 mb-2 overflow-x-auto">
+                                  {editingHotel.images.map((img, i) => (
+                                      <div key={i} className="relative group min-w-[64px]">
+                                          <img src={img} className="w-16 h-16 object-cover rounded" />
+                                          <button 
+                                              type="button" 
+                                              onClick={() => {
+                                                  const newImages = [...editingHotel.images]; 
+                                                  newImages.splice(i, 1); 
+                                                  setEditingHotel({ ...editingHotel, images: newImages });
+                                              }} 
+                                              className="absolute top-0 right-0 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100"
+                                          >
+                                              x
+                                          </button>
+                                      </div>
+                                  ))}
+                              </div>
+                              <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border"><div className="flex gap-2"><input type="text" placeholder="URL Imagen" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('hotel')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm">URL</button></div><input type="file" multiple onChange={(e)=>handleFileUpload(e, 'hotel')} className="text-sm" /></div>
+                          </div>
                           <div className="flex justify-end gap-2"><button type="button" onClick={()=>setIsModalOpen(false)} className="px-4 py-2 border rounded">Cancelar</button><button type="submit" className="bg-cyan-600 text-white px-4 py-2 rounded">Guardar</button></div>
                       </form>
                   )}
 
+                  {/* EXCURSION EDIT */}
                   {editingExcursion && (
                       <form onSubmit={saveCurrentExcursion} className="space-y-4">
                           <h3 className="text-xl font-bold mb-4">Editar Excursión</h3>
@@ -419,11 +475,33 @@ const Admin: React.FC = () => {
                               </div>
                           </div>
                           <textarea value={editingExcursion.description} onChange={e=>setEditingExcursion({...editingExcursion, description:e.target.value})} className="border p-2 w-full rounded" placeholder="Descripción" rows={3}></textarea>
-                          <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border"><div className="flex gap-2"><input type="text" placeholder="URL Imagen" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('excursion')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm">URL</button></div><input type="file" multiple onChange={(e)=>handleFileUpload(e, 'excursion')} className="text-sm" /></div>
+                          <div>
+                              <label className="block text-sm font-bold mb-1">Imágenes</label>
+                              <div className="flex gap-2 mb-2 overflow-x-auto">
+                                  {editingExcursion.images.map((img, i) => (
+                                      <div key={i} className="relative group min-w-[64px]">
+                                          <img src={img} className="w-16 h-16 object-cover rounded" />
+                                          <button 
+                                              type="button" 
+                                              onClick={() => {
+                                                  const newImages = [...editingExcursion.images]; 
+                                                  newImages.splice(i, 1); 
+                                                  setEditingExcursion({ ...editingExcursion, images: newImages });
+                                              }} 
+                                              className="absolute top-0 right-0 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100"
+                                          >
+                                              x
+                                          </button>
+                                      </div>
+                                  ))}
+                              </div>
+                              <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border"><div className="flex gap-2"><input type="text" placeholder="URL Imagen" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('excursion')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm">URL</button></div><input type="file" multiple onChange={(e)=>handleFileUpload(e, 'excursion')} className="text-sm" /></div>
+                          </div>
                           <div className="flex justify-end gap-2"><button type="button" onClick={()=>setIsModalOpen(false)} className="px-4 py-2 border rounded">Cancelar</button><button type="submit" className="bg-cyan-600 text-white px-4 py-2 rounded">Guardar</button></div>
                       </form>
                   )}
 
+                  {/* INSTALLMENT EDIT */}
                   {editingInstallment && (
                       <form onSubmit={saveCurrentInstallment} className="space-y-4">
                           <h2 className="text-xl font-bold mb-4 border-b pb-2 text-indigo-700">Editar ABRAS Cuotas</h2>
@@ -440,11 +518,33 @@ const Admin: React.FC = () => {
                               </div>
                           </div>
                           <textarea className="w-full border p-2 rounded" rows={3} placeholder="Descripción" value={editingInstallment.description} onChange={e=>setEditingInstallment({...editingInstallment, description: e.target.value})} />
-                          <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border"><div className="flex gap-2"><input type="text" placeholder="URL Imagen" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('installment')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm">URL</button></div><input type="file" multiple onChange={(e)=>handleFileUpload(e, 'installment')} className="text-sm" /></div>
+                          <div>
+                              <label className="block text-sm font-bold mb-1">Imágenes</label>
+                              <div className="flex gap-2 mb-2 overflow-x-auto">
+                                  {editingInstallment.images.map((img, i) => (
+                                      <div key={i} className="relative group min-w-[64px]">
+                                          <img src={img} className="w-16 h-16 object-cover rounded" />
+                                          <button 
+                                              type="button" 
+                                              onClick={() => {
+                                                  const newImages = [...editingInstallment.images]; 
+                                                  newImages.splice(i, 1); 
+                                                  setEditingInstallment({ ...editingInstallment, images: newImages });
+                                              }} 
+                                              className="absolute top-0 right-0 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100"
+                                          >
+                                              x
+                                          </button>
+                                      </div>
+                                  ))}
+                              </div>
+                              <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border"><div className="flex gap-2"><input type="text" placeholder="URL Imagen" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('installment')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm">URL</button></div><input type="file" multiple onChange={(e)=>handleFileUpload(e, 'installment')} className="text-sm" /></div>
+                          </div>
                           <div className="flex justify-end gap-2"><button type="button" onClick={()=>setIsModalOpen(false)} className="px-4 py-2 border rounded">Cancelar</button><button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded font-bold">Guardar</button></div>
                       </form>
                   )}
 
+                  {/* WORLD CUP EDIT */}
                   {editingWorldCup && (
                       <form onSubmit={saveCurrentWorldCup} className="space-y-4">
                           <h2 className="text-xl font-bold mb-4 border-b pb-2 text-blue-800">Editar Paquete Mundial</h2>
@@ -461,7 +561,28 @@ const Admin: React.FC = () => {
                               </div>
                           </div>
                           <textarea className="w-full border p-2 rounded" rows={3} placeholder="Descripción" value={editingWorldCup.description} onChange={e=>setEditingWorldCup({...editingWorldCup, description: e.target.value})} />
-                          <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border"><div className="flex gap-2"><input type="text" placeholder="URL Imagen" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('worldcup')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm">URL</button></div><input type="file" multiple onChange={(e)=>handleFileUpload(e, 'worldcup')} className="text-sm" /></div>
+                          <div>
+                              <label className="block text-sm font-bold mb-1">Imágenes</label>
+                              <div className="flex gap-2 mb-2 overflow-x-auto">
+                                  {editingWorldCup.images.map((img, i) => (
+                                      <div key={i} className="relative group min-w-[64px]">
+                                          <img src={img} className="w-16 h-16 object-cover rounded" />
+                                          <button 
+                                              type="button" 
+                                              onClick={() => {
+                                                  const newImages = [...editingWorldCup.images]; 
+                                                  newImages.splice(i, 1); 
+                                                  setEditingWorldCup({ ...editingWorldCup, images: newImages });
+                                              }} 
+                                              className="absolute top-0 right-0 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100"
+                                          >
+                                              x
+                                          </button>
+                                      </div>
+                                  ))}
+                              </div>
+                              <div className="flex flex-col gap-2 p-2 bg-gray-50 rounded border"><div className="flex gap-2"><input type="text" placeholder="URL Imagen" className="border p-2 rounded flex-1 text-sm" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} /><button type="button" onClick={()=>handleAddImageUrl('worldcup')} className="bg-blue-500 text-white px-3 py-1 rounded text-sm">URL</button></div><input type="file" multiple onChange={(e)=>handleFileUpload(e, 'worldcup')} className="text-sm" /></div>
+                          </div>
                           <div className="flex justify-end gap-2"><button type="button" onClick={()=>setIsModalOpen(false)} className="px-4 py-2 border rounded">Cancelar</button><button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded font-bold">Guardar</button></div>
                       </form>
                   )}
