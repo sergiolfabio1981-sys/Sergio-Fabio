@@ -126,7 +126,7 @@ const Navbar: React.FC = () => {
                         src="https://i.ibb.co/VWjb9tVp/Logo-ABRAS.png" 
                         onError={(e) => { e.currentTarget.src = "https://i.ibb.co/gFDNRMFD/Logo-ABRAS.png"; }}
                         alt="ABRAS Travel" 
-                        className="h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105" 
+                        className="h-[60px] w-auto object-contain transition-transform duration-300 group-hover:scale-105" 
                     />
                 </Link>
             </div>
