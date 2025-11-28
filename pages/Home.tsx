@@ -6,13 +6,16 @@ import { getTrips } from '../services/tripService';
 import { getRentals } from '../services/rentalService';
 import { getExcursions } from '../services/excursionService';
 import { getHotels } from '../services/hotelService';
+import { getInstallmentTrips } from '../services/installmentService';
+import { getWorldCupTrips } from '../services/worldCupService';
 import { getHeroSlides, getPromoBanners } from '../services/heroService';
 import TripCard from '../components/TripCard';
 
 const Home: React.FC = () => {
-  const [trips, setTrips] = useState<Trip[]>([]);
   const [combinedOffers, setCombinedOffers] = useState<ListingItem[]>([]);
+  const [allItems, setAllItems] = useState<ListingItem[]>([]); // Everything that is NOT an offer
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeCategory, setActiveCategory] = useState<string>('all');
   const [showImportToast, setShowImportToast] = useState(false);
   
   // Carousel & Banner State
@@ -25,10 +28,13 @@ const Home: React.FC = () => {
     setHeroSlides(getHeroSlides());
     setPromoBanners(getPromoBanners());
 
-    const allTrips = getTrips();
-    const allRentals = getRentals();
-    const allExcursions = getExcursions();
-    const allHotels = getHotels();
+    // Load ALL Data Sources
+    const allTrips = getTrips().map(t => ({...t, type: 'trip' as const}));
+    const allRentals = getRentals().map(r => ({...r, type: 'rental' as const}));
+    const allExcursions = getExcursions().map(e => ({...e, type: 'excursion' as const}));
+    const allHotels = getHotels().map(h => ({...h, type: 'hotel' as const}));
+    const allInstallments = getInstallmentTrips().map(i => ({...i, type: 'installment' as const}));
+    const allWorldCup = getWorldCupTrips().map(w => ({...w, type: 'worldcup' as const}));
 
     // Check if user is admin before showing simulation toast
     const isAdmin = localStorage.getItem('abras_isAdmin') === 'true';
@@ -37,21 +43,25 @@ const Home: React.FC = () => {
         setTimeout(() => setShowImportToast(false), 6000);
     }
 
-    const taggedTrips = allTrips.map(t => ({...t, type: 'trip' as const}));
-    const taggedRentals = allRentals.map(r => ({...r, type: 'rental' as const}));
-    const taggedExcursions = allExcursions.map(e => ({...e, type: 'excursion' as const}));
-    const taggedHotels = allHotels.map(h => ({...h, type: 'hotel' as const}));
-
-    setTrips(taggedTrips);
-
-    const offers = [
-        ...taggedTrips.filter(t => t.isOffer),
-        ...taggedRentals.filter(r => r.isOffer),
-        ...taggedExcursions.filter(e => e.isOffer),
-        ...taggedHotels.filter(h => h.isOffer)
+    // Merge everything
+    const fullInventory = [
+        ...allTrips,
+        ...allRentals,
+        ...allExcursions,
+        ...allHotels,
+        ...allInstallments,
+        ...allWorldCup
     ];
-    
+
+    // Split into Offers vs Regular Catalog
+    const offers = fullInventory.filter(item => item.isOffer);
+    const regular = fullInventory.filter(item => !item.isOffer); // Everything else goes to the main grid
+
+    // Randomize offers slightly for variety
     setCombinedOffers(offers.sort(() => Math.random() - 0.5));
+    
+    // Set main catalog
+    setAllItems(regular);
 
   }, []);
 
@@ -67,12 +77,32 @@ const Home: React.FC = () => {
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
 
-  const filteredTrips = trips.filter(trip => 
-    trip.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    trip.location.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter Logic for Main Grid
+  const getFilteredItems = () => {
+      return allItems.filter(item => {
+          // 1. Search Filter
+          const matchesSearch = 
+            item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.location.toLowerCase().includes(searchTerm.toLowerCase());
+          
+          // 2. Category Filter
+          const matchesCategory = activeCategory === 'all' || item.type === activeCategory;
 
-  const regularTrips = filteredTrips.filter(trip => !trip.isOffer);
+          return matchesSearch && matchesCategory;
+      });
+  };
+
+  const filteredItems = getFilteredItems();
+
+  const categories = [
+      { id: 'all', label: 'Todos' },
+      { id: 'trip', label: 'Paquetes' },
+      { id: 'hotel', label: 'Hoteles' },
+      { id: 'rental', label: 'Alquileres' },
+      { id: 'excursion', label: 'Excursiones' },
+      { id: 'installment', label: 'Cuotas' },
+      { id: 'worldcup', label: 'Mundial' },
+  ];
 
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
@@ -87,9 +117,9 @@ const Home: React.FC = () => {
                     </svg>
                 </div>
                 <div className="ml-3">
-                    <h3 className="text-sm font-medium text-gray-900">Importación Completada</h3>
+                    <h3 className="text-sm font-medium text-gray-900">Datos Actualizados</h3>
                     <div className="mt-1 text-sm text-gray-500">
-                        <p>Datos de inventario global actualizados.</p>
+                        <p>Inventario completo cargado exitosamente.</p>
                     </div>
                 </div>
                 <button onClick={() => setShowImportToast(false)} className="ml-auto text-gray-400 hover:text-gray-500">x</button>
@@ -173,13 +203,19 @@ const Home: React.FC = () => {
                   </div>
                   <input
                     type="text"
-                    placeholder="Busca tu próximo destino (ej: Cancún, Río, Miami...)"
+                    placeholder="Busca por destino, hotel o experiencia..."
                     className="w-full pl-12 pr-4 py-3 rounded-full text-gray-800 focus:outline-none bg-transparent text-lg placeholder-gray-500"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-                <button className="w-full md:w-auto mt-2 md:mt-0 bg-cyan-700 hover:bg-cyan-800 text-white font-bold py-3 px-8 rounded-full transition-all duration-200 shadow-md">
+                <button 
+                    className="w-full md:w-auto mt-2 md:mt-0 bg-cyan-700 hover:bg-cyan-800 text-white font-bold py-3 px-8 rounded-full transition-all duration-200 shadow-md"
+                    onClick={() => {
+                        const section = document.getElementById('explore-section');
+                        if(section) section.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                >
                   Buscar
                 </button>
               </div>
@@ -187,7 +223,8 @@ const Home: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 relative z-20">
-        {/* Offers Section (Mixed) */}
+        
+        {/* MIXED OFFERS SECTION */}
         {combinedOffers.length > 0 && (
           <div className="mb-20">
             <div className="flex items-center justify-between mb-8">
@@ -195,46 +232,14 @@ const Home: React.FC = () => {
                  <h2 className="text-3xl font-bold text-gray-800 mr-4">Ofertas Destacadas</h2>
                  <span className="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse shadow-lg border border-red-400">¡Tiempo Limitado!</span>
                </div>
-               <Link to="/trips" className="hidden md:block text-cyan-600 hover:text-cyan-800 font-medium">Ver todas &rarr;</Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {combinedOffers.slice(0, 6).map((item, idx) => ( // Show max 6 offers on home
-                <TripCard key={`${item.type}-${item.id}-${idx}`} trip={item} />
+                <TripCard key={`offer-${item.type}-${item.id}-${idx}`} trip={item} />
               ))}
             </div>
           </div>
         )}
-
-        {/* Categories/Features Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-            <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex items-center hover:shadow-xl transition-shadow cursor-pointer group">
-                <div className="p-4 bg-cyan-100 text-cyan-600 rounded-full mr-4 group-hover:bg-cyan-600 group-hover:text-white transition-colors">
-                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </div>
-                <div>
-                    <h3 className="font-bold text-lg text-gray-800">Destinos Internacionales</h3>
-                    <p className="text-sm text-gray-500">Europa, Caribe y América.</p>
-                </div>
-            </div>
-            <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex items-center hover:shadow-xl transition-shadow cursor-pointer group">
-                <div className="p-4 bg-orange-100 text-orange-600 rounded-full mr-4 group-hover:bg-orange-600 group-hover:text-white transition-colors">
-                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </div>
-                <div>
-                    <h3 className="font-bold text-lg text-gray-800">Mejores Precios</h3>
-                    <p className="text-sm text-gray-500">Financiación y ofertas exclusivas.</p>
-                </div>
-            </div>
-            <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex items-center hover:shadow-xl transition-shadow cursor-pointer group">
-                <div className="p-4 bg-purple-100 text-purple-600 rounded-full mr-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                </div>
-                <div>
-                    <h3 className="font-bold text-lg text-gray-800">Soporte 24/7</h3>
-                    <p className="text-sm text-gray-500">Estamos contigo en cada paso.</p>
-                </div>
-            </div>
-        </div>
 
         {/* DYNAMIC PROMOTIONAL BANNERS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
@@ -255,31 +260,48 @@ const Home: React.FC = () => {
             ))}
         </div>
 
-        {/* All Destinations (Trips Only) */}
-        <div className="mt-8">
-          <div className="flex items-end justify-between mb-8 border-b border-gray-200 pb-4">
+        {/* MAIN CATALOG SECTION (FILTERABLE) */}
+        <div className="mt-8" id="explore-section">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 border-b border-gray-200 pb-4 gap-4">
              <div>
                 <span className="text-cyan-600 font-bold uppercase tracking-wider text-sm">Explora</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mt-1">
-                    Todos los Paquetes
+                    Todas las Opciones
                 </h2>
+             </div>
+             
+             {/* Category Filter Pills */}
+             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide w-full md:w-auto">
+                 {categories.map(cat => (
+                     <button
+                        key={cat.id}
+                        onClick={() => setActiveCategory(cat.id)}
+                        className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all ${
+                            activeCategory === cat.id 
+                            ? 'bg-cyan-600 text-white shadow-md' 
+                            : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                        }`}
+                     >
+                         {cat.label}
+                     </button>
+                 ))}
              </div>
           </div>
           
-          {regularTrips.length === 0 && combinedOffers.length === 0 ? (
+          {filteredItems.length === 0 ? (
              <div className="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-100">
-                <p className="text-xl text-gray-500">No encontramos destinos con ese nombre.</p>
+                <p className="text-xl text-gray-500">No encontramos resultados para tu búsqueda.</p>
                 <button 
-                    onClick={() => setSearchTerm('')}
+                    onClick={() => { setSearchTerm(''); setActiveCategory('all'); }}
                     className="mt-4 text-cyan-600 hover:text-cyan-800 underline font-medium"
                 >
                     Ver todo el catálogo
                 </button>
              </div>
           ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {regularTrips.map(trip => (
-                  <TripCard key={trip.id} trip={trip} />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 animate-fade-in">
+                {filteredItems.map(item => (
+                  <TripCard key={`reg-${item.type}-${item.id}`} trip={item} />
                 ))}
               </div>
           )}
