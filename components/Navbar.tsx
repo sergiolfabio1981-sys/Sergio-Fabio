@@ -137,18 +137,18 @@ const Navbar: React.FC = () => {
           {/* Logo (Always Centered) */}
           <div className="z-10 mb-2 md:mb-0">
             <Link to="/" className="flex flex-col items-center group">
-              <div className="flex items-center gap-2 mb-1">
-                 {/* Updated Logo URL */}
+              <div className="flex items-center">
+                 {/* Updated Logo URL and Size with negative margin for joined look */}
                  <img 
-                    src="https://i.ibb.co/6R043qF/Logo-ABRAS.png" 
+                    src="https://i.ibb.co/gFDNRMFD/Logo-ABRAS.png" 
                     alt="ABRAS Travel Logo" 
-                    className="w-12 h-12 object-contain transform group-hover:scale-110 transition-transform duration-300" 
+                    className="w-20 h-20 object-contain transform group-hover:scale-110 transition-transform duration-300 relative z-10" 
                  />
-                <span className="font-bold text-3xl tracking-tighter text-cyan-700 whitespace-nowrap">
+                <span className="font-bold text-3xl tracking-tighter text-cyan-700 whitespace-nowrap -ml-3 pt-1">
                   ABRAS <span className="text-orange-500">Travel</span>
                 </span>
               </div>
-              <div className="h-1 w-16 bg-gradient-to-r from-orange-400 to-cyan-400 rounded-full"></div>
+              <div className="h-1 w-16 bg-gradient-to-r from-orange-400 to-cyan-400 rounded-full mt-[-2px]"></div>
             </Link>
           </div>
 
