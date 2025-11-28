@@ -19,7 +19,7 @@ const Navbar: React.FC = () => {
       name: t('nav.home'), 
       path: '/', 
       icon: (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
         </svg>
       )
@@ -28,7 +28,7 @@ const Navbar: React.FC = () => {
       name: t('nav.trips'), 
       path: '/trips',
       icon: (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       )
@@ -37,7 +37,7 @@ const Navbar: React.FC = () => {
       name: t('nav.rentals'), 
       path: '/rentals',
       icon: (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11.5 14.5a9.999 9.999 0 00-6.755 3.745l-.708.707 1.414 1.414.707-.707a8.001 8.001 0 0111.314 0l.707-.707 1.414 1.414-.707.707a9.999 9.999 0 00-3.745 6.755 6 6 0 015.743-7.743 2 2 0 012 2v2a2 2 0 01-2 2H15a2 2 0 01-2-2v-2z" />
         </svg>
       )
@@ -46,7 +46,7 @@ const Navbar: React.FC = () => {
       name: t('nav.hotels'), 
       path: '/hotels',
       icon: (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
         </svg>
       )
@@ -55,7 +55,7 @@ const Navbar: React.FC = () => {
       name: t('nav.excursions'), 
       path: '/excursions',
       icon: (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
@@ -65,7 +65,7 @@ const Navbar: React.FC = () => {
       name: 'ABRAS Cuotas', 
       path: '/installments',
       icon: (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
         </svg>
       )
@@ -74,7 +74,7 @@ const Navbar: React.FC = () => {
       name: 'Mundial 2026', 
       path: '/worldcup',
       icon: (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       )
@@ -83,7 +83,7 @@ const Navbar: React.FC = () => {
       name: 'Usuario', 
       path: '/admin',
       icon: (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       )
@@ -115,116 +115,124 @@ const Navbar: React.FC = () => {
     <nav className="bg-white shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* ONE ROW LAYOUT */}
-        <div className="flex justify-between items-center h-20">
-          
-          {/* 1. LEFT: Logo (No text) */}
-          <div className="flex-shrink-0 flex items-center">
-            <Link to="/" className="flex items-center group">
-               {/* Updated to use the new logo URL without text */}
-               <img 
-                  src="https://i.ibb.co/VWjb9tVp/Logo-ABRAS.png" 
-                  onError={(e) => {
-                      // Fallback to previous one if the new link is invalid/broken
-                      e.currentTarget.src = "https://i.ibb.co/gFDNRMFD/Logo-ABRAS.png";
-                  }}
-                  alt="ABRAS Travel" 
-                  className="h-16 w-auto object-contain transform group-hover:scale-105 transition-transform duration-300" 
-               />
-            </Link>
-          </div>
-
-          {/* 2. CENTER: Nav Links (Desktop) */}
-          <div className="hidden md:flex flex-1 justify-center items-center space-x-1 lg:space-x-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 group whitespace-nowrap ${
-                  isActive(link.path)
-                    ? 'text-cyan-700 bg-cyan-50'
-                    : 'text-gray-600 hover:text-orange-500 hover:bg-orange-50'
-                }`}
-              >
-                <span className={`transition-transform group-hover:-translate-y-0.5 ${isActive(link.path) ? 'text-cyan-600' : 'text-gray-400 group-hover:text-orange-500'}`}>
-                  {link.icon}
-                </span>
-                <span>{link.name}</span>
-              </Link>
-            ))}
-          </div>
-
-          {/* 3. RIGHT: Config & Mobile Menu */}
-          <div className="flex items-center gap-2 lg:gap-4">
-             
-             {/* Currency Dropdown (Desktop) */}
-             <div className="relative hidden md:block">
-                <button 
-                  onClick={() => { setCurrencyDropdownOpen(!currencyDropdownOpen); setLanguageDropdownOpen(false); }}
-                  className="flex items-center gap-1 text-xs font-bold text-gray-600 hover:text-cyan-700 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100 hover:border-cyan-200 transition-all min-w-[80px]"
-                >
-                  <span className="mr-1">{(currentCurr as any).flag}</span>
-                  {currentCurr.code} 
-                  <svg className={`w-3 h-3 ml-1 transition-transform ${currencyDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                </button>
+        {/* DESKTOP LAYOUT (Stacked) */}
+        <div className="hidden md:flex flex-col">
+            
+            {/* TOP ROW: Logo & Config */}
+            <div className="relative flex justify-center items-center py-6 border-b border-gray-100/50">
                 
-                {currencyDropdownOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in max-h-80 overflow-y-auto z-50">
-                    {currencies.map(c => (
-                      <button 
-                        key={c.code}
-                        onClick={() => { setCurrency(c.code as any); setCurrencyDropdownOpen(false); }}
-                        className={`w-full text-left px-4 py-2 text-sm flex items-center justify-between hover:bg-cyan-50 transition-colors ${currency === c.code ? 'text-cyan-700 font-bold bg-cyan-50' : 'text-gray-600'}`}
-                      >
-                        <div className="flex items-center">
-                            <span className="mr-2 text-lg">{(c as any).flag}</span>
-                            <span>{c.label}</span>
+                {/* Centered Logo ONLY (Text removed, Size Increased) */}
+                <Link to="/" className="flex items-center justify-center group">
+                    <img 
+                        src="https://i.ibb.co/VWjb9tVp/Logo-ABRAS.png" 
+                        onError={(e) => { e.currentTarget.src = "https://i.ibb.co/gFDNRMFD/Logo-ABRAS.png"; }}
+                        alt="ABRAS Travel" 
+                        className="h-32 md:h-40 w-auto object-contain transform group-hover:scale-105 transition-transform duration-300" 
+                    />
+                </Link>
+
+                {/* Right: Config Buttons (Absolute) */}
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-3">
+                    {/* Currency Dropdown */}
+                    <div className="relative">
+                        <button 
+                        onClick={() => { setCurrencyDropdownOpen(!currencyDropdownOpen); setLanguageDropdownOpen(false); }}
+                        className="flex items-center gap-1 text-xs font-bold text-gray-600 hover:text-cyan-700 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100 hover:border-cyan-200 transition-all min-w-[80px]"
+                        >
+                        <span className="mr-1">{(currentCurr as any).flag}</span>
+                        {currentCurr.code} 
+                        <svg className={`w-3 h-3 ml-1 transition-transform ${currencyDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                        </button>
+                        
+                        {currencyDropdownOpen && (
+                        <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in max-h-80 overflow-y-auto z-50">
+                            {currencies.map(c => (
+                            <button 
+                                key={c.code}
+                                onClick={() => { setCurrency(c.code as any); setCurrencyDropdownOpen(false); }}
+                                className={`w-full text-left px-4 py-2 text-sm flex items-center justify-between hover:bg-cyan-50 transition-colors ${currency === c.code ? 'text-cyan-700 font-bold bg-cyan-50' : 'text-gray-600'}`}
+                            >
+                                <div className="flex items-center">
+                                    <span className="mr-2 text-lg">{(c as any).flag}</span>
+                                    <span>{c.label}</span>
+                                </div>
+                                <span className="text-xs text-gray-400 font-mono">{c.code}</span>
+                            </button>
+                            ))}
                         </div>
-                        <span className="text-xs text-gray-400 font-mono">{c.code}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-             </div>
+                        )}
+                    </div>
 
-             {/* Language Dropdown (Desktop) */}
-             <div className="relative hidden md:block">
-                <button 
-                  onClick={() => { setLanguageDropdownOpen(!languageDropdownOpen); setCurrencyDropdownOpen(false); }}
-                  className="flex items-center gap-1 text-xs font-bold text-gray-600 hover:text-cyan-700 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100 hover:border-cyan-200 transition-all"
+                    {/* Language Dropdown */}
+                    <div className="relative">
+                        <button 
+                        onClick={() => { setLanguageDropdownOpen(!languageDropdownOpen); setCurrencyDropdownOpen(false); }}
+                        className="flex items-center gap-1 text-xs font-bold text-gray-600 hover:text-cyan-700 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100 hover:border-cyan-200 transition-all"
+                        >
+                        {currentLang.flag}
+                        <svg className={`w-3 h-3 ml-1 transition-transform ${languageDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                        </button>
+
+                        {languageDropdownOpen && (
+                        <div className="absolute top-full right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in z-50">
+                            {languages.map(l => (
+                                <button 
+                                key={l.code}
+                                onClick={() => { setLanguage(l.code as any); setLanguageDropdownOpen(false); }}
+                                className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-cyan-50 transition-colors ${language === l.code ? 'text-cyan-700 font-bold bg-cyan-50' : 'text-gray-600'}`}
+                                >
+                                    <span className="text-lg">{l.flag}</span>
+                                    <span>{l.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* BOTTOM ROW: Navigation Links (Vertical Stack: Icon Top, Text Bottom) */}
+            <div className="flex justify-center py-3 space-x-2 lg:space-x-6 overflow-x-auto">
+                {navLinks.map((link) => (
+                <Link
+                    key={link.path}
+                    to={link.path}
+                    className={`flex flex-col items-center justify-center px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 group whitespace-nowrap min-w-[90px] ${
+                    isActive(link.path)
+                        ? 'text-cyan-700 bg-cyan-50 border border-cyan-100'
+                        : 'text-gray-500 hover:text-orange-500 hover:bg-orange-50 border border-transparent'
+                    }`}
                 >
-                   {currentLang.flag}
-                   <svg className={`w-3 h-3 ml-1 transition-transform ${languageDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                </button>
+                    <span className={`mb-1 transition-transform group-hover:-translate-y-1 ${isActive(link.path) ? 'text-cyan-600' : 'text-gray-400 group-hover:text-orange-500'}`}>
+                    {link.icon}
+                    </span>
+                    <span className="uppercase tracking-wide text-[10px] sm:text-xs">{link.name}</span>
+                </Link>
+                ))}
+            </div>
+        </div>
 
-                {languageDropdownOpen && (
-                   <div className="absolute top-full right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in z-50">
-                      {languages.map(l => (
-                         <button 
-                           key={l.code}
-                           onClick={() => { setLanguage(l.code as any); setLanguageDropdownOpen(false); }}
-                           className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-cyan-50 transition-colors ${language === l.code ? 'text-cyan-700 font-bold bg-cyan-50' : 'text-gray-600'}`}
-                         >
-                            <span className="text-lg">{l.flag}</span>
-                            <span>{l.label}</span>
-                         </button>
-                      ))}
-                   </div>
-                )}
+        {/* MOBILE LAYOUT (Compact) */}
+        <div className="flex md:hidden justify-between items-center h-24">
+             {/* Logo Left - NO TEXT - BIGGER */}
+             <div className="flex-shrink-0 flex items-center">
+                <Link to="/" className="flex items-center gap-2">
+                    <img 
+                        src="https://i.ibb.co/VWjb9tVp/Logo-ABRAS.png" 
+                        onError={(e) => { e.currentTarget.src = "https://i.ibb.co/gFDNRMFD/Logo-ABRAS.png"; }}
+                        alt="ABRAS Travel" 
+                        className="h-20 w-auto object-contain" 
+                    />
+                </Link>
              </div>
-
-             {/* Invisible backdrop to close dropdowns */}
-             {(currencyDropdownOpen || languageDropdownOpen) && (
-               <div className="fixed inset-0 z-[-1]" onClick={() => { setCurrencyDropdownOpen(false); setLanguageDropdownOpen(false); }}></div>
-             )}
 
              {/* Mobile Menu Button */}
-             <div className="md:hidden">
+             <div>
                 <button
                   onClick={() => setIsOpen(!isOpen)}
                   className="text-gray-600 hover:text-orange-500 focus:outline-none p-2"
                 >
-                  <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     {isOpen ? (
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     ) : (
@@ -233,13 +241,12 @@ const Navbar: React.FC = () => {
                   </svg>
                 </button>
              </div>
-          </div>
         </div>
       </div>
       
-      {/* Mobile menu (Drawer style) */}
+      {/* Mobile Drawer */}
       {isOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100 shadow-inner animate-fade-in max-h-[80vh] overflow-y-auto absolute w-full top-20 left-0 z-40">
+        <div className="md:hidden bg-white border-t border-gray-100 shadow-inner animate-fade-in max-h-[80vh] overflow-y-auto absolute w-full top-24 left-0 z-40">
           
           {/* Config Section for Mobile */}
           <div className="p-4 bg-gray-50 border-b border-gray-200">
@@ -295,6 +302,11 @@ const Navbar: React.FC = () => {
             ))}
           </div>
         </div>
+      )}
+
+      {/* Invisible backdrop to close dropdowns */}
+      {(currencyDropdownOpen || languageDropdownOpen) && (
+        <div className="fixed inset-0 z-[-1]" onClick={() => { setCurrencyDropdownOpen(false); setLanguageDropdownOpen(false); }}></div>
       )}
     </nav>
   );
