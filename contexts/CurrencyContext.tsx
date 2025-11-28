@@ -25,7 +25,7 @@ const EXCHANGE_RATES = {
 const CurrencyContext = createContext<CurrencyContextProps | undefined>(undefined);
 
 export const CurrencyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // Configuración por defecto: USD
+  // Configuración por defecto: USD (Solicitado por usuario)
   const [currency, setCurrencyState] = useState<Currency>('USD');
 
   useEffect(() => {

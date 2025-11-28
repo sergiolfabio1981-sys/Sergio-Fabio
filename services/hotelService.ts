@@ -2,7 +2,7 @@
 import { Hotel } from '../types';
 import { INITIAL_HOTELS } from '../constants';
 
-const HOTEL_STORAGE_KEY = 'abras_travel_hotels_v11';
+const HOTEL_STORAGE_KEY = 'abras_travel_hotels_v12';
 
 export const getHotels = (): Hotel[] => {
   const stored = localStorage.getItem(HOTEL_STORAGE_KEY);
@@ -51,5 +51,6 @@ export const createEmptyHotel = (): Hotel => ({
   lng: undefined,
   type: 'hotel',
   discount: 0,
-  specialLabel: ''
+  specialLabel: '',
+  baseCurrency: 'USD'
 });

@@ -344,7 +344,7 @@ const Admin: React.FC = () => {
                            <input value={editingTrip.title} onChange={e=>setEditingTrip({...editingTrip, title:e.target.value})} className="border p-2 w-full rounded" placeholder="Título" />
                            <input value={editingTrip.location} onChange={e=>setEditingTrip({...editingTrip, location:e.target.value})} className="border p-2 w-full rounded" placeholder="Ubicación" />
                            <div className="grid grid-cols-3 gap-4">
-                                <input type="number" value={editingTrip.price} onChange={e=>setEditingTrip({...editingTrip, price:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Precio" />
+                                <input type="number" value={editingTrip.price} onChange={e=>setEditingTrip({...editingTrip, price:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Precio (USD)" />
                                 <div>
                                     <label className="text-xs font-bold text-red-500">Descuento (%)</label>
                                     <input type="number" value={editingTrip.discount || 0} onChange={e=>setEditingTrip({...editingTrip, discount:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="0" />
@@ -373,7 +373,7 @@ const Admin: React.FC = () => {
                           <input value={editingRental.title} onChange={e=>setEditingRental({...editingRental, title:e.target.value})} className="border p-2 w-full rounded" placeholder="Título" />
                           <input value={editingRental.location} onChange={e=>setEditingRental({...editingRental, location:e.target.value})} className="border p-2 w-full rounded" placeholder="Ubicación" />
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                              <input type="number" value={editingRental.pricePerNight} onChange={e=>setEditingRental({...editingRental, pricePerNight:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Precio x Noche" />
+                              <input type="number" value={editingRental.pricePerNight} onChange={e=>setEditingRental({...editingRental, pricePerNight:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Precio x Noche (USD)" />
                               <input type="number" value={editingRental.bedrooms} onChange={e=>setEditingRental({...editingRental, bedrooms:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Habitaciones" />
                               <div>
                                 <label className="text-xs font-bold text-red-500">Descuento (%)</label>
@@ -419,7 +419,7 @@ const Admin: React.FC = () => {
                           <h3 className="text-xl font-bold mb-4">Editar Hotel</h3>
                           <input value={editingHotel.title} onChange={e=>setEditingHotel({...editingHotel, title:e.target.value})} className="border p-2 w-full rounded" placeholder="Título" />
                           <div className="grid grid-cols-3 gap-4">
-                              <input type="number" value={editingHotel.pricePerNight} onChange={e=>setEditingHotel({...editingHotel, pricePerNight:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Precio x Noche" />
+                              <input type="number" value={editingHotel.pricePerNight} onChange={e=>setEditingHotel({...editingHotel, pricePerNight:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Precio x Noche (USD)" />
                               <div>
                                 <label className="text-xs font-bold text-red-500">Descuento (%)</label>
                                 <input type="number" value={editingHotel.discount || 0} onChange={e=>setEditingHotel({...editingHotel, discount:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="0" />
@@ -464,7 +464,7 @@ const Admin: React.FC = () => {
                           <h3 className="text-xl font-bold mb-4">Editar Excursión</h3>
                           <input value={editingExcursion.title} onChange={e=>setEditingExcursion({...editingExcursion, title:e.target.value})} className="border p-2 w-full rounded" placeholder="Título" />
                           <div className="grid grid-cols-3 gap-4">
-                              <input type="number" value={editingExcursion.price} onChange={e=>setEditingExcursion({...editingExcursion, price:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Precio" />
+                              <input type="number" value={editingExcursion.price} onChange={e=>setEditingExcursion({...editingExcursion, price:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="Precio (USD)" />
                               <div>
                                 <label className="text-xs font-bold text-red-500">Descuento (%)</label>
                                 <input type="number" value={editingExcursion.discount || 0} onChange={e=>setEditingExcursion({...editingExcursion, discount:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="0" />
@@ -507,7 +507,7 @@ const Admin: React.FC = () => {
                           <h2 className="text-xl font-bold mb-4 border-b pb-2 text-indigo-700">Editar ABRAS Cuotas</h2>
                           <input className="border p-2 rounded w-full" placeholder="Título" value={editingInstallment.title} onChange={e=>setEditingInstallment({...editingInstallment, title: e.target.value})} />
                           <div className="grid grid-cols-3 gap-4">
-                              <input type="number" className="w-full border p-2 rounded" value={editingInstallment.totalPrice} onChange={e=>setEditingInstallment({...editingInstallment, totalPrice: Number(e.target.value)})} placeholder="Precio Total" />
+                              <input type="number" className="w-full border p-2 rounded" value={editingInstallment.totalPrice} onChange={e=>setEditingInstallment({...editingInstallment, totalPrice: Number(e.target.value)})} placeholder="Precio Total (USD)" />
                               <div>
                                 <label className="text-xs font-bold text-red-500">Descuento (%)</label>
                                 <input type="number" value={editingInstallment.discount || 0} onChange={e=>setEditingInstallment({...editingInstallment, discount:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="0" />
@@ -550,7 +550,7 @@ const Admin: React.FC = () => {
                           <h2 className="text-xl font-bold mb-4 border-b pb-2 text-blue-800">Editar Paquete Mundial</h2>
                           <input className="border p-2 rounded w-full" placeholder="Título" value={editingWorldCup.title} onChange={e=>setEditingWorldCup({...editingWorldCup, title: e.target.value})} />
                           <div className="grid grid-cols-3 gap-4">
-                              <input type="number" className="w-full border p-2 rounded" value={editingWorldCup.totalPrice} onChange={e=>setEditingWorldCup({...editingWorldCup, totalPrice: Number(e.target.value)})} placeholder="Precio Total" />
+                              <input type="number" className="w-full border p-2 rounded" value={editingWorldCup.totalPrice} onChange={e=>setEditingWorldCup({...editingWorldCup, totalPrice: Number(e.target.value)})} placeholder="Precio Total (USD)" />
                               <div>
                                 <label className="text-xs font-bold text-red-500">Descuento (%)</label>
                                 <input type="number" value={editingWorldCup.discount || 0} onChange={e=>setEditingWorldCup({...editingWorldCup, discount:Number(e.target.value)})} className="border p-2 w-full rounded" placeholder="0" />
