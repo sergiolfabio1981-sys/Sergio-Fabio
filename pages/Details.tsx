@@ -33,13 +33,6 @@ const Details: React.FC = () => {
   // Booking Logic
   const [selectedDate, setSelectedDate] = useState('');
   const [guests, setGuests] = useState(2);
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-  const [passengers, setPassengers] = useState<PassengerData[]>([]);
-  
-  // Payment
-  const [bookingCode, setBookingCode] = useState('');
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [isPaid, setIsPaid] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   const { t } = useLanguage();
@@ -59,22 +52,8 @@ const Details: React.FC = () => {
 
   const handleInitiateBooking = () => {
     if (!selectedDate) return;
-    const initialData = Array(guests).fill(null).map(() => ({ fullName: '', dni: '', birthDate: '', address: '', city: '', province: '', nationality: '', email: '' }));
-    setPassengers(initialData);
-    setIsBookingModalOpen(true);
-  };
-
-  const handlePassengerChange = (index: number, field: keyof PassengerData, value: string) => {
-    const newPassengers = [...passengers];
-    newPassengers[index] = { ...newPassengers[index], [field]: value };
-    setPassengers(newPassengers);
-  };
-
-  const handleDataSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setBookingCode('BR-' + Math.floor(Math.random()*1000000).toString(16).toUpperCase());
-    setIsBookingModalOpen(false);
-    setIsPaymentModalOpen(true);
+    // Redirección directa a WhatsApp como solicitado
+    window.open("https://wa.me/message/TVC7DUGWGV27G1", "_blank");
   };
 
   const handleSharePdf = async () => {
@@ -251,79 +230,6 @@ const Details: React.FC = () => {
               </div>
           </div>
       </div>
-
-      {/* Booking Modal (Simplified) */}
-      {isBookingModalOpen && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in">
-                  <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-                      <h2 className="text-2xl font-bold text-gray-800">Datos de los Pasajeros</h2>
-                      <button onClick={()=>setIsBookingModalOpen(false)} className="text-gray-400 hover:text-gray-600">✕</button>
-                  </div>
-                  <form onSubmit={handleDataSubmit} className="p-6 space-y-6">
-                      {passengers.map((p,i)=>(
-                          <div key={i} className="bg-gray-50 p-5 rounded-xl border border-gray-200">
-                              <h4 className="font-bold mb-3 text-cyan-700 flex items-center">
-                                  <span className="w-6 h-6 bg-cyan-100 rounded-full flex items-center justify-center text-xs mr-2">{i+1}</span>
-                                  Pasajero {i+1}
-                              </h4>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <input placeholder="Nombre y Apellido" className="border border-gray-300 p-3 w-full rounded-lg focus:ring-2 focus:ring-cyan-500 outline-none" required value={p.fullName} onChange={e=>handlePassengerChange(i,'fullName',e.target.value)} />
-                                  <input placeholder="DNI / Pasaporte" className="border border-gray-300 p-3 w-full rounded-lg focus:ring-2 focus:ring-cyan-500 outline-none" required value={p.dni} onChange={e=>handlePassengerChange(i,'dni',e.target.value)} />
-                              </div>
-                              {i===0 && (
-                                  <input placeholder="Email de Contacto" type="email" className="border border-gray-300 p-3 w-full rounded-lg mt-4 focus:ring-2 focus:ring-cyan-500 outline-none" required value={p.email} onChange={e=>handlePassengerChange(i,'email',e.target.value)} />
-                              )}
-                          </div>
-                      ))}
-                      <div className="flex gap-4 pt-2">
-                          <button type="button" onClick={()=>setIsBookingModalOpen(false)} className="flex-1 border border-gray-300 py-3 rounded-xl font-medium text-gray-600 hover:bg-gray-50 transition-colors">Cancelar</button>
-                          <button type="submit" className="flex-1 bg-cyan-600 text-white py-3 rounded-xl font-bold hover:bg-cyan-700 transition-colors shadow-lg">Confirmar Reserva</button>
-                      </div>
-                  </form>
-              </div>
-          </div>
-      )}
-
-      {/* Payment Modal */}
-      {isPaymentModalOpen && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 text-center relative overflow-hidden animate-fade-in">
-                  {!isPaid ? (
-                      <>
-                        <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
-                        </div>
-                        <h2 className="text-2xl font-bold mb-2 text-gray-800">Confirmar Pago</h2>
-                        <p className="text-gray-500 mb-6">Abona la seña para asegurar tu lugar.</p>
-                        
-                        <div className="bg-gray-50 p-4 rounded-xl mb-6">
-                            <p className="text-xs text-gray-500 uppercase font-bold">Total a pagar ahora</p>
-                            <p className="text-4xl font-bold text-cyan-600">{formatPrice(bookingFee, baseCurrency)}</p>
-                        </div>
-
-                        <button onClick={()=>{window.open("https://link.mercadopago.com.ar/lumat2"); setIsPaid(true);}} className="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold mb-3 hover:bg-blue-700 transition-colors shadow-lg">
-                            Pagar con MercadoPago
-                        </button>
-                        <button onClick={()=>setIsPaymentModalOpen(false)} className="text-gray-400 text-sm hover:text-gray-600 font-medium">Cancelar</button>
-                      </>
-                  ) : (
-                      <>
-                        <div className="w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-500/30">
-                            <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-                        </div>
-                        <h2 className="text-2xl font-bold mb-2 text-gray-800">¡Reserva Exitosa!</h2>
-                        <div className="bg-green-50 border border-green-100 rounded-lg p-3 mb-6 inline-block">
-                            <p className="text-green-800 font-mono font-bold tracking-wider">{bookingCode}</p>
-                        </div>
-                        <p className="mb-6 text-gray-600 text-sm">Hemos enviado los detalles a tu correo electrónico. ¡Prepárate para viajar!</p>
-                        <button onClick={()=>setIsPaymentModalOpen(false)} className="text-cyan-600 font-bold hover:underline">Cerrar ventana</button>
-                      </>
-                  )}
-              </div>
-          </div>
-      )}
-
     </div>
   );
 };

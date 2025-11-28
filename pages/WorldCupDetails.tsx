@@ -20,7 +20,7 @@ const WorldCupDetails: React.FC = () => {
   const [passengers, setPassengers] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
-  // Modal State
+  // Modal State (Kept for compatibility, though primary action now redirects)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [titularName, setTitularName] = useState('');
   const [titularEmail, setTitularEmail] = useState('');
@@ -93,6 +93,10 @@ const WorldCupDetails: React.FC = () => {
   const shareText = `Mira este paquete al MUNDIAL 2026 en ABRAS Travel: ${trip?.title}`;
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
   const emailUrl = `mailto:?subject=${encodeURIComponent(trip?.title || '')}&body=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`;
+
+  const handleWhatsAppRedirect = () => {
+      window.open("https://wa.me/message/TVC7DUGWGV27G1", "_blank");
+  };
 
   if (!trip) return <div className="p-10 text-center">Cargando...</div>;
 
@@ -215,7 +219,7 @@ const WorldCupDetails: React.FC = () => {
                     </p>
 
                     <button 
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={handleWhatsAppRedirect}
                         className="w-full bg-blue-600 text-white font-bold py-4 rounded-lg hover:bg-blue-700 shadow-lg shadow-blue-500/30"
                     >
                         Pagar 1ra Cuota y Reservar
@@ -224,6 +228,7 @@ const WorldCupDetails: React.FC = () => {
             </div>
         </div>
 
+        {/* Modal Logic kept in component structure but unused by primary CTA */}
         {isModalOpen && (
             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
                 <form onSubmit={handleBook} className="bg-white p-6 rounded-xl w-full max-w-md">

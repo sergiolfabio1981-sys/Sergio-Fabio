@@ -21,16 +21,6 @@ const ExcursionDetails: React.FC = () => {
   const [passengers, setPassengers] = useState(2);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
-  // Booking State
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [titularName, setTitularName] = useState('');
-  const [titularEmail, setTitularEmail] = useState('');
-  
-  // Payment State
-  const [bookingCode, setBookingCode] = useState('');
-  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
-  const [isPaid, setIsPaid] = useState(false);
-
   // Sharing State
   const [isSharingMenuOpen, setIsSharingMenuOpen] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
@@ -56,35 +46,9 @@ const ExcursionDetails: React.FC = () => {
   const totalPrice = excursion ? excursion.price * passengers : 0;
   const bookingFee = totalPrice * 0.10;
 
-  const generateBookingCode = () => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = 'EXC-';
-    for (let i = 0; i < 5; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return code;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      const code = generateBookingCode();
-      setBookingCode(code);
-      console.log(`📧 Enviando reserva excursión ${code} a ${ADMIN_EMAIL}`);
-      setIsModalOpen(false);
-      setIsPaymentOpen(true);
-  };
-
-  const handlePay = () => {
-      window.open("https://link.mercadopago.com.ar/lumat2", "_blank");
-      setIsPaid(true);
-  };
-
-  const generateVoucherPDF = () => {
-    if (!excursion) return;
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    doc.text(`Voucher Excursión: ${bookingCode}`, 20, 20);
-    doc.save(`Voucher-${bookingCode}.pdf`);
+  const handleSubmit = () => {
+      // Direct redirect to WhatsApp
+      window.open("https://wa.me/message/TVC7DUGWGV27G1", "_blank");
   };
 
   // --- SHARE LOGIC ---
@@ -221,7 +185,7 @@ const ExcursionDetails: React.FC = () => {
                   </div>
 
                   <button 
-                    onClick={() => setIsModalOpen(true)} 
+                    onClick={handleSubmit} 
                     disabled={!selectedDate}
                     className="w-full bg-cyan-600 text-white font-bold py-3 rounded hover:bg-cyan-700 disabled:bg-gray-300"
                   >
@@ -230,42 +194,6 @@ const ExcursionDetails: React.FC = () => {
               </div>
           </div>
       </div>
-
-      {isModalOpen && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-              <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl w-full max-w-md">
-                  <h3 className="text-xl font-bold mb-4">Datos de Contacto</h3>
-                  <input type="text" placeholder="Nombre Completo" required value={titularName} onChange={e=>setTitularName(e.target.value)} className="w-full border p-2 rounded mb-3" />
-                  <input type="email" placeholder="Email" required value={titularEmail} onChange={e=>setTitularEmail(e.target.value)} className="w-full border p-2 rounded mb-3" />
-                  <div className="flex gap-3">
-                      <button type="button" onClick={()=>setIsModalOpen(false)} className="flex-1 border p-2 rounded">Cancelar</button>
-                      <button type="submit" className="flex-1 bg-cyan-600 text-white p-2 rounded">Confirmar</button>
-                  </div>
-              </form>
-          </div>
-      )}
-
-      {isPaymentOpen && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-              <div className="bg-white p-6 rounded-xl w-full max-w-md text-center">
-                  {!isPaid ? (
-                      <>
-                        <h3 className="text-xl font-bold mb-2">Pago de Reserva</h3>
-                        <p className="text-3xl font-bold text-cyan-600 mb-4">{formatPrice(bookingFee)}</p>
-                        <button onClick={handlePay} className="w-full bg-cyan-600 text-white font-bold py-3 rounded mb-3">Pagar Ahora</button>
-                        <button onClick={()=>setIsPaymentOpen(false)} className="text-gray-500 text-sm">Cancelar</button>
-                      </>
-                  ) : (
-                      <>
-                        <h3 className="text-xl font-bold text-green-600 mb-2">¡Confirmado!</h3>
-                        <p className="mb-4">Tu voucher está listo.</p>
-                        <button onClick={generateVoucherPDF} className="w-full bg-gray-800 text-white font-bold py-3 rounded mb-3">Descargar PDF</button>
-                        <button onClick={()=>{setIsPaymentOpen(false); setIsPaid(false);}} className="text-gray-500 text-sm">Cerrar</button>
-                      </>
-                  )}
-              </div>
-          </div>
-      )}
     </div>
   );
 };

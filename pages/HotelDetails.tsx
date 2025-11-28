@@ -14,13 +14,6 @@ declare global {
   }
 }
 
-interface PassengerData {
-  fullName: string;
-  dni: string;
-  email: string;
-  phone: string;
-}
-
 const HotelDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [hotel, setHotel] = useState<Hotel | undefined>(undefined);
@@ -28,16 +21,6 @@ const HotelDetails: React.FC = () => {
   const [checkOut, setCheckOut] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
-  // Booking State
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-  const [passenger, setPassenger] = useState<PassengerData>({ fullName: '', dni: '', email: '', phone: '' });
-  
-  // Payment State
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [bookingCode, setBookingCode] = useState('');
-  const [availableSpots, setAvailableSpots] = useState(8); // Start higher for hotels
-  const [isPaid, setIsPaid] = useState(false);
-
   // Sharing State
   const [isSharingMenuOpen, setIsSharingMenuOpen] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
@@ -73,60 +56,13 @@ const HotelDetails: React.FC = () => {
   const totalPrice = hotel ? hotel.pricePerNight * nights : 0;
   const bookingFee = totalPrice * 0.10; // 10% reserve
 
-  const generateBookingCode = () => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = 'HTL-';
-    for (let i = 0; i < 5; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return code;
-  };
-
   const handleInitiateBooking = () => {
     if (!nights || nights <= 0) {
         alert("Por favor seleccione fechas válidas (mínimo 1 noche)");
         return;
     }
-    setIsBookingModalOpen(true);
-  };
-
-  const handlePassengerChange = (field: keyof PassengerData, value: string) => {
-    setPassenger(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleDataSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newCode = generateBookingCode();
-    setBookingCode(newCode);
-    
-    console.log(`📧 Enviando reserva hotel ${newCode} a ${ADMIN_EMAIL}...`);
-    setIsBookingModalOpen(false);
-    setIsPaymentModalOpen(true);
-    
-    // Urgency countdown logic
-    let currentSpots = 8;
-    setAvailableSpots(currentSpots);
-    const interval = setInterval(() => {
-        if (currentSpots > 2) {
-            currentSpots -= 1;
-            setAvailableSpots(currentSpots);
-        } else {
-            clearInterval(interval);
-        }
-    }, 3500);
-  };
-
-  const handlePay = () => {
-      window.open("https://link.mercadopago.com.ar/lumat2", "_blank");
-      setIsPaid(true);
-  };
-
-  const generateVoucherPDF = () => {
-    if (!hotel) return;
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    doc.text(`Voucher Hotel: ${bookingCode}`, 20, 20);
-    doc.save(`Hotel-${bookingCode}.pdf`);
+    // Direct redirect to WhatsApp
+    window.open("https://wa.me/message/TVC7DUGWGV27G1", "_blank");
   };
 
   // --- SHARE LOGIC ---
@@ -365,107 +301,6 @@ const HotelDetails: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Passenger Modal */}
-      {isBookingModalOpen && (
-        <div className="fixed inset-0 z-40 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-fade-in">
-            <div className="p-6 bg-blue-700 text-white flex justify-between items-center">
-                <div>
-                    <h2 className="text-xl font-bold">Datos del Titular</h2>
-                    <p className="text-blue-200 text-xs">A nombre de quién quedará la reserva</p>
-                </div>
-                <button onClick={() => setIsBookingModalOpen(false)} className="bg-blue-800/50 p-2 rounded-full hover:bg-blue-800"><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
-            </div>
-            <form onSubmit={handleDataSubmit} className="p-8 space-y-5">
-                <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Nombre Completo</label>
-                    <input type="text" required value={passenger.fullName} onChange={(e) => handlePassengerChange('fullName', e.target.value)} className="w-full border-b-2 border-gray-200 focus:border-blue-500 outline-none py-2 transition-colors" placeholder="Ej: Juan Pérez" />
-                </div>
-                <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">DNI / Pasaporte</label>
-                    <input type="text" required value={passenger.dni} onChange={(e) => handlePassengerChange('dni', e.target.value)} className="w-full border-b-2 border-gray-200 focus:border-blue-500 outline-none py-2 transition-colors" placeholder="Número de documento" />
-                </div>
-                <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Email</label>
-                    <input type="email" required value={passenger.email} onChange={(e) => handlePassengerChange('email', e.target.value)} className="w-full border-b-2 border-gray-200 focus:border-blue-500 outline-none py-2 transition-colors" placeholder="nombre@ejemplo.com" />
-                </div>
-                <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Teléfono</label>
-                    <input type="tel" required value={passenger.phone} onChange={(e) => handlePassengerChange('phone', e.target.value)} className="w-full border-b-2 border-gray-200 focus:border-blue-500 outline-none py-2 transition-colors" placeholder="+54 9 11..." />
-                </div>
-                <button type="submit" className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 mt-4 shadow-lg shadow-blue-500/30">
-                    Ir a Pagar
-                </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Payment / Urgency Modal */}
-      {isPaymentModalOpen && (
-         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md relative overflow-hidden">
-                {!isPaid ? (
-                    <>
-                        <div className="bg-gradient-to-r from-orange-500 to-red-500 p-6 text-center text-white">
-                            <h3 className="text-2xl font-bold mb-1">¡Último Paso!</h3>
-                            <p className="text-orange-100 text-sm opacity-90">Confirma tu reserva antes de que se agote.</p>
-                        </div>
-
-                        <div className="p-8">
-                            <div className="text-center mb-8">
-                                <p className="text-gray-500 text-sm uppercase font-bold tracking-wider">Monto a pagar ahora</p>
-                                <p className="text-5xl font-bold text-gray-800 my-2">{formatPrice(bookingFee)}</p>
-                                <p className="text-xs text-gray-400">Restante {formatPrice(totalPrice - bookingFee)} en el hotel</p>
-                            </div>
-
-                            {/* Urgency Counter */}
-                            <div className="bg-red-50 border border-red-100 rounded-xl p-4 mb-8 flex items-center justify-between animate-pulse">
-                                <div className="flex items-center text-red-600 font-bold">
-                                    <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                    Alta Demanda
-                                </div>
-                                <span className="text-gray-700 text-sm">
-                                    Quedan <strong className="text-red-600 text-lg">{availableSpots}</strong> habitaciones
-                                </span>
-                            </div>
-
-                            <button onClick={handlePay} className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/40 mb-4">
-                                Pagar con MercadoPago
-                            </button>
-                            <button onClick={() => setIsPaymentModalOpen(false)} className="w-full text-gray-400 text-sm hover:text-gray-600">Cancelar</button>
-                        </div>
-                    </>
-                ) : (
-                    <div className="bg-white">
-                        <div className="bg-green-500 p-8 text-center text-white">
-                            <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
-                                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-                            </div>
-                            <h3 className="text-3xl font-bold">¡Reserva Exitosa!</h3>
-                            <p className="mt-2 opacity-90 font-mono bg-green-600 inline-block px-3 py-1 rounded">{bookingCode}</p>
-                        </div>
-
-                        <div className="p-8 text-center">
-                            <p className="text-gray-600 mb-8 leading-relaxed">
-                                Tu habitación ha sido bloqueada correctamente. Te esperamos para disfrutar de tu estadía.
-                            </p>
-
-                            <button onClick={generateVoucherPDF} className="w-full bg-gray-800 text-white font-bold py-4 rounded-xl hover:bg-gray-900 transition-all flex items-center justify-center gap-2 mb-4">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                                Descargar Voucher PDF
-                            </button>
-
-                            <button onClick={() => { setIsPaymentModalOpen(false); setIsPaid(false); }} className="text-blue-600 font-medium hover:underline">
-                                Cerrar ventana
-                            </button>
-                        </div>
-                    </div>
-                )}
-            </div>
-         </div>
-      )}
     </div>
   );
 };
