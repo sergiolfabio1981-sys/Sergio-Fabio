@@ -49,7 +49,11 @@ const HotelDetails: React.FC = () => {
         alert("Por favor seleccione fechas válidas (mínimo 1 noche)");
         return;
     }
-    window.open("https://wa.me/message/TVC7DUGWGV27G1", "_blank");
+    
+    const message = `Hola ABRAS Travel, quiero reservar el hotel: *${hotel?.title}*.\n\n📅 Fechas: ${checkIn} al ${checkOut}\n🔗 Link: ${window.location.href}`;
+    const whatsappUrl = `https://wa.me/5491140632644?text=${encodeURIComponent(message)}`;
+    
+    window.open(whatsappUrl, "_blank");
   };
 
   const handleSharePdf = async () => {

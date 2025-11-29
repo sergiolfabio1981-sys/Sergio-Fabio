@@ -55,7 +55,9 @@ const InstallmentDetails: React.FC = () => {
   const emailUrl = `mailto:?subject=${encodeURIComponent(trip?.title || '')}&body=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`;
 
   const handleWhatsAppRedirect = () => {
-      window.open("https://wa.me/message/TVC7DUGWGV27G1", "_blank");
+      const message = `Hola ABRAS Travel, quiero comenzar a pagar el plan cuotas: *${trip?.title}*.\n\n🔗 Link: ${window.location.href}`;
+      const whatsappUrl = `https://wa.me/5491140632644?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, "_blank");
   };
 
   if (!trip) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div></div>;

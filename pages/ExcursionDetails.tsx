@@ -35,7 +35,10 @@ const ExcursionDetails: React.FC = () => {
   const bookingFee = totalPrice * 0.10;
 
   const handleSubmit = () => {
-      window.open("https://wa.me/message/TVC7DUGWGV27G1", "_blank");
+      if(!excursion) return;
+      const message = `Hola ABRAS Travel, quiero reservar la excursión: *${excursion.title}*.\n\n📅 Fecha: ${selectedDate}\n👥 Personas: ${passengers}\n🔗 Link: ${window.location.href}`;
+      const whatsappUrl = `https://wa.me/5491140632644?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, "_blank");
   };
 
   const handleSharePdf = async () => {

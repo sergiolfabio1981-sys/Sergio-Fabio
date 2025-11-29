@@ -31,7 +31,11 @@ const GroupDetails: React.FC = () => {
 
   const handleInitiateBooking = () => {
     if (!selectedDate) return;
-    window.open("https://wa.me/message/TVC7DUGWGV27G1", "_blank");
+    
+    const message = `Hola ABRAS Travel, quiero reservar la salida grupal: *${trip.title}*.\n\n📅 Salida: ${selectedDate}\n👥 Pasajeros: ${guests}\n🔗 Link: ${window.location.href}`;
+    const whatsappUrl = `https://wa.me/5491140632644?text=${encodeURIComponent(message)}`;
+    
+    window.open(whatsappUrl, "_blank");
   };
 
   const handleSharePdf = async () => {

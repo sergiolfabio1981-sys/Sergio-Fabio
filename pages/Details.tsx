@@ -53,8 +53,12 @@ const Details: React.FC = () => {
 
   const handleInitiateBooking = () => {
     if (!selectedDate) return;
-    // Redirección directa a WhatsApp como solicitado
-    window.open("https://wa.me/message/TVC7DUGWGV27G1", "_blank");
+    
+    // Construct message with Link and Details
+    const message = `Hola ABRAS Travel, quiero reservar el paquete: *${trip.title}*.\n\n📅 Fecha: ${selectedDate}\n👥 Pasajeros: ${guests}\n🔗 Link: ${window.location.href}`;
+    const whatsappUrl = `https://wa.me/5491140632644?text=${encodeURIComponent(message)}`;
+    
+    window.open(whatsappUrl, "_blank");
   };
 
   const handleSharePdf = async () => {
