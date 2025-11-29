@@ -6,9 +6,28 @@ import { supabase } from './supabase';
 export const getHeroSlides = async (): Promise<HeroSlide[]> => {
   try {
     const { data, error } = await supabase.from('hero_slides').select('*').order('id', { ascending: true });
-    if (error || !data || data.length === 0) return INITIAL_HERO_SLIDES;
-    return data as HeroSlide[];
-  } catch {
+    
+    // If DB is empty or error, return defaults
+    if (error) {
+        console.error("Error loading slides:", error);
+        return INITIAL_HERO_SLIDES;
+    }
+
+    const dbSlides = data || [];
+
+    // MERGE STRATEGY:
+    // We map over the INITIAL structure (slots 1 to 4).
+    // If the DB has a slide for that ID, we use the DB version.
+    // Otherwise, we use the default version.
+    // This prevents the carousel from "disappearing" if you only edit 1 slide.
+    const mergedSlides = INITIAL_HERO_SLIDES.map(initialSlide => {
+        const foundInDb = dbSlides.find((dbSlide: any) => dbSlide.id === initialSlide.id);
+        return foundInDb ? (foundInDb as HeroSlide) : initialSlide;
+    });
+
+    return mergedSlides;
+  } catch (err) {
+    console.error(err);
     return INITIAL_HERO_SLIDES;
   }
 };
@@ -21,9 +40,23 @@ export const saveHeroSlide = async (slide: HeroSlide): Promise<void> => {
 export const getPromoBanners = async (): Promise<PromoBanner[]> => {
   try {
     const { data, error } = await supabase.from('promo_banners').select('*');
-    if (error || !data || data.length === 0) return INITIAL_PROMO_BANNERS;
-    return data as PromoBanner[];
-  } catch {
+    
+    if (error) {
+        console.error("Error loading banners:", error);
+        return INITIAL_PROMO_BANNERS;
+    }
+
+    const dbBanners = data || [];
+
+    // Same merge strategy for Banners
+    const mergedBanners = INITIAL_PROMO_BANNERS.map(initialBanner => {
+        const foundInDb = dbBanners.find((dbBanner: any) => dbBanner.id === initialBanner.id);
+        return foundInDb ? (foundInDb as PromoBanner) : initialBanner;
+    });
+
+    return mergedBanners;
+  } catch (err) {
+    console.error(err);
     return INITIAL_PROMO_BANNERS;
   }
 };

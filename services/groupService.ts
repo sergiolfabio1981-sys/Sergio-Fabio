@@ -5,20 +5,22 @@ import { supabase } from './supabase';
 
 export const getGroupTrips = async (): Promise<GroupTrip[]> => {
   try {
-    const { data, error } = await supabase.from('groups').select('*');
+    // Changed table from 'groups' to 'group_trips'
+    const { data, error } = await supabase.from('group_trips').select('*');
     if (error) {
-        console.error(error);
+        console.error('Error fetching group trips:', error);
         return INITIAL_GROUP_TRIPS;
     }
     return (data as GroupTrip[]) || INITIAL_GROUP_TRIPS;
-  } catch {
+  } catch (err) {
+    console.error(err);
     return INITIAL_GROUP_TRIPS;
   }
 };
 
 export const getGroupTripById = async (id: string): Promise<GroupTrip | undefined> => {
   try {
-    const { data, error } = await supabase.from('groups').select('*').eq('id', id).single();
+    const { data, error } = await supabase.from('group_trips').select('*').eq('id', id).single();
     if (error) return INITIAL_GROUP_TRIPS.find(t => t.id === id);
     return data as GroupTrip;
   } catch {
@@ -32,13 +34,13 @@ export const saveGroupTrip = async (trip: GroupTrip): Promise<void> => {
       images: Array.isArray(trip.images) ? trip.images : [],
       availableDates: Array.isArray(trip.availableDates) ? trip.availableDates : []
   };
-  const { error } = await supabase.from('groups').upsert(tripToSave);
-  if (error) console.error(error);
+  const { error } = await supabase.from('group_trips').upsert(tripToSave);
+  if (error) console.error('Error saving group trip:', error);
 };
 
 export const deleteGroupTrip = async (id: string): Promise<void> => {
-  const { error } = await supabase.from('groups').delete().eq('id', id);
-  if (error) console.error(error);
+  const { error } = await supabase.from('group_trips').delete().eq('id', id);
+  if (error) console.error('Error deleting group trip:', error);
 };
 
 export const createEmptyGroupTrip = (): GroupTrip => ({
