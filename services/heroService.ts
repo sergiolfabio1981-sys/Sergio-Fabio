@@ -16,16 +16,18 @@ export const getHeroSlides = async (): Promise<HeroSlide[]> => {
     const dbSlides = data || [];
 
     // MERGE STRATEGY:
-    // We map over the INITIAL structure (slots 1 to 4).
+    // We map over the INITIAL structure.
     // If the DB has a slide for that ID, we use the DB version.
     // Otherwise, we use the default version.
-    // This prevents the carousel from "disappearing" if you only edit 1 slide.
     const mergedSlides = INITIAL_HERO_SLIDES.map(initialSlide => {
         const foundInDb = dbSlides.find((dbSlide: any) => dbSlide.id === initialSlide.id);
         return foundInDb ? (foundInDb as HeroSlide) : initialSlide;
     });
 
-    return mergedSlides;
+    // Add any new slides created in DB that are not in the initial set
+    const extraSlides = dbSlides.filter((dbSlide: any) => !INITIAL_HERO_SLIDES.find(is => is.id === dbSlide.id));
+
+    return [...mergedSlides, ...extraSlides].sort((a, b) => a.id - b.id);
   } catch (err) {
     console.error(err);
     return INITIAL_HERO_SLIDES;
@@ -35,6 +37,11 @@ export const getHeroSlides = async (): Promise<HeroSlide[]> => {
 export const saveHeroSlide = async (slide: HeroSlide): Promise<void> => {
   const { error } = await supabase.from('hero_slides').upsert(slide);
   if (error) console.error('Error saving slide:', error);
+};
+
+export const deleteHeroSlide = async (id: number): Promise<void> => {
+  const { error } = await supabase.from('hero_slides').delete().eq('id', id);
+  if (error) console.error('Error deleting slide:', error);
 };
 
 export const getPromoBanners = async (): Promise<PromoBanner[]> => {
@@ -53,8 +60,10 @@ export const getPromoBanners = async (): Promise<PromoBanner[]> => {
         const foundInDb = dbBanners.find((dbBanner: any) => dbBanner.id === initialBanner.id);
         return foundInDb ? (foundInDb as PromoBanner) : initialBanner;
     });
+    
+    const extraBanners = dbBanners.filter((dbBanner: any) => !INITIAL_PROMO_BANNERS.find(ib => ib.id === dbBanner.id));
 
-    return mergedBanners;
+    return [...mergedBanners, ...extraBanners];
   } catch (err) {
     console.error(err);
     return INITIAL_PROMO_BANNERS;
