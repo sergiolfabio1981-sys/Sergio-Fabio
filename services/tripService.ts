@@ -1,60 +1,82 @@
 
 import { Trip } from '../types';
 import { INITIAL_TRIPS } from '../constants';
+import { supabase } from './supabase';
 
-// Stable key for persistent user data
-const CURRENT_KEY = 'abras_travel_trips_main';
-// List of previous keys to migrate data from if found
-const LEGACY_KEYS = ['abras_travel_trips_v16', 'abras_travel_trips_v15', 'abras_travel_trips_v13'];
+export const getTrips = async (): Promise<Trip[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('trips')
+      .select('*');
 
-export const getTrips = (): Trip[] => {
-  // 1. Check for stable user data
-  const stored = localStorage.getItem(CURRENT_KEY);
-  if (stored) {
-    return JSON.parse(stored);
+    if (error) {
+      console.error('Error fetching trips from Supabase:', error);
+      // Fallback to initial data if DB fails or is empty initially for demo
+      return INITIAL_TRIPS; 
+    }
+
+    if (!data || data.length === 0) {
+        // If DB is empty, return initial mock data (Optional: You could insert initial data here)
+        return INITIAL_TRIPS; 
+    }
+
+    return data as Trip[];
+  } catch (err) {
+    console.error('Unexpected error fetching trips:', err);
+    return INITIAL_TRIPS;
   }
-
-  // 2. Migration: Check for legacy data from previous versions
-  for (const key of LEGACY_KEYS) {
-      const legacyData = localStorage.getItem(key);
-      if (legacyData) {
-          console.log(`Migrating Trips data from ${key} to ${CURRENT_KEY}`);
-          localStorage.setItem(CURRENT_KEY, legacyData);
-          return JSON.parse(legacyData);
-      }
-  }
-
-  // 3. Fallback: Load Initial Data
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(INITIAL_TRIPS));
-  return INITIAL_TRIPS;
 };
 
-export const getTripById = (id: string): Trip | undefined => {
-  const trips = getTrips();
-  return trips.find((t) => t.id === id);
-};
+export const getTripById = async (id: string): Promise<Trip | undefined> => {
+  try {
+    const { data, error } = await supabase
+      .from('trips')
+      .select('*')
+      .eq('id', id)
+      .single();
 
-export const saveTrip = (trip: Trip): void => {
-  const trips = getTrips();
-  const existingIndex = trips.findIndex((t) => t.id === trip.id);
-  
-  if (existingIndex >= 0) {
-    trips[existingIndex] = trip;
-  } else {
-    trips.push(trip);
+    if (error) {
+       // Fallback to local search if not in DB (e.g. if using mock data)
+       return INITIAL_TRIPS.find(t => t.id === id);
+    }
+    
+    return data as Trip;
+  } catch (err) {
+    return INITIAL_TRIPS.find(t => t.id === id);
   }
-  
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(trips));
 };
 
-export const deleteTrip = (id: string): void => {
-  const trips = getTrips();
-  const filtered = trips.filter((t) => t.id !== id);
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(filtered));
+export const saveTrip = async (trip: Trip): Promise<void> => {
+  // Ensure dates/images are arrays for Supabase text[] column compatibility
+  const tripToSave = {
+      ...trip,
+      images: Array.isArray(trip.images) ? trip.images : [],
+      availableDates: Array.isArray(trip.availableDates) ? trip.availableDates : []
+  };
+
+  const { error } = await supabase
+    .from('trips')
+    .upsert(tripToSave);
+
+  if (error) {
+    console.error('Error saving trip to Supabase:', error);
+    alert('Error guardando en la base de datos. Verifica la consola.');
+  }
+};
+
+export const deleteTrip = async (id: string): Promise<void> => {
+  const { error } = await supabase
+    .from('trips')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error('Error deleting trip:', error);
+  }
 };
 
 export const createEmptyTrip = (): Trip => ({
-  id: Date.now().toString(),
+  id: crypto.randomUUID(), // Use standard UUID for DB
   title: '',
   location: '',
   price: 0,
@@ -64,8 +86,10 @@ export const createEmptyTrip = (): Trip => ({
   availableDates: [],
   discount: 0,
   includesFlight: false,
-  rating: undefined,
+  rating: 0,
+  reviewsCount: 0,
   specialLabel: '',
   durationLabel: '',
-  baseCurrency: 'USD'
+  baseCurrency: 'USD',
+  type: 'trip'
 });

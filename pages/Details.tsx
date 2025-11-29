@@ -40,11 +40,12 @@ const Details: React.FC = () => {
 
   useEffect(() => {
     if (id) {
-      setTrip(getTripById(id));
+        // Fetch async
+        getTripById(id).then(data => setTrip(data));
     }
   }, [id]);
 
-  if (!trip) return <div>Loading...</div>;
+  if (!trip) return <div className="min-h-screen flex justify-center items-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-600"></div></div>;
 
   const baseCurrency = trip.baseCurrency || 'ARS';
   const basePrice = trip.price * guests;

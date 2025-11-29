@@ -17,6 +17,7 @@ const Home: React.FC = () => {
   const [allItems, setAllItems] = useState<ListingItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [isLoading, setIsLoading] = useState(true);
   
   // Carousel & Banner State
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([]);
@@ -24,33 +25,41 @@ const Home: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
-    setHeroSlides(getHeroSlides());
-    setPromoBanners(getPromoBanners());
+    const fetchData = async () => {
+        setHeroSlides(getHeroSlides());
+        setPromoBanners(getPromoBanners());
 
-    const allTrips = getTrips().map(t => ({...t, type: 'trip' as const}));
-    const allRentals = getRentals().map(r => ({...r, type: 'rental' as const}));
-    const allExcursions = getExcursions().map(e => ({...e, type: 'excursion' as const}));
-    const allHotels = getHotels().map(h => ({...h, type: 'hotel' as const}));
-    const allInstallments = getInstallmentTrips().map(i => ({...i, type: 'installment' as const}));
-    const allWorldCup = getWorldCupTrips().map(w => ({...w, type: 'worldcup' as const}));
-    const allGroups = getGroupTrips().map(g => ({...g, type: 'group' as const}));
+        // Async Fetch for Trips (Supabase)
+        const tripsData = await getTrips();
+        const allTrips = tripsData.map(t => ({...t, type: 'trip' as const}));
 
-    const fullInventory = [
-        ...allTrips,
-        ...allRentals,
-        ...allExcursions,
-        ...allHotels,
-        ...allInstallments,
-        ...allWorldCup,
-        ...allGroups
-    ];
+        // Sync Fetch for others (LocalStorage)
+        const allRentals = getRentals().map(r => ({...r, type: 'rental' as const}));
+        const allExcursions = getExcursions().map(e => ({...e, type: 'excursion' as const}));
+        const allHotels = getHotels().map(h => ({...h, type: 'hotel' as const}));
+        const allInstallments = getInstallmentTrips().map(i => ({...i, type: 'installment' as const}));
+        const allWorldCup = getWorldCupTrips().map(w => ({...w, type: 'worldcup' as const}));
+        const allGroups = getGroupTrips().map(g => ({...g, type: 'group' as const}));
 
-    const offers = fullInventory.filter(item => item.isOffer);
-    const regular = fullInventory.filter(item => !item.isOffer);
+        const fullInventory = [
+            ...allTrips,
+            ...allRentals,
+            ...allExcursions,
+            ...allHotels,
+            ...allInstallments,
+            ...allWorldCup,
+            ...allGroups
+        ];
 
-    setCombinedOffers(offers.sort(() => Math.random() - 0.5));
-    setAllItems(regular);
+        const offers = fullInventory.filter(item => item.isOffer);
+        const regular = fullInventory.filter(item => !item.isOffer);
 
+        setCombinedOffers(offers.sort(() => Math.random() - 0.5));
+        setAllItems(regular);
+        setIsLoading(false);
+    };
+
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -88,6 +97,10 @@ const Home: React.FC = () => {
       { id: 'installment', label: 'Cuotas' },
       { id: 'worldcup', label: 'Mundial' },
   ];
+
+  if (isLoading) {
+      return <div className="min-h-screen flex items-center justify-center bg-slate-50"><div className="animate-spin rounded-full h-16 w-16 border-t-4 border-cyan-600"></div></div>;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 pb-20">

@@ -7,11 +7,15 @@ import TripCard from '../components/TripCard';
 const Trips: React.FC = () => {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch trips and ensure type is set correctly for the card component
-    const data = getTrips().map(t => ({...t, type: 'trip' as const}));
-    setTrips(data);
+    const fetchTrips = async () => {
+        const data = await getTrips();
+        setTrips(data.map(t => ({...t, type: 'trip' as const})));
+        setIsLoading(false);
+    };
+    fetchTrips();
   }, []);
 
   const filteredTrips = trips.filter(t => 
@@ -42,22 +46,31 @@ const Trips: React.FC = () => {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {filteredTrips.map(trip => (
-                    <TripCard key={trip.id} trip={trip} />
-                ))}
-            </div>
-            
-            {filteredTrips.length === 0 && (
-                <div className="text-center py-10">
-                    <p className="text-xl text-gray-500">No encontramos paquetes con ese nombre.</p>
-                    <button 
-                        onClick={() => setSearchTerm('')}
-                        className="mt-4 text-cyan-600 hover:text-cyan-800 underline"
-                    >
-                        Ver todos los paquetes
-                    </button>
+            {isLoading ? (
+                <div className="text-center py-20">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-500">Cargando paquetes...</p>
                 </div>
+            ) : (
+                <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                        {filteredTrips.map(trip => (
+                            <TripCard key={trip.id} trip={trip} />
+                        ))}
+                    </div>
+                    
+                    {filteredTrips.length === 0 && (
+                        <div className="text-center py-10">
+                            <p className="text-xl text-gray-500">No encontramos paquetes con ese nombre.</p>
+                            <button 
+                                onClick={() => setSearchTerm('')}
+                                className="mt-4 text-cyan-600 hover:text-cyan-800 underline"
+                            >
+                                Ver todos los paquetes
+                            </button>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     </div>
