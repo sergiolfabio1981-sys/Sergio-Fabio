@@ -12,7 +12,7 @@ interface TripCardProps {
 const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { t } = useLanguage();
-  const { formatPrice } = useCurrency();
+  const { formatPrice, currency } = useCurrency();
 
   // Determine type safely
   const isRental = item.type === 'rental';
@@ -22,7 +22,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
   const isExcursion = item.type === 'excursion';
   const isGroup = item.type === 'group';
 
-  const baseCurrency = (item as any).baseCurrency || 'ARS';
+  const baseCurrency = (item as any).baseCurrency || 'USD';
   const includesFlight = (item as any).includesFlight;
   const rating = (item as any).rating;
   const specialLabel = (item as any).specialLabel;
@@ -178,9 +178,8 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
                 </p>
             )}
             <div className="flex items-baseline gap-1">
-                <span className="text-xs text-gray-500">$</span>
                 <span className={`text-2xl font-bold ${isOffer ? 'text-orange-600' : 'text-gray-900'}`}>
-                    {formatPrice(displayPrice, baseCurrency).replace(/[^0-9.,]/g, '')}
+                    {formatPrice(displayPrice, baseCurrency)}
                 </span>
             </div>
             <p className="text-[10px] text-gray-400 mt-1">Incluye Impuestos, Tasas y Cargos</p>

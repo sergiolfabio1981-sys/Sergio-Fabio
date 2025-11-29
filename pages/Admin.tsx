@@ -9,6 +9,7 @@ import { getInstallmentTrips, saveInstallmentTrip, deleteInstallmentTrip, create
 import { getWorldCupTrips, saveWorldCupTrip, deleteWorldCupTrip, createEmptyWorldCupTrip } from '../services/worldCupService';
 import { getGroupTrips, saveGroupTrip, deleteGroupTrip, createEmptyGroupTrip } from '../services/groupService';
 import { getHeroSlides, saveHeroSlide, getPromoBanners, savePromoBanner, deleteHeroSlide } from '../services/heroService';
+import { getTermsAndConditions, saveTermsAndConditions } from '../services/settingsService';
 import { ADMIN_EMAIL, ADMIN_PASS } from '../constants';
 
 const Admin: React.FC = () => {
@@ -19,7 +20,7 @@ const Admin: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [activeTab, setActiveTab] = useState<'hero' | 'trips' | 'rentals' | 'excursions' | 'hotels' | 'installments' | 'worldcup' | 'groups'>('trips');
+  const [activeTab, setActiveTab] = useState<'hero' | 'trips' | 'rentals' | 'excursions' | 'hotels' | 'installments' | 'worldcup' | 'groups' | 'legales'>('trips');
   const [imageUrlInput, setImageUrlInput] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
@@ -33,6 +34,7 @@ const Admin: React.FC = () => {
   const [groupTrips, setGroupTrips] = useState<GroupTrip[]>([]);
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([]);
   const [promoBanners, setPromoBanners] = useState<PromoBanner[]>([]);
+  const [termsText, setTermsText] = useState('');
 
   // Edit State
   const [editingTrip, setEditingTrip] = useState<Trip | null>(null);
@@ -58,6 +60,12 @@ const Admin: React.FC = () => {
         loadAllData();
     }
   }, [isAuthenticated]);
+
+  useEffect(() => {
+      if (activeTab === 'legales') {
+          getTermsAndConditions().then(setTermsText);
+      }
+  }, [activeTab]);
 
   const loadAllData = async () => {
       const [t, r, e, h, i, w, g, hs, pb] = await Promise.all([
@@ -118,6 +126,18 @@ const Admin: React.FC = () => {
       await loadAllData();
       setIsSaving(false);
       setIsModalOpen(false);
+  };
+
+  const handleSaveLegales = async () => {
+      setIsSaving(true);
+      try {
+          await saveTermsAndConditions(termsText);
+          alert('Bases y Condiciones guardadas correctamente.');
+      } catch (e) {
+          alert('Error al guardar.');
+      } finally {
+          setIsSaving(false);
+      }
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, setter: any) => {
@@ -186,7 +206,7 @@ const Admin: React.FC = () => {
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Panel de Administración</h1>
             <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                 <div className="flex space-x-2 bg-white rounded-lg p-1 shadow-sm overflow-x-auto w-full md:w-auto">
-                    {['hero','trips','groups','hotels','rentals','excursions','installments','worldcup'].map(tab => (
+                    {['hero','trips','groups','hotels','rentals','excursions','installments','worldcup','legales'].map(tab => (
                         <button key={tab} onClick={() => setActiveTab(tab as any)} className={`px-4 py-2 rounded-md whitespace-nowrap capitalize ${activeTab === tab ? 'bg-cyan-600 text-white' : 'hover:bg-gray-100'}`}>
                             {tab === 'hero' ? 'Portada' : tab}
                         </button>
@@ -205,6 +225,24 @@ const Admin: React.FC = () => {
         {activeTab === 'installments' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl text-indigo-800">Cuotas</h2><button onClick={()=>{resetEditState(); setEditingInstallment(createEmptyInstallmentTrip()); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Plan</button></div>{installments.map(i=><div key={i.id} className="flex justify-between border-b py-2 items-center"><span>{i.title}</span><div><button onClick={()=>{resetEditState(); setEditingInstallment({...i}); setIsModalOpen(true)}} className="text-blue-500 mr-4">Editar</button><button onClick={()=>handleDelete(i.id, 'installment')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
         {activeTab === 'worldcup' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl text-blue-900">Mundial</h2><button onClick={()=>{resetEditState(); setEditingWorldCup(createEmptyWorldCupTrip()); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Paquete</button></div>{worldCupTrips.map(w=><div key={w.id} className="flex justify-between border-b py-2 items-center"><span>{w.title}</span><div><button onClick={()=>{resetEditState(); setEditingWorldCup({...w}); setIsModalOpen(true)}} className="text-blue-500 mr-4">Editar</button><button onClick={()=>handleDelete(w.id, 'worldcup')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
         
+        {activeTab === 'legales' && (
+            <div className="bg-white rounded-xl shadow-sm p-6">
+                <h2 className="text-xl font-bold mb-4">Bases y Condiciones</h2>
+                <p className="text-gray-500 mb-4 text-sm">Edite aquí el texto que aparecerá en la ventana de Bases y Condiciones para los clientes.</p>
+                <textarea 
+                    value={termsText} 
+                    onChange={e=>setTermsText(e.target.value)} 
+                    className="w-full h-96 border p-4 rounded-lg bg-gray-50 font-mono text-sm focus:ring-2 focus:ring-cyan-500 outline-none"
+                    placeholder="Escriba aquí los términos..."
+                ></textarea>
+                <div className="mt-4 flex justify-end">
+                    <button onClick={handleSaveLegales} disabled={isSaving} className="bg-cyan-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-cyan-700 disabled:bg-gray-400">
+                        {isSaving ? 'Guardando...' : 'Guardar Términos'}
+                    </button>
+                </div>
+            </div>
+        )}
+
         {activeTab === 'hero' && (
             <div className="bg-white rounded-xl shadow-sm p-6">
                 <div className="flex justify-between items-center mb-4">
@@ -381,7 +419,7 @@ const Admin: React.FC = () => {
                                        <input value={editingRental.title} onChange={e=>setEditingRental({...editingRental, title:e.target.value})} className="border p-3 w-full rounded-lg" placeholder="Título del Aviso" />
                                        <input value={editingRental.location} onChange={e=>setEditingRental({...editingRental, location:e.target.value})} className="border p-3 w-full rounded-lg" placeholder="Dirección / Ciudad" />
                                        <div className="grid grid-cols-3 gap-2">
-                                            <div><label className="text-xs font-bold text-gray-500">Precio/Noche</label><input type="number" value={editingRental.pricePerNight} onChange={e=>setEditingRental({...editingRental, pricePerNight:Number(e.target.value)})} className="border p-2 w-full rounded" /></div>
+                                            <div><label className="text-xs font-bold text-gray-500">Precio/Noche (USD)</label><input type="number" value={editingRental.pricePerNight} onChange={e=>setEditingRental({...editingRental, pricePerNight:Number(e.target.value)})} className="border p-2 w-full rounded" /></div>
                                             <div><label className="text-xs font-bold text-gray-500">Habitaciones</label><input type="number" value={editingRental.bedrooms} onChange={e=>setEditingRental({...editingRental, bedrooms:Number(e.target.value)})} className="border p-2 w-full rounded" /></div>
                                             <div><label className="text-xs font-bold text-gray-500">Huéspedes</label><input type="number" value={editingRental.maxGuests} onChange={e=>setEditingRental({...editingRental, maxGuests:Number(e.target.value)})} className="border p-2 w-full rounded" /></div>
                                        </div>

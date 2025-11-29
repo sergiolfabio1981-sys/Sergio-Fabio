@@ -33,6 +33,9 @@ export const CurrencyProvider: React.FC<{ children: ReactNode }> = ({ children }
     const supportedCurrencies = ['ARS', 'USD', 'BRL', 'UYU', 'CLP', 'COP', 'MXN'];
     if (saved && supportedCurrencies.includes(saved)) {
       setCurrencyState(saved as Currency);
+    } else {
+        // Force USD default if nothing saved
+        setCurrencyState('USD');
     }
   }, []);
 
@@ -42,15 +45,18 @@ export const CurrencyProvider: React.FC<{ children: ReactNode }> = ({ children }
   };
 
   // Convert any base currency amount to the currently selected currency
-  const convertPrice = (amount: number, baseCurrency: string = 'ARS'): number => {
+  const convertPrice = (amount: number, baseCurrency: string = 'USD'): number => {
     if (isNaN(amount) || amount === undefined) return 0;
 
     // 1. Convert everything to ARS first (Common Denominator)
     let amountInArs = amount;
     
+    // Default base is usually USD now for Admin, but handling ARS legacy
     if (baseCurrency === 'USD') {
         amountInArs = amount * EXCHANGE_RATES.USD;
-    } 
+    } else if (baseCurrency === 'ARS') {
+        amountInArs = amount;
+    }
     // Add other base currencies here if needed in future
 
     // 2. Convert ARS to Target Currency
@@ -58,7 +64,7 @@ export const CurrencyProvider: React.FC<{ children: ReactNode }> = ({ children }
     return amountInArs / EXCHANGE_RATES[currency];
   };
 
-  const formatPrice = (amount: number, baseCurrency: string = 'ARS'): string => {
+  const formatPrice = (amount: number, baseCurrency: string = 'USD'): string => {
     const value = convertPrice(amount, baseCurrency);
     
     // Configuraciones regionales para formato de números
