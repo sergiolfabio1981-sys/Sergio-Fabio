@@ -9,8 +9,11 @@ const Groups: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    const data = getGroupTrips().map(t => ({...t, type: 'group' as const}));
-    setTrips(data);
+    const fetchData = async () => {
+        const data = await getGroupTrips();
+        setTrips(data.map(t => ({...t, type: 'group' as const})));
+    };
+    fetchData();
   }, []);
 
   const filteredTrips = trips.filter(t => 

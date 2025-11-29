@@ -1,54 +1,48 @@
 
 import { Hotel } from '../types';
 import { INITIAL_HOTELS } from '../constants';
+import { supabase } from './supabase';
 
-const CURRENT_KEY = 'abras_travel_hotels_main';
-const LEGACY_KEYS = ['abras_travel_hotels_v12', 'abras_travel_hotels_v11', 'abras_travel_hotels_v9'];
-
-export const getHotels = (): Hotel[] => {
-  const stored = localStorage.getItem(CURRENT_KEY);
-  if (stored) {
-    return JSON.parse(stored);
+export const getHotels = async (): Promise<Hotel[]> => {
+  try {
+    const { data, error } = await supabase.from('hotels').select('*');
+    if (error) {
+      console.error('Error fetching hotels:', error);
+      return INITIAL_HOTELS;
+    }
+    return (data as Hotel[]) || INITIAL_HOTELS;
+  } catch (err) {
+    return INITIAL_HOTELS;
   }
-
-  for (const key of LEGACY_KEYS) {
-      const legacyData = localStorage.getItem(key);
-      if (legacyData) {
-          localStorage.setItem(CURRENT_KEY, legacyData);
-          return JSON.parse(legacyData);
-      }
-  }
-
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(INITIAL_HOTELS));
-  return INITIAL_HOTELS;
 };
 
-export const getHotelById = (id: string): Hotel | undefined => {
-  const hotels = getHotels();
-  return hotels.find((h) => h.id === id);
-};
-
-export const saveHotel = (hotel: Hotel): void => {
-  const hotels = getHotels();
-  const existingIndex = hotels.findIndex((h) => h.id === hotel.id);
-  
-  if (existingIndex >= 0) {
-    hotels[existingIndex] = hotel;
-  } else {
-    hotels.push(hotel);
+export const getHotelById = async (id: string): Promise<Hotel | undefined> => {
+  try {
+    const { data, error } = await supabase.from('hotels').select('*').eq('id', id).single();
+    if (error) return INITIAL_HOTELS.find(h => h.id === id);
+    return data as Hotel;
+  } catch {
+    return INITIAL_HOTELS.find(h => h.id === id);
   }
-  
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(hotels));
 };
 
-export const deleteHotel = (id: string): void => {
-  const hotels = getHotels();
-  const filtered = hotels.filter((h) => h.id !== id);
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(filtered));
+export const saveHotel = async (hotel: Hotel): Promise<void> => {
+  const hotelToSave = {
+      ...hotel,
+      images: Array.isArray(hotel.images) ? hotel.images : [],
+      amenities: Array.isArray(hotel.amenities) ? hotel.amenities : []
+  };
+  const { error } = await supabase.from('hotels').upsert(hotelToSave);
+  if (error) console.error('Error saving hotel:', error);
+};
+
+export const deleteHotel = async (id: string): Promise<void> => {
+  const { error } = await supabase.from('hotels').delete().eq('id', id);
+  if (error) console.error('Error deleting hotel:', error);
 };
 
 export const createEmptyHotel = (): Hotel => ({
-  id: Date.now().toString(),
+  id: crypto.randomUUID(),
   title: '',
   location: '',
   pricePerNight: 0,

@@ -8,8 +8,11 @@ const WorldCup: React.FC = () => {
   const [trips, setTrips] = useState<WorldCupTrip[]>([]);
 
   useEffect(() => {
-    const data = getWorldCupTrips().map(t => ({...t, type: 'worldcup' as const}));
-    setTrips(data);
+    const fetchData = async () => {
+        const data = await getWorldCupTrips();
+        setTrips(data.map(t => ({...t, type: 'worldcup' as const})));
+    };
+    fetchData();
   }, []);
 
   return (

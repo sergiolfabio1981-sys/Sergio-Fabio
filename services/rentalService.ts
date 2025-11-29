@@ -1,52 +1,48 @@
 
 import { Apartment } from '../types';
 import { INITIAL_RENTALS } from '../constants';
+import { supabase } from './supabase';
 
-const CURRENT_KEY = 'abras_travel_rentals_main';
-const LEGACY_KEYS = ['abras_travel_rentals_v9', 'abras_travel_rentals_v8'];
-
-export const getRentals = (): Apartment[] => {
-  const stored = localStorage.getItem(CURRENT_KEY);
-  if (stored) return JSON.parse(stored);
-
-  for (const key of LEGACY_KEYS) {
-      const legacyData = localStorage.getItem(key);
-      if (legacyData) {
-          localStorage.setItem(CURRENT_KEY, legacyData);
-          return JSON.parse(legacyData);
-      }
+export const getRentals = async (): Promise<Apartment[]> => {
+  try {
+    const { data, error } = await supabase.from('rentals').select('*');
+    if (error) {
+      console.error('Error fetching rentals:', error);
+      return INITIAL_RENTALS;
+    }
+    return (data as Apartment[]) || INITIAL_RENTALS;
+  } catch (err) {
+    return INITIAL_RENTALS;
   }
-
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(INITIAL_RENTALS));
-  return INITIAL_RENTALS;
 };
 
-export const getRentalById = (id: string): Apartment | undefined => {
-  const rentals = getRentals();
-  return rentals.find((r) => r.id === id);
-};
-
-export const saveRental = (rental: Apartment): void => {
-  const rentals = getRentals();
-  const existingIndex = rentals.findIndex((r) => r.id === rental.id);
-  
-  if (existingIndex >= 0) {
-    rentals[existingIndex] = rental;
-  } else {
-    rentals.push(rental);
+export const getRentalById = async (id: string): Promise<Apartment | undefined> => {
+  try {
+    const { data, error } = await supabase.from('rentals').select('*').eq('id', id).single();
+    if (error) return INITIAL_RENTALS.find(r => r.id === id);
+    return data as Apartment;
+  } catch {
+    return INITIAL_RENTALS.find(r => r.id === id);
   }
-  
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(rentals));
 };
 
-export const deleteRental = (id: string): void => {
-  const rentals = getRentals();
-  const filtered = rentals.filter((r) => r.id !== id);
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(filtered));
+export const saveRental = async (rental: Apartment): Promise<void> => {
+  const rentalToSave = {
+      ...rental,
+      images: Array.isArray(rental.images) ? rental.images : [],
+      amenities: Array.isArray(rental.amenities) ? rental.amenities : []
+  };
+  const { error } = await supabase.from('rentals').upsert(rentalToSave);
+  if (error) console.error('Error saving rental:', error);
+};
+
+export const deleteRental = async (id: string): Promise<void> => {
+  const { error } = await supabase.from('rentals').delete().eq('id', id);
+  if (error) console.error('Error deleting rental:', error);
 };
 
 export const createEmptyRental = (): Apartment => ({
-  id: Date.now().toString(),
+  id: crypto.randomUUID(),
   title: '',
   location: '',
   pricePerNight: 0,
@@ -60,5 +56,6 @@ export const createEmptyRental = (): Apartment => ({
   lng: undefined,
   discount: 0,
   specialLabel: '',
-  baseCurrency: 'USD'
+  baseCurrency: 'USD',
+  type: 'rental'
 });

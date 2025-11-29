@@ -1,52 +1,48 @@
 
 import { Excursion } from '../types';
 import { INITIAL_EXCURSIONS } from '../constants';
+import { supabase } from './supabase';
 
-const CURRENT_KEY = 'abras_travel_excursions_main';
-const LEGACY_KEYS = ['abras_travel_excursions_v9', 'abras_travel_excursions_v8'];
-
-export const getExcursions = (): Excursion[] => {
-  const stored = localStorage.getItem(CURRENT_KEY);
-  if (stored) return JSON.parse(stored);
-
-  for (const key of LEGACY_KEYS) {
-      const legacyData = localStorage.getItem(key);
-      if (legacyData) {
-          localStorage.setItem(CURRENT_KEY, legacyData);
-          return JSON.parse(legacyData);
-      }
+export const getExcursions = async (): Promise<Excursion[]> => {
+  try {
+    const { data, error } = await supabase.from('excursions').select('*');
+    if (error) {
+      console.error('Error fetching excursions:', error);
+      return INITIAL_EXCURSIONS;
+    }
+    return (data as Excursion[]) || INITIAL_EXCURSIONS;
+  } catch (err) {
+    return INITIAL_EXCURSIONS;
   }
-
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(INITIAL_EXCURSIONS));
-  return INITIAL_EXCURSIONS;
 };
 
-export const getExcursionById = (id: string): Excursion | undefined => {
-  const excursions = getExcursions();
-  return excursions.find((e) => e.id === id);
-};
-
-export const saveExcursion = (excursion: Excursion): void => {
-  const excursions = getExcursions();
-  const existingIndex = excursions.findIndex((e) => e.id === excursion.id);
-  
-  if (existingIndex >= 0) {
-    excursions[existingIndex] = excursion;
-  } else {
-    excursions.push(excursion);
+export const getExcursionById = async (id: string): Promise<Excursion | undefined> => {
+  try {
+    const { data, error } = await supabase.from('excursions').select('*').eq('id', id).single();
+    if (error) return INITIAL_EXCURSIONS.find(e => e.id === id);
+    return data as Excursion;
+  } catch {
+    return INITIAL_EXCURSIONS.find(e => e.id === id);
   }
-  
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(excursions));
 };
 
-export const deleteExcursion = (id: string): void => {
-  const excursions = getExcursions();
-  const filtered = excursions.filter((e) => e.id !== id);
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(filtered));
+export const saveExcursion = async (excursion: Excursion): Promise<void> => {
+  const excursionToSave = {
+      ...excursion,
+      images: Array.isArray(excursion.images) ? excursion.images : [],
+      availableDates: Array.isArray(excursion.availableDates) ? excursion.availableDates : []
+  };
+  const { error } = await supabase.from('excursions').upsert(excursionToSave);
+  if (error) console.error('Error saving excursion:', error);
+};
+
+export const deleteExcursion = async (id: string): Promise<void> => {
+  const { error } = await supabase.from('excursions').delete().eq('id', id);
+  if (error) console.error('Error deleting excursion:', error);
 };
 
 export const createEmptyExcursion = (): Excursion => ({
-  id: Date.now().toString(),
+  id: crypto.randomUUID(),
   title: '',
   location: '',
   price: 0,

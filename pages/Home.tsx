@@ -19,44 +19,52 @@ const Home: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
   
-  // Carousel & Banner State
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([]);
   const [promoBanners, setPromoBanners] = useState<PromoBanner[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
-        setHeroSlides(getHeroSlides());
-        setPromoBanners(getPromoBanners());
+        try {
+            const [
+                slides, banners,
+                trips, rentals, excursions, hotels,
+                installments, worldcup, groups
+            ] = await Promise.all([
+                getHeroSlides(),
+                getPromoBanners(),
+                getTrips(),
+                getRentals(),
+                getExcursions(),
+                getHotels(),
+                getInstallmentTrips(),
+                getWorldCupTrips(),
+                getGroupTrips()
+            ]);
 
-        // Async Fetch for Trips (Supabase)
-        const tripsData = await getTrips();
-        const allTrips = tripsData.map(t => ({...t, type: 'trip' as const}));
+            setHeroSlides(slides);
+            setPromoBanners(banners);
 
-        // Sync Fetch for others (LocalStorage)
-        const allRentals = getRentals().map(r => ({...r, type: 'rental' as const}));
-        const allExcursions = getExcursions().map(e => ({...e, type: 'excursion' as const}));
-        const allHotels = getHotels().map(h => ({...h, type: 'hotel' as const}));
-        const allInstallments = getInstallmentTrips().map(i => ({...i, type: 'installment' as const}));
-        const allWorldCup = getWorldCupTrips().map(w => ({...w, type: 'worldcup' as const}));
-        const allGroups = getGroupTrips().map(g => ({...g, type: 'group' as const}));
+            const fullInventory = [
+                ...trips.map(t => ({...t, type: 'trip' as const})),
+                ...rentals.map(r => ({...r, type: 'rental' as const})),
+                ...excursions.map(e => ({...e, type: 'excursion' as const})),
+                ...hotels.map(h => ({...h, type: 'hotel' as const})),
+                ...installments.map(i => ({...i, type: 'installment' as const})),
+                ...worldcup.map(w => ({...w, type: 'worldcup' as const})),
+                ...groups.map(g => ({...g, type: 'group' as const}))
+            ];
 
-        const fullInventory = [
-            ...allTrips,
-            ...allRentals,
-            ...allExcursions,
-            ...allHotels,
-            ...allInstallments,
-            ...allWorldCup,
-            ...allGroups
-        ];
+            const offers = fullInventory.filter(item => item.isOffer);
+            const regular = fullInventory.filter(item => !item.isOffer);
 
-        const offers = fullInventory.filter(item => item.isOffer);
-        const regular = fullInventory.filter(item => !item.isOffer);
-
-        setCombinedOffers(offers.sort(() => Math.random() - 0.5));
-        setAllItems(regular);
-        setIsLoading(false);
+            setCombinedOffers(offers.sort(() => Math.random() - 0.5));
+            setAllItems(regular);
+        } catch (e) {
+            console.error("Error loading home data", e);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     fetchData();

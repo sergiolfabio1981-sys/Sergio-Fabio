@@ -1,52 +1,47 @@
 
 import { WorldCupTrip } from '../types';
 import { INITIAL_WORLDCUP_TRIPS } from '../constants';
+import { supabase } from './supabase';
 
-const CURRENT_KEY = 'abras_travel_worldcup_main';
-const LEGACY_KEYS = ['abras_travel_worldcup_v4'];
-
-export const getWorldCupTrips = (): WorldCupTrip[] => {
-  const stored = localStorage.getItem(CURRENT_KEY);
-  if (stored) return JSON.parse(stored);
-
-  for (const key of LEGACY_KEYS) {
-      const legacyData = localStorage.getItem(key);
-      if (legacyData) {
-          localStorage.setItem(CURRENT_KEY, legacyData);
-          return JSON.parse(legacyData);
-      }
+export const getWorldCupTrips = async (): Promise<WorldCupTrip[]> => {
+  try {
+    const { data, error } = await supabase.from('worldcup').select('*');
+    if (error) {
+        console.error(error);
+        return INITIAL_WORLDCUP_TRIPS;
+    }
+    return (data as WorldCupTrip[]) || INITIAL_WORLDCUP_TRIPS;
+  } catch {
+    return INITIAL_WORLDCUP_TRIPS;
   }
-
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(INITIAL_WORLDCUP_TRIPS));
-  return INITIAL_WORLDCUP_TRIPS;
 };
 
-export const getWorldCupTripById = (id: string): WorldCupTrip | undefined => {
-  const trips = getWorldCupTrips();
-  return trips.find((t) => t.id === id);
-};
-
-export const saveWorldCupTrip = (trip: WorldCupTrip): void => {
-  const trips = getWorldCupTrips();
-  const existingIndex = trips.findIndex((t) => t.id === trip.id);
-  
-  if (existingIndex >= 0) {
-    trips[existingIndex] = trip;
-  } else {
-    trips.push(trip);
+export const getWorldCupTripById = async (id: string): Promise<WorldCupTrip | undefined> => {
+  try {
+    const { data, error } = await supabase.from('worldcup').select('*').eq('id', id).single();
+    if (error) return INITIAL_WORLDCUP_TRIPS.find(t => t.id === id);
+    return data as WorldCupTrip;
+  } catch {
+    return INITIAL_WORLDCUP_TRIPS.find(t => t.id === id);
   }
-  
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(trips));
 };
 
-export const deleteWorldCupTrip = (id: string): void => {
-  const trips = getWorldCupTrips();
-  const filtered = trips.filter((t) => t.id !== id);
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(filtered));
+export const saveWorldCupTrip = async (trip: WorldCupTrip): Promise<void> => {
+  const tripToSave = {
+      ...trip,
+      images: Array.isArray(trip.images) ? trip.images : []
+  };
+  const { error } = await supabase.from('worldcup').upsert(tripToSave);
+  if (error) console.error(error);
+};
+
+export const deleteWorldCupTrip = async (id: string): Promise<void> => {
+  const { error } = await supabase.from('worldcup').delete().eq('id', id);
+  if (error) console.error(error);
 };
 
 export const createEmptyWorldCupTrip = (): WorldCupTrip => ({
-  id: Date.now().toString(),
+  id: crypto.randomUUID(),
   title: '',
   location: 'USA - México - Canadá',
   totalPrice: 0,

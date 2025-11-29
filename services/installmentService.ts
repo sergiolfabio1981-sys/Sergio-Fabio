@@ -1,52 +1,47 @@
 
 import { InstallmentTrip } from '../types';
 import { INITIAL_INSTALLMENT_TRIPS } from '../constants';
+import { supabase } from './supabase';
 
-const CURRENT_KEY = 'abras_travel_installments_main';
-const LEGACY_KEYS = ['abras_travel_installments_v8', 'abras_travel_installments_v7'];
-
-export const getInstallmentTrips = (): InstallmentTrip[] => {
-  const stored = localStorage.getItem(CURRENT_KEY);
-  if (stored) return JSON.parse(stored);
-
-  for (const key of LEGACY_KEYS) {
-      const legacyData = localStorage.getItem(key);
-      if (legacyData) {
-          localStorage.setItem(CURRENT_KEY, legacyData);
-          return JSON.parse(legacyData);
-      }
+export const getInstallmentTrips = async (): Promise<InstallmentTrip[]> => {
+  try {
+    const { data, error } = await supabase.from('installments').select('*');
+    if (error) {
+        console.error(error);
+        return INITIAL_INSTALLMENT_TRIPS;
+    }
+    return (data as InstallmentTrip[]) || INITIAL_INSTALLMENT_TRIPS;
+  } catch {
+    return INITIAL_INSTALLMENT_TRIPS;
   }
-
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(INITIAL_INSTALLMENT_TRIPS));
-  return INITIAL_INSTALLMENT_TRIPS;
 };
 
-export const getInstallmentTripById = (id: string): InstallmentTrip | undefined => {
-  const trips = getInstallmentTrips();
-  return trips.find((t) => t.id === id);
-};
-
-export const saveInstallmentTrip = (trip: InstallmentTrip): void => {
-  const trips = getInstallmentTrips();
-  const existingIndex = trips.findIndex((t) => t.id === trip.id);
-  
-  if (existingIndex >= 0) {
-    trips[existingIndex] = trip;
-  } else {
-    trips.push(trip);
+export const getInstallmentTripById = async (id: string): Promise<InstallmentTrip | undefined> => {
+  try {
+    const { data, error } = await supabase.from('installments').select('*').eq('id', id).single();
+    if (error) return INITIAL_INSTALLMENT_TRIPS.find(t => t.id === id);
+    return data as InstallmentTrip;
+  } catch {
+    return INITIAL_INSTALLMENT_TRIPS.find(t => t.id === id);
   }
-  
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(trips));
 };
 
-export const deleteInstallmentTrip = (id: string): void => {
-  const trips = getInstallmentTrips();
-  const filtered = trips.filter((t) => t.id !== id);
-  localStorage.setItem(CURRENT_KEY, JSON.stringify(filtered));
+export const saveInstallmentTrip = async (trip: InstallmentTrip): Promise<void> => {
+  const tripToSave = {
+      ...trip,
+      images: Array.isArray(trip.images) ? trip.images : []
+  };
+  const { error } = await supabase.from('installments').upsert(tripToSave);
+  if (error) console.error(error);
+};
+
+export const deleteInstallmentTrip = async (id: string): Promise<void> => {
+  const { error } = await supabase.from('installments').delete().eq('id', id);
+  if (error) console.error(error);
 };
 
 export const createEmptyInstallmentTrip = (): InstallmentTrip => ({
-  id: Date.now().toString(),
+  id: crypto.randomUUID(),
   title: '',
   location: '',
   totalPrice: 0,

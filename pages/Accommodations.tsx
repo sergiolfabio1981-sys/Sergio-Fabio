@@ -17,9 +17,20 @@ const Accommodations: React.FC = () => {
   const { formatPrice, currency } = useCurrency();
 
   useEffect(() => {
-    const hotels = getHotels().map(h => ({...h, type: 'hotel' as const}));
-    const rentals = getRentals().map(r => ({...r, type: 'rental' as const}));
-    setItems([...hotels, ...rentals]);
+    const fetchData = async () => {
+      try {
+        const [hotelsData, rentalsData] = await Promise.all([
+          getHotels(),
+          getRentals()
+        ]);
+        const hotels = hotelsData.map(h => ({...h, type: 'hotel' as const}));
+        const rentals = rentalsData.map(r => ({...r, type: 'rental' as const}));
+        setItems([...hotels, ...rentals]);
+      } catch (error) {
+        console.error("Error fetching accommodations:", error);
+      }
+    };
+    fetchData();
   }, []);
 
   useEffect(() => {

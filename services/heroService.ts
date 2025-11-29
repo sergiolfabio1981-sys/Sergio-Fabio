@@ -1,74 +1,34 @@
 
 import { HeroSlide, PromoBanner } from '../types';
 import { INITIAL_HERO_SLIDES, INITIAL_PROMO_BANNERS } from '../constants';
+import { supabase } from './supabase';
 
-const HERO_KEY = 'abras_travel_hero_main';
-const BANNER_KEY = 'abras_travel_banners_main';
-
-const LEGACY_HERO_KEYS = ['abras_travel_hero_v3'];
-const LEGACY_BANNER_KEYS = ['abras_travel_banners_v1'];
-
-export const getHeroSlides = (): HeroSlide[] => {
-  const stored = localStorage.getItem(HERO_KEY);
-  if (stored) return JSON.parse(stored);
-
-  for (const key of LEGACY_HERO_KEYS) {
-      const legacy = localStorage.getItem(key);
-      if (legacy) {
-          localStorage.setItem(HERO_KEY, legacy);
-          return JSON.parse(legacy);
-      }
+export const getHeroSlides = async (): Promise<HeroSlide[]> => {
+  try {
+    const { data, error } = await supabase.from('hero_slides').select('*').order('id', { ascending: true });
+    if (error || !data || data.length === 0) return INITIAL_HERO_SLIDES;
+    return data as HeroSlide[];
+  } catch {
+    return INITIAL_HERO_SLIDES;
   }
-
-  localStorage.setItem(HERO_KEY, JSON.stringify(INITIAL_HERO_SLIDES));
-  return INITIAL_HERO_SLIDES;
 };
 
-export const saveHeroSlide = (slide: HeroSlide): void => {
-  const slides = getHeroSlides();
-  const existingIndex = slides.findIndex((s) => s.id === slide.id);
-  
-  if (existingIndex >= 0) {
-    slides[existingIndex] = slide;
-  } else {
-    slides.push(slide);
-  }
-  
-  localStorage.setItem(HERO_KEY, JSON.stringify(slides));
+export const saveHeroSlide = async (slide: HeroSlide): Promise<void> => {
+  const { error } = await supabase.from('hero_slides').upsert(slide);
+  if (error) console.error('Error saving slide:', error);
 };
 
-// --- PROMO BANNERS ---
-
-export const getPromoBanners = (): PromoBanner[] => {
-  const stored = localStorage.getItem(BANNER_KEY);
-  if (stored) return JSON.parse(stored);
-
-  for (const key of LEGACY_BANNER_KEYS) {
-      const legacy = localStorage.getItem(key);
-      if (legacy) {
-          localStorage.setItem(BANNER_KEY, legacy);
-          return JSON.parse(legacy);
-      }
+export const getPromoBanners = async (): Promise<PromoBanner[]> => {
+  try {
+    const { data, error } = await supabase.from('promo_banners').select('*');
+    if (error || !data || data.length === 0) return INITIAL_PROMO_BANNERS;
+    return data as PromoBanner[];
+  } catch {
+    return INITIAL_PROMO_BANNERS;
   }
-
-  localStorage.setItem(BANNER_KEY, JSON.stringify(INITIAL_PROMO_BANNERS));
-  return INITIAL_PROMO_BANNERS;
 };
 
-export const savePromoBanner = (banner: PromoBanner): void => {
-  const banners = getPromoBanners();
-  const existingIndex = banners.findIndex((b) => b.id === banner.id);
-  
-  if (existingIndex >= 0) {
-    banners[existingIndex] = banner;
-  } else {
-    banners.push(banner);
-  }
-  
-  localStorage.setItem(BANNER_KEY, JSON.stringify(banners));
-};
-
-export const resetHeroData = (): void => {
-    localStorage.setItem(HERO_KEY, JSON.stringify(INITIAL_HERO_SLIDES));
-    localStorage.setItem(BANNER_KEY, JSON.stringify(INITIAL_PROMO_BANNERS));
+export const savePromoBanner = async (banner: PromoBanner): Promise<void> => {
+  const { error } = await supabase.from('promo_banners').upsert(banner);
+  if (error) console.error('Error saving banner:', error);
 };

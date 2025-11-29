@@ -9,8 +9,11 @@ const Excursions: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    const data = getExcursions().map(e => ({...e, type: 'excursion' as const}));
-    setExcursions(data);
+    const fetchData = async () => {
+        const data = await getExcursions();
+        setExcursions(data.map(e => ({...e, type: 'excursion' as const})));
+    };
+    fetchData();
   }, []);
 
   const filteredExcursions = excursions.filter(e => 

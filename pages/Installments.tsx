@@ -8,8 +8,11 @@ const Installments: React.FC = () => {
   const [trips, setTrips] = useState<InstallmentTrip[]>([]);
 
   useEffect(() => {
-    const data = getInstallmentTrips().map(t => ({...t, type: 'installment' as const}));
-    setTrips(data);
+    const fetchData = async () => {
+        const data = await getInstallmentTrips();
+        setTrips(data.map(t => ({...t, type: 'installment' as const})));
+    };
+    fetchData();
   }, []);
 
   return (
