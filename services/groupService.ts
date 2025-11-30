@@ -7,10 +7,25 @@ export const getGroupTrips = async (): Promise<GroupTrip[]> => {
   try {
     // Changed table from 'groups' to 'group_trips'
     const { data, error } = await supabase.from('group_trips').select('*');
+    
     if (error) {
         console.error('Error fetching group trips:', error);
         return INITIAL_GROUP_TRIPS;
     }
+
+    // AUTO-SEEDING LOGIC
+    // If database is empty or has very few items (indicating older test data), populate it with the full PDF extracted data.
+    if (!data || data.length < 5) {
+        console.log("Seeding Database with Group Trips from PDF...");
+        const { error: seedError } = await supabase.from('group_trips').upsert(INITIAL_GROUP_TRIPS);
+        if (seedError) {
+            console.error("Error seeding groups:", seedError);
+        } else {
+            console.log("Seeding complete. Refreshing...");
+            return INITIAL_GROUP_TRIPS;
+        }
+    }
+
     return (data as GroupTrip[]) || INITIAL_GROUP_TRIPS;
   } catch (err) {
     console.error(err);

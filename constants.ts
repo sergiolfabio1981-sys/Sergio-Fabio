@@ -250,65 +250,469 @@ export const INITIAL_TRIPS: Trip[] = [
   }
 ];
 
-// --- GRUPALES (NUEVA SECCIÓN) ---
+// --- GRUPALES (EXTRACCIÓN PDF COMPLETA) ---
 export const INITIAL_GROUP_TRIPS: GroupTrip[] = [
+  // EUROPA
   {
-    id: 'grp-peru',
-    title: 'Perú Mágico - Salida Grupal',
-    location: 'Perú',
-    price: 1890,
-    description: 'Únete a nuestro grupo exclusivo para recorrer Lima, Cusco y Machu Picchu. Incluye vuelos, tren panorámico, entradas y guía coordinador permanente. Ideal para viajeros solos o acompañados.',
+    id: 'grp-inglaterra',
+    title: 'Inglaterra, Escocia e Irlanda',
+    location: 'Europa',
+    price: 6999,
+    description: 'Incluye Bus hasta Ezeiza, Aéreos directos, Hoteles y Excursiones. Visitando Londres, Edimburgo, Glasgow, Dublin, Liverpool y Madrid de regalo.',
     images: [
-      'https://images.unsplash.com/photo-1526392060635-9d6019884377?q=80&w=2070&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1587595431973-160d0d94add1?q=80&w=2076&auto=format&fit=crop'
+      'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=2070&auto=format&fit=crop'
+    ],
+    isOffer: false,
+    durationLabel: '18 DÍAS / 16 NOCHES',
+    availableDates: ['6 de Mayo 2026', '15 de Julio 2026', '2 de Septiembre 2026'],
+    includesFlight: true,
+    rating: 9.8,
+    reviewsCount: 45,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  {
+    id: 'grp-portugal',
+    title: 'Portugal y Pais Vasco',
+    location: 'Europa',
+    price: 5399,
+    description: 'Con Lourdes y Andalucia. Recorriendo Madrid, Granada, Sevilla, Lisboa, Oporto, Santiago, Oviedo, Santander, San Sebastian, Burdeos y Lourdes.',
+    images: [
+      'https://images.unsplash.com/photo-1555881400-74d7acaacd81?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1582234220760-4965823184f9?q=80&w=2070&auto=format&fit=crop'
+    ],
+    isOffer: false,
+    durationLabel: '18 DÍAS / 16 NOCHES',
+    availableDates: ['6 de Mayo 2026', '15 de Julio 2026', '2 de Septiembre 2026'],
+    includesFlight: true,
+    rating: 9.5,
+    reviewsCount: 30,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  {
+    id: 'grp-europa-clasica',
+    title: 'Europa Clásica',
+    location: 'Europa',
+    price: 5999,
+    description: 'Con Pausas y Hoteles Céntricos. Madrid, Barcelona, Roma, Paris. Traslado a Ezeiza incluido para interior de PBA, Santa Fe, Entre Rios y La Pampa.',
+    images: [
+      'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1552832230-c0197dd311b5?q=80&w=1996&auto=format&fit=crop'
     ],
     isOffer: true,
-    discount: 5,
-    specialLabel: 'SALIDA CONFIRMADA',
-    durationLabel: '10 DÍAS / 9 NOCHES',
-    availableDates: ['Salida 15 Mayo 2026', 'Salida 10 Septiembre 2026'],
+    durationLabel: '18 DÍAS / 16 NOCHES',
+    availableDates: ['8 de Octubre 2025', '21 de Enero 2026', '4 de Marzo 2026', '1 de Abril 2026', '22 de Abril 2026', '6 de Mayo 2026', '3 de Junio 2026'],
     includesFlight: true,
-    rating: 9.6,
+    rating: 9.7,
     reviewsCount: 120,
     baseCurrency: 'USD',
     type: 'group'
   },
   {
-    id: 'grp-europa-joven',
-    title: 'Europa Joven 2026',
-    location: 'Europa Multidestino',
-    price: 3200,
-    description: 'El viaje de tu vida con gente de tu edad (18-35 años). Madrid, París, Londres, Amsterdam y Berlín. Hoteles céntricos, fiestas exclusivas y mucha diversión.',
+    id: 'grp-sur-italia',
+    title: 'Sur de Italia: Capri, Sorrento y Sicilia',
+    location: 'Italia',
+    price: 5299,
+    description: 'Recorriendo Roma, Bari, Brindisi, Napoles, Salerno, Taormina, Agrigento, Palermo. Incluye traslados, aéreos y excursiones.',
     images: [
-      'https://images.unsplash.com/photo-1499856871940-a09627c6d7db?q=80&w=2020&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=2070&auto=format&fit=crop'
+      'https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=1887&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1619546952912-335dd051ebf9?q=80&w=1887&auto=format&fit=crop'
     ],
     isOffer: false,
-    specialLabel: 'SOLO JÓVENES',
-    durationLabel: '18 DÍAS / 16 NOCHES',
-    availableDates: ['Salida Enero 2026', 'Salida Julio 2026'],
+    durationLabel: '16 DÍAS / 13 NOCHES',
+    availableDates: ['16 de Marzo 2026', '13 de Abril 2026', '18 de Mayo 2026'],
     includesFlight: true,
-    rating: 9.8,
-    reviewsCount: 350,
+    rating: 9.6,
+    reviewsCount: 25,
     baseCurrency: 'USD',
     type: 'group'
   },
   {
-    id: 'grp-norte-arg',
-    title: 'Norte Argentino en Grupo',
-    location: 'Salta y Jujuy, Argentina',
-    price: 650,
-    description: 'Descubre los colores del norte. Salta, Purmamarca, Humahuaca y Salinas Grandes. Grupo reducido en combi privada con guía local. Peña folklórica de bienvenida.',
+    id: 'grp-europa-apasionante',
+    title: 'Europa Apasionante: España, Francia e Italia',
+    location: 'Europa',
+    price: 4449,
+    description: 'Madrid, Burdeos, Paris, Aosta, Venecia, Roma, Florencia, Costa Azul, Barcelona. Aéreos en vuelo directo.',
     images: [
-      'https://images.unsplash.com/photo-1612293905096-732af2c3249f?q=80&w=2071&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?q=80&w=2070&auto=format&fit=crop'
+      'https://images.unsplash.com/photo-1499856871940-a09627c6d7db?q=80&w=2020&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1529260830199-42c42dda5f3d?q=80&w=2071&auto=format&fit=crop'
     ],
     isOffer: true,
-    durationLabel: '6 DÍAS / 5 NOCHES',
-    availableDates: ['Salida 20 Abril 2026', 'Salida 12 Octubre 2026'],
+    durationLabel: '18 DÍAS / 16 NOCHES',
+    availableDates: ['8 Oct 2025', '5 Nov 2025', '21 Ene 2026', '4 Mar 2026', '1 Abr 2026', '22 Abr 2026', '6 May 2026', '3 Jun 2026', '22 Jul 2026'],
+    includesFlight: true,
+    rating: 9.4,
+    reviewsCount: 88,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  // CARIBE
+  {
+    id: 'grp-punta-cana-ene',
+    title: 'Punta Cana y Bayahibe - Enero 2026',
+    location: 'República Dominicana',
+    price: 3579,
+    description: 'Especial 8 de Enero. 5 Noches en Bayahibe + 5 Noches en Punta Cana. All Inclusive. Vuelo Directo.',
+    images: [
+      'https://images.unsplash.com/photo-1614350280436-15949176395b?q=80&w=2071&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1544124499-58912cbddaad?q=80&w=1935&auto=format&fit=crop'
+    ],
+    isOffer: true,
+    specialLabel: 'SALIDA ENERO',
+    durationLabel: '11 DÍAS / 10 NOCHES',
+    availableDates: ['8 de Enero 2026'],
     includesFlight: true,
     rating: 9.2,
-    reviewsCount: 85,
+    reviewsCount: 15,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  {
+    id: 'grp-miches-bayahibe',
+    title: 'Combinado Miches y Bayahibe',
+    location: 'República Dominicana',
+    price: 2999,
+    description: '10 Noches con All Inclusive. Pasajes aéreos directo. Coordinador acompañante.',
+    images: [
+      'https://images.unsplash.com/photo-1596423736767-4861cb78923a?q=80&w=1936&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1574621100236-d25a64a47e63?q=80&w=2069&auto=format&fit=crop'
+    ],
+    isOffer: false,
+    durationLabel: '11 DÍAS / 10 NOCHES',
+    availableDates: ['20 de Julio 2026', '22 de Julio 2026', '16 de Agosto 2026', '7 de Octubre 2026'],
+    includesFlight: true,
+    rating: 9.3,
+    reviewsCount: 10,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  {
+    id: 'grp-bayahibe-ene',
+    title: 'Especial Bayahibe - Enero 2026',
+    location: 'República Dominicana',
+    price: 2899,
+    description: 'Salida 2 de Enero. 8 Noches con All Inclusive. Pasajes aéreos directo. Traslado a Ezeiza.',
+    images: [
+      'https://images.unsplash.com/photo-1540206395-688085723adb?q=80&w=2048&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?q=80&w=1949&auto=format&fit=crop'
+    ],
+    isOffer: true,
+    specialLabel: 'AÑO NUEVO',
+    durationLabel: '9 DÍAS / 8 NOCHES',
+    availableDates: ['2 de Enero 2026'],
+    includesFlight: true,
+    rating: 9.1,
+    reviewsCount: 12,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  {
+    id: 'grp-punta-cana-bayahibe',
+    title: 'Combinado Punta Cana y Bayahibe',
+    location: 'República Dominicana',
+    price: 2749,
+    description: '10 Noches All Inclusive. Salidas en Enero, Marzo y Mayo. Bus hasta Ezeiza incluido.',
+    images: [
+      'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1614350280436-15949176395b?q=80&w=2071&auto=format&fit=crop'
+    ],
+    isOffer: false,
+    durationLabel: '11 DÍAS / 10 NOCHES',
+    availableDates: ['5 de Enero 2026', '19 de Enero 2026', '11 de Marzo 2026', '11 de Mayo 2026'],
+    includesFlight: true,
+    rating: 9.3,
+    reviewsCount: 18,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  {
+    id: 'grp-cuba-13d',
+    title: 'Cuba Sol y Playa (13 Días)',
+    location: 'Cuba',
+    price: 2699,
+    description: '3 Noches en Habana, 5 en Cayo Santa Maria, 4 en Varadero. Visa incluida. Aéreos con LATAM.',
+    images: [
+      'https://images.unsplash.com/photo-1503464093195-36b34a0869bd?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1585671758509-c88a8047ce40?q=80&w=2070&auto=format&fit=crop'
+    ],
+    isOffer: false,
+    durationLabel: '13 DÍAS / 12 NOCHES',
+    availableDates: ['24 de Febrero 2026', '15 de Marzo 2026', '11 de Abril 2026'],
+    includesFlight: true,
+    rating: 8.9,
+    reviewsCount: 22,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  {
+    id: 'grp-cuba-11d',
+    title: 'Cuba Sol y Playa (11 Días)',
+    location: 'Cuba',
+    price: 2549,
+    description: '3 Noches en Habana, 7 Noches en Varadero. Visa incluida. Salida especial Octubre.',
+    images: [
+      'https://images.unsplash.com/photo-1589782182703-2aaa69037b5b?q=80&w=1974&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1542998966-23573229b673?q=80&w=2070&auto=format&fit=crop'
+    ],
+    isOffer: true,
+    durationLabel: '11 DÍAS / 10 NOCHES',
+    availableDates: ['18 de Octubre 2025'],
+    includesFlight: true,
+    rating: 8.8,
+    reviewsCount: 14,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  {
+    id: 'grp-cancun',
+    title: 'Cancún y Playa del Carmen',
+    location: 'México',
+    price: 3149,
+    description: 'Con Stop de Regalo en Panamá. 3 Noches Panamá, 3 Noches Playa del Carmen, 4 Noches Cancún. All Inclusive en playas.',
+    images: [
+      'https://images.unsplash.com/photo-1563297136-1e031eb09dfb?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1544124499-58912cbddaad?q=80&w=1935&auto=format&fit=crop'
+    ],
+    isOffer: false,
+    durationLabel: '12 DÍAS / 11 NOCHES',
+    availableDates: ['10 de Marzo 2026', '22 de Abril 2026', '3 de Junio 2026'],
+    includesFlight: true,
+    rating: 9.4,
+    reviewsCount: 33,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  // BRASIL
+  {
+    id: 'grp-rio-buzios-26',
+    title: 'Rio de Janeiro y Búzios (2026)',
+    location: 'Brasil',
+    price: 1779,
+    description: '3 Noches en Rio, 7 Noches en Búzios. Incluye Paseo en Barco, City Tour Rio y Búzios. Asistencia al viajero.',
+    images: [
+      'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1544015759-3660632906b3?q=80&w=2070&auto=format&fit=crop'
+    ],
+    isOffer: false,
+    durationLabel: '11 DÍAS / 10 NOCHES',
+    availableDates: ['5 de Enero 2026', '16 de Febrero 2026', '10 de Marzo 2026'],
+    includesFlight: true,
+    rating: 9.5,
+    reviewsCount: 50,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  {
+    id: 'grp-rio-buzios-25',
+    title: 'Rio de Janeiro y Búzios (2025)',
+    location: 'Brasil',
+    price: 1449,
+    description: 'Salidas 2025. 3 Noches en Rio, 7 Noches en Búzios. Excursiones incluidas.',
+    images: [
+      'https://images.unsplash.com/photo-1596484552834-6a58f850e0a1?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1516306580123-e6e52b1b7b5f?q=80&w=2026&auto=format&fit=crop'
+    ],
+    isOffer: true,
+    durationLabel: '11 DÍAS / 10 NOCHES',
+    availableDates: ['1 de Octubre 2025', '25 de Noviembre 2025'],
+    includesFlight: true,
+    rating: 9.4,
+    reviewsCount: 45,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  {
+    id: 'grp-salvador',
+    title: 'Salvador de Bahia - Palladium Imbassai',
+    location: 'Brasil',
+    price: 2499,
+    description: '4 Noches en Grand Palladium Imbassai (All Inclusive) + 3 Noches en Salvador. City Tour histórico incluido.',
+    images: [
+      'https://images.unsplash.com/photo-1598135753163-6167c1a1ad65?q=80&w=2069&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1574005697380-4965d83c3933?q=80&w=1964&auto=format&fit=crop'
+    ],
+    isOffer: false,
+    durationLabel: '10 DÍAS / 8 NOCHES',
+    availableDates: ['20 de Septiembre 2025'],
+    includesFlight: true,
+    rating: 9.2,
+    reviewsCount: 20,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  // EXOTICOS
+  {
+    id: 'grp-china-japon',
+    title: 'China y Japón: Asia Milenaria',
+    location: 'Asia',
+    price: 6690,
+    description: '4 Beijing, 2 Xian, 3 Shanghai, 1 Osaka, 2 Kyoto, 3 Tokyo. Vuelos con Turkish. Hoteles de lujo.',
+    images: [
+      'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=1988&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?q=80&w=2070&auto=format&fit=crop'
+    ],
+    isOffer: false,
+    durationLabel: '20 DÍAS / 17 NOCHES',
+    availableDates: ['31 de Marzo 2026', '9 de Mayo 2026'],
+    includesFlight: true,
+    rating: 9.9,
+    reviewsCount: 15,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  {
+    id: 'grp-sudafrica',
+    title: 'Sudafrica: Aventura Salvaje',
+    location: 'África',
+    price: 4790,
+    description: '12 Noches en hoteles. Excursiones y Safaris incluidos. Coordinador acompañante.',
+    images: [
+      'https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=2068&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1523805009345-7448845a9e53?q=80&w=2072&auto=format&fit=crop'
+    ],
+    isOffer: false,
+    durationLabel: '14 DÍAS / 12 NOCHES',
+    availableDates: ['9 de Enero 2026'],
+    includesFlight: true,
+    rating: 9.7,
+    reviewsCount: 10,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  {
+    id: 'grp-india-dubai',
+    title: 'India y Dubai: Mística y Modernidad',
+    location: 'Asia / Medio Oriente',
+    price: 4990,
+    description: '4 Noches en India Hoteles 4*, 4 Noches en Dubai Hoteles 4*. Vuelos con Emirates.',
+    images: [
+      'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?q=80&w=2071&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1512453979798-5ea932a88406?q=80&w=2070&auto=format&fit=crop'
+    ],
+    isOffer: false,
+    durationLabel: '13 DÍAS / 11 NOCHES',
+    availableDates: ['10 de Noviembre 2025', '17 de Enero 2026'],
+    includesFlight: true,
+    rating: 9.6,
+    reviewsCount: 22,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  {
+    id: 'grp-dubai-fin-ano',
+    title: 'Dubai y Abu Dhabi: Fin de Año',
+    location: 'Emiratos Árabes',
+    price: 3949,
+    description: 'Salida Especial Fin de Año. 7 Noches Dubai, 3 Abu Dhabi. Safari 4x4, Cena Dhow Cruise.',
+    images: [
+      'https://images.unsplash.com/photo-1546412414-e1885259563a?q=80&w=1974&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=1974&auto=format&fit=crop'
+    ],
+    isOffer: true,
+    specialLabel: 'AÑO NUEVO',
+    durationLabel: '12 DÍAS / 10 NOCHES',
+    availableDates: ['27 de Diciembre 2025'],
+    includesFlight: true,
+    rating: 9.8,
+    reviewsCount: 18,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  {
+    id: 'grp-egipto-dubai',
+    title: 'Egipto y Dubai',
+    location: 'Medio Oriente',
+    price: 4299,
+    description: '4 Noches Dubai, 4 Noches Cairo, 4 Noches Crucero por Egipto. Vuelos con Emirates.',
+    images: [
+      'https://images.unsplash.com/photo-1539650116455-8efdbec6431a?q=80&w=1974&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1587595431973-160d0d94add1?q=80&w=2076&auto=format&fit=crop'
+    ],
+    isOffer: false,
+    durationLabel: '14 DÍAS / 12 NOCHES',
+    availableDates: ['20 de Octubre 2025', '12 de Enero 2026'],
+    includesFlight: true,
+    rating: 9.5,
+    reviewsCount: 40,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  {
+    id: 'grp-dubai-emiratos',
+    title: 'Lo Mejor de los Emiratos',
+    location: 'Emiratos Árabes',
+    price: 2999,
+    description: '7 Noches Dubai, 3 Noches Abu Dhabi. Múltiples salidas todo el año. Bus hasta Ezeiza.',
+    images: [
+      'https://images.unsplash.com/photo-1512453979798-5ea932a88406?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=1974&auto=format&fit=crop'
+    ],
+    isOffer: true,
+    durationLabel: '12 DÍAS / 10 NOCHES',
+    availableDates: ['Sep/Oct/Nov 2025', 'Ene/Feb/Mar/Abr/May 2026'],
+    includesFlight: true,
+    rating: 9.4,
+    reviewsCount: 60,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  // AMERICAS
+  {
+    id: 'grp-costa-oeste',
+    title: 'Costa Oeste de Estados Unidos',
+    location: 'USA',
+    price: 4699,
+    description: 'Los Angeles, Las Vegas, Yosemite, San Francisco, Cañón del Colorado. Salida desde tu ciudad.',
+    images: [
+      'https://images.unsplash.com/photo-1453974336165-b5c58464f1ed?q=80&w=2073&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1474433188271-d3f339f41911?q=80&w=2070&auto=format&fit=crop'
+    ],
+    isOffer: false,
+    durationLabel: 'Salidas 2026',
+    availableDates: ['3 de Abril 2026', '1 de Mayo 2026'],
+    includesFlight: true,
+    rating: 9.6,
+    reviewsCount: 20,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  {
+    id: 'grp-costa-rica',
+    title: 'Costa Rica Inolvidable',
+    location: 'Costa Rica',
+    price: 3599,
+    description: 'Encanto Natural. San José, Tortuguero, La Fortuna, Tamarindo. Naturaleza pura.',
+    images: [
+      'https://images.unsplash.com/photo-1518182170546-0766aaef3129?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1596237563267-8453e5c68430?q=80&w=2070&auto=format&fit=crop'
+    ],
+    isOffer: false,
+    durationLabel: '11 DÍAS / 10 NOCHES',
+    availableDates: ['12 de Marzo 2026', '9 de Mayo 2026'],
+    includesFlight: true,
+    rating: 9.3,
+    reviewsCount: 15,
+    baseCurrency: 'USD',
+    type: 'group'
+  },
+  {
+    id: 'grp-peru-andina',
+    title: 'Perú con Machu Picchu: Mística Andina',
+    location: 'Perú',
+    price: 2649,
+    description: 'Lima, Cusco, Valle Sagrado, Machu Picchu. Hoteles con desayuno y excursiones.',
+    images: [
+      'https://images.unsplash.com/photo-1526392060635-9d6019884377?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1587595431973-160d0d94add1?q=80&w=2076&auto=format&fit=crop'
+    ],
+    isOffer: true,
+    durationLabel: '10 DÍAS / 8 NOCHES',
+    availableDates: ['Oct/Nov 2025', 'Ene-Jul 2026'],
+    includesFlight: true,
+    rating: 9.7,
+    reviewsCount: 100,
     baseCurrency: 'USD',
     type: 'group'
   }
