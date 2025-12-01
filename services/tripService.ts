@@ -15,8 +15,12 @@ export const getTrips = async (): Promise<Trip[]> => {
       return INITIAL_TRIPS; 
     }
 
-    if (!data || data.length === 0) {
-        // If DB is empty, return initial mock data (Optional: You could insert initial data here)
+    // AUTO-SEEDING LOGIC FOR TRIPS
+    // If DB is empty or has fewer items than our updated list, we seed it.
+    if (!data || data.length < 5) {
+        console.log("Seeding Database with Trips...");
+        const { error: seedError } = await supabase.from('trips').upsert(INITIAL_TRIPS);
+        if (seedError) console.error("Error seeding trips:", seedError);
         return INITIAL_TRIPS; 
     }
 

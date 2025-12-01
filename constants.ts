@@ -66,6 +66,179 @@ export const INITIAL_PROMO_BANNERS: PromoBanner[] = [
 
 // --- PAQUETES (Precios en USD) - EXTRAÍDOS DEL PDF ---
 export const INITIAL_TRIPS: Trip[] = [
+  // --- BRASIL VERANO 2026 (FROM PDF) ---
+  {
+    id: 'bra-camboriu-bus',
+    title: 'Verano en Camboriú - En Bus',
+    location: 'Brasil',
+    price: 872,
+    description: '7 Noches de alojamiento en Hamburgo Palace Hotel. Salida Enero/Febrero 2026. Bus Cama.',
+    images: ['https://images.unsplash.com/photo-1563806461-12778943df44?q=80&w=2070&auto=format&fit=crop'],
+    isOffer: true,
+    durationLabel: '10 DÍAS / 7 NOCHES',
+    availableDates: ['Enero 2026', 'Febrero 2026'],
+    includesFlight: false,
+    rating: 8.5,
+    reviewsCount: 12,
+    baseCurrency: 'USD',
+    type: 'trip',
+    specialLabel: 'BUS CAMA'
+  },
+  {
+    id: 'bra-floripa-eco',
+    title: 'Paquete a Florianópolis - 8 días',
+    location: 'Brasil',
+    price: 475,
+    description: 'Opción económica. Salida desde Buenos Aires. Fechas disponibles Diciembre 2025, Enero 2026.',
+    images: ['https://images.unsplash.com/photo-1544256667-27e1f486cc4e?q=80&w=2071&auto=format&fit=crop'],
+    isOffer: true,
+    durationLabel: '8 DÍAS / 7 NOCHES',
+    availableDates: ['Diciembre 2025', 'Enero 2026', 'Marzo 2026'],
+    includesFlight: false,
+    rating: 8.0,
+    reviewsCount: 40,
+    baseCurrency: 'USD',
+    type: 'trip',
+    specialLabel: 'ECONÓMICO'
+  },
+  {
+    id: 'bra-floripa-varadero',
+    title: 'Florianópolis Verano! Varadero Palace',
+    location: 'Brasil',
+    price: 1326,
+    description: 'Pagá el 50% y el resto en CUOTAS. Hotel Varadero Palace II. Vuelo Directo BUE-FLN. Enero 2026.',
+    images: ['https://images.unsplash.com/photo-1626240291902-690226c45982?q=80&w=1932&auto=format&fit=crop'],
+    isOffer: false,
+    durationLabel: '8 DÍAS / 7 NOCHES',
+    availableDates: ['Enero 2026'],
+    includesFlight: true,
+    rating: 9.4,
+    reviewsCount: 8,
+    baseCurrency: 'USD',
+    type: 'trip',
+    specialLabel: 'FINANCIACIÓN'
+  },
+  {
+    id: 'bra-floripa-balmare',
+    title: 'Escapate a Florianópolis – Hotel Balmare',
+    location: 'Brasil',
+    price: 1265,
+    description: '¡Pagalo en cuotas! Hotel Balmare. Salida Enero 2026. Vuelo Directo.',
+    images: ['https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?q=80&w=1932&auto=format&fit=crop'],
+    isOffer: false,
+    durationLabel: '8 DÍAS / 7 NOCHES',
+    availableDates: ['Enero 2026'],
+    includesFlight: true,
+    rating: 8.8,
+    reviewsCount: 5,
+    baseCurrency: 'USD',
+    type: 'trip'
+  },
+  {
+    id: 'bra-floripa-ingleses',
+    title: 'OFERTA 30%OFF Verano 2026 - Ingleses Praia',
+    location: 'Brasil',
+    price: 866,
+    description: 'Hotel Ingleses Praia. Desayuno incluido. Vuelo Directo BUE-FLN. Enero/Febrero 2026.',
+    images: ['https://images.unsplash.com/photo-1535443274868-756b0f070b6e?q=80&w=2070&auto=format&fit=crop'],
+    isOffer: true,
+    specialLabel: '30% OFF',
+    discount: 30,
+    durationLabel: '8 DÍAS / 7 NOCHES',
+    availableDates: ['Enero 2026', 'Febrero 2026'],
+    includesFlight: true,
+    rating: 9.0,
+    reviewsCount: 22,
+    baseCurrency: 'USD',
+    type: 'trip'
+  },
+  {
+    id: 'bra-camboriu-brut',
+    title: 'OFERTA 30%OFF Verano 2026 - Hotel Brut',
+    location: 'Brasil',
+    price: 849,
+    description: 'Paquete a Camboriu Hotel Brut. Enero/Febrero 2026. Vuelo Directo.',
+    images: ['https://images.unsplash.com/photo-1555979869-7da2696b738e?q=80&w=1974&auto=format&fit=crop'],
+    isOffer: true,
+    specialLabel: '30% OFF',
+    discount: 30,
+    durationLabel: '8 DÍAS / 7 NOCHES',
+    availableDates: ['Enero 2026', 'Febrero 2026'],
+    includesFlight: true,
+    rating: 9.1,
+    reviewsCount: 18,
+    baseCurrency: 'USD',
+    type: 'trip'
+  },
+  {
+    id: 'bra-bombinhas',
+    title: 'Paquete a Bombinhas - 8 días',
+    location: 'Brasil',
+    price: 799,
+    description: 'Destino BBH - Florianópolis. Salida desde Buenos Aires. Diciembre 2025, Enero 2026.',
+    images: ['https://images.unsplash.com/photo-1519832276906-e77fa7478054?q=80&w=2069&auto=format&fit=crop'],
+    isOffer: true,
+    durationLabel: '8 DÍAS / 7 NOCHES',
+    availableDates: ['Diciembre 2025', 'Enero 2026'],
+    includesFlight: true,
+    rating: 8.7,
+    reviewsCount: 14,
+    baseCurrency: 'USD',
+    type: 'trip'
+  },
+  {
+    id: 'bra-floripa-maiken',
+    title: 'OFERTA VERANO 2026 - Posada Maiken',
+    location: 'Brasil',
+    price: 891,
+    description: 'Paquete a Florianópolis Posada Maiken. Desayuno incluido. Vuelo Directo BUE-FLN. Enero/Feb 2026.',
+    images: ['https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=2070&auto=format&fit=crop'],
+    isOffer: true,
+    durationLabel: '8 DÍAS / 7 NOCHES',
+    availableDates: ['Enero 2026', 'Febrero 2026'],
+    includesFlight: true,
+    rating: 8.2,
+    reviewsCount: 9,
+    baseCurrency: 'USD',
+    type: 'trip',
+    specialLabel: 'VERANO 2026'
+  },
+  {
+    id: 'bra-camboriu-rieger',
+    title: 'OFERTA 30%OFF Verano 2026 - Hotel Rieger',
+    location: 'Brasil',
+    price: 849,
+    description: 'Paquete a Camboriu Hotel Rieger. Enero 2026. Vuelo Directo.',
+    images: ['https://images.unsplash.com/photo-1566665797739-1674de7a421a?q=80&w=2074&auto=format&fit=crop'],
+    isOffer: true,
+    specialLabel: '30% OFF',
+    discount: 30,
+    durationLabel: '8 DÍAS / 7 NOCHES',
+    availableDates: ['Enero 2026'],
+    includesFlight: true,
+    rating: 8.9,
+    reviewsCount: 30,
+    baseCurrency: 'USD',
+    type: 'trip'
+  },
+  {
+    id: 'bra-camboriu-ilha',
+    title: 'OFERTA VERANO 2026 - Hotel Ilha de Madeira',
+    location: 'Brasil',
+    price: 893,
+    description: 'Paquete a Camboriu Hotel Ilha de Madeira. Enero 2026. Vuelo Directo.',
+    images: ['https://images.unsplash.com/photo-1534351590666-13e3e96b5017?q=80&w=2070&auto=format&fit=crop'],
+    isOffer: true,
+    durationLabel: '8 DÍAS / 7 NOCHES',
+    availableDates: ['Enero 2026'],
+    includesFlight: true,
+    rating: 8.6,
+    reviewsCount: 15,
+    baseCurrency: 'USD',
+    type: 'trip',
+    specialLabel: 'VERANO 2026'
+  },
+
   // --- EUROPA ---
   {
     id: 'pkg-inglaterra-escocia',
@@ -178,4 +351,14 @@ export const INITIAL_TRIPS: Trip[] = [
     includesFlight: true,
     rating: 9.3,
     reviewsCount: 10,
-    
+    baseCurrency: 'USD',
+    type: 'trip'
+  }
+];
+
+export const INITIAL_RENTALS: Apartment[] = [];
+export const INITIAL_HOTELS: Hotel[] = [];
+export const INITIAL_EXCURSIONS: Excursion[] = [];
+export const INITIAL_INSTALLMENT_TRIPS: InstallmentTrip[] = [];
+export const INITIAL_WORLDCUP_TRIPS: WorldCupTrip[] = [];
+export const INITIAL_GROUP_TRIPS: GroupTrip[] = [];
