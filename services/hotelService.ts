@@ -10,6 +10,15 @@ export const getHotels = async (): Promise<Hotel[]> => {
       console.error('Error fetching hotels:', error);
       return INITIAL_HOTELS;
     }
+
+    // AUTO-SEEDING FOR HOTELS
+    if (!data || data.length < 5) {
+        console.log("Seeding Database with Hotels...");
+        const { error: seedError } = await supabase.from('hotels').upsert(INITIAL_HOTELS);
+        if (seedError) console.error("Error seeding hotels:", seedError);
+        return INITIAL_HOTELS;
+    }
+
     return (data as Hotel[]) || INITIAL_HOTELS;
   } catch (err) {
     return INITIAL_HOTELS;

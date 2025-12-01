@@ -10,6 +10,15 @@ export const getRentals = async (): Promise<Apartment[]> => {
       console.error('Error fetching rentals:', error);
       return INITIAL_RENTALS;
     }
+
+    // AUTO-SEEDING FOR RENTALS
+    if (!data || data.length < 5) {
+        console.log("Seeding Database with Rentals...");
+        const { error: seedError } = await supabase.from('rentals').upsert(INITIAL_RENTALS);
+        if (seedError) console.error("Error seeding rentals:", seedError);
+        return INITIAL_RENTALS;
+    }
+
     return (data as Apartment[]) || INITIAL_RENTALS;
   } catch (err) {
     return INITIAL_RENTALS;
