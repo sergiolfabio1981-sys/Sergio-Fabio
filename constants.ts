@@ -66,7 +66,128 @@ export const INITIAL_PROMO_BANNERS: PromoBanner[] = [
 
 // --- PAQUETES (Precios en USD) - EXTRAÍDOS DEL PDF ---
 export const INITIAL_TRIPS: Trip[] = [
-  // --- BUZIOS & RIO (NEW PDF EXTRACT) ---
+  // --- MARAGOGI (NEW PDF EXTRACT) ---
+  {
+    id: 'maragogi-jangadeiros',
+    title: 'Vacaciones en Maragogi',
+    location: 'Maragogi, Brasil',
+    price: 1237,
+    description: '8 Noches. Salida desde Buenos Aires. Julio 2026. Alojamiento en Pousada dos Jangadeiros. Incluye Vuelo + Hotel.',
+    images: ['https://images.unsplash.com/photo-1590001155093-a3c66ab0c3ff?q=80&w=2070&auto=format&fit=crop', 'https://images.unsplash.com/photo-1540541338287-41700207dee6?q=80&w=2070&auto=format&fit=crop'],
+    isOffer: true,
+    durationLabel: '9 DÍAS / 8 NOCHES',
+    availableDates: ['Julio 2026'],
+    includesFlight: true,
+    rating: 8.9,
+    reviewsCount: 12,
+    baseCurrency: 'USD',
+    type: 'trip',
+    specialLabel: 'CARIBE BRASILEÑO'
+  },
+  {
+    id: 'maragogi-carnaval-2026',
+    title: 'Maragogi Carnaval 2026',
+    location: 'Maragogi, Brasil',
+    price: 2576,
+    description: '9 Noches. Disfrutá el Carnaval en Praia Dourada Maragogi Park. Salida Febrero 2026 desde Buenos Aires.',
+    images: ['https://images.unsplash.com/photo-1519046904884-53103b34b271?q=80&w=2070&auto=format&fit=crop', 'https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=2025&auto=format&fit=crop'],
+    isOffer: true,
+    durationLabel: '10 DÍAS / 9 NOCHES',
+    availableDates: ['Febrero 2026'],
+    includesFlight: true,
+    rating: 9.4,
+    reviewsCount: 28,
+    baseCurrency: 'USD',
+    type: 'trip',
+    specialLabel: 'CARNAVAL'
+  },
+  {
+    id: 'maragogi-cordoba-shalom',
+    title: 'Desde Córdoba a Maragogi',
+    location: 'Maragogi, Brasil',
+    price: 1825,
+    description: '9 Noches. Salida desde Córdoba. Enero 2026. Alojamiento en POUSADA SHALOM BEACH. Vuelo Directo.',
+    images: ['https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop', 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=2070&auto=format&fit=crop'],
+    isOffer: false,
+    durationLabel: '10 DÍAS / 9 NOCHES',
+    availableDates: ['Enero 2026'],
+    includesFlight: true,
+    rating: 8.8,
+    reviewsCount: 10,
+    baseCurrency: 'USD',
+    type: 'trip',
+    specialLabel: 'DESDE CÓRDOBA'
+  },
+  {
+    id: 'maragogi-porto-11d',
+    title: 'Circuito Maragogi y Porto de Galinhas',
+    location: 'Brasil',
+    price: 1163,
+    description: '10 Noches. Combiná lo mejor del nordeste: Maragogi + Porto de Galinhas. Salida Diciembre 2025. Vuelo desde BsAs.',
+    images: ['https://images.unsplash.com/photo-1516834474-48c0abc2a902?q=80&w=2073&auto=format&fit=crop', 'https://images.unsplash.com/photo-1590001155093-a3c66ab0c3ff?q=80&w=2070&auto=format&fit=crop'],
+    isOffer: true,
+    durationLabel: '11 DÍAS / 10 NOCHES',
+    availableDates: ['Diciembre 2025'],
+    includesFlight: true,
+    rating: 9.5,
+    reviewsCount: 35,
+    baseCurrency: 'USD',
+    type: 'trip',
+    specialLabel: 'COMBINADO'
+  },
+  {
+    id: 'maragogi-cordoba-croa',
+    title: '¡Maragogi Saliendo de Córdoba!',
+    location: 'Maragogi, Brasil',
+    price: 1862,
+    description: '7 Noches. Hotel Croa Mares Maragogi. Salidas Febrero y Marzo 2026. Vuelo Directo COR-MCZ.',
+    images: ['https://images.unsplash.com/photo-1544988513-404323abcf72?q=80&w=1974&auto=format&fit=crop'],
+    isOffer: false,
+    durationLabel: '8 DÍAS / 7 NOCHES',
+    availableDates: ['Febrero 2026', 'Marzo 2026'],
+    includesFlight: true,
+    rating: 9.2,
+    reviewsCount: 14,
+    baseCurrency: 'USD',
+    type: 'trip',
+    specialLabel: 'DESDE CÓRDOBA'
+  },
+  {
+    id: 'maragogi-rosario-ibis',
+    title: '¡Maragogi Saliendo de Rosario!',
+    location: 'Maragogi, Brasil',
+    price: 2005,
+    description: '7 Noches. Salida desde Rosario. Enero 2026. Hotel Ibis Styles Maragogi. Estilo moderno y confort.',
+    images: ['https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop', 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?q=80&w=2070&auto=format&fit=crop'],
+    isOffer: false,
+    durationLabel: '8 DÍAS / 7 NOCHES',
+    availableDates: ['Enero 2026'],
+    includesFlight: true,
+    rating: 9.4,
+    reviewsCount: 18,
+    baseCurrency: 'USD',
+    type: 'trip',
+    specialLabel: 'DESDE ROSARIO'
+  },
+  {
+    id: 'maragogi-rosario-dourada',
+    title: 'Sol y Playa en Maragogi Saliendo de Rosario',
+    location: 'Maragogi, Brasil',
+    price: 2061,
+    description: '7 Noches. Alojamiento en Praia Dourada Maragogi Park. Salida Febrero 2026. Vuelo Directo ROS-MCZ.',
+    images: ['https://images.unsplash.com/photo-1572331165267-854da2dc7252?q=80&w=2070&auto=format&fit=crop'],
+    isOffer: true,
+    durationLabel: '8 DÍAS / 7 NOCHES',
+    availableDates: ['Febrero 2026'],
+    includesFlight: true,
+    rating: 9.0,
+    reviewsCount: 22,
+    baseCurrency: 'USD',
+    type: 'trip',
+    specialLabel: 'DESDE ROSARIO'
+  },
+
+  // --- BUZIOS & RIO (PREVIOUS PDF) ---
   {
     id: 'buzios-rio-relax',
     title: 'Relax en Rio de Janeiro & Buzios',
@@ -203,7 +324,7 @@ export const INITIAL_TRIPS: Trip[] = [
     specialLabel: 'CRUCERO'
   },
 
-  // --- BRASIL VERANO 2026 (PREVIOUS PDF) ---
+  // --- BRASIL VERANO 2026 ---
   {
     id: 'bra-camboriu-bus',
     title: 'Verano en Camboriú - En Bus',
