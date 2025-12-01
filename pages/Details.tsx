@@ -7,6 +7,7 @@ import { ADMIN_EMAIL } from '../constants';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { generateSharePDF } from '../services/pdfShareService';
+import ImageGallery from '../components/ImageGallery';
 
 declare global {
   interface Window {
@@ -34,6 +35,7 @@ const Details: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState('');
   const [guests, setGuests] = useState(2);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [isSharingMenuOpen, setIsSharingMenuOpen] = useState(false); // Added share menu state
 
   const { t } = useLanguage();
   const { formatPrice } = useCurrency();
@@ -65,7 +67,13 @@ const Details: React.FC = () => {
       setIsGeneratingPdf(true);
       await generateSharePDF(trip, formatPrice(trip.price, baseCurrency));
       setIsGeneratingPdf(false);
+      setIsSharingMenuOpen(false);
   };
+
+  const shareUrl = window.location.href;
+  const shareText = `Mira este paquete en ABRAS Travel: ${trip?.title}`;
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
+  const emailUrl = `mailto:?subject=${encodeURIComponent(trip?.title || '')}&body=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`;
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20 font-sans">
@@ -82,23 +90,12 @@ const Details: React.FC = () => {
               </div>
               
               {/* Share Icon Button */}
-              <button 
-                onClick={handleSharePdf} 
-                disabled={isGeneratingPdf}
-                className="p-3 rounded-full hover:bg-gray-100 text-gray-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 disabled:opacity-50"
-                title="Compartir PDF"
-              >
-                  {isGeneratingPdf ? (
-                      <svg className="animate-spin h-6 w-6 text-cyan-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                  ) : (
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                      </svg>
-                  )}
-              </button>
+              <div className="relative">
+                  <button onClick={() => setIsSharingMenuOpen(!isSharingMenuOpen)} disabled={isGeneratingPdf} className="p-2 md:p-3 rounded-full hover:bg-gray-100 text-gray-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 disabled:opacity-50 flex items-center gap-2" title="Compartir">
+                      {isGeneratingPdf ? (<svg className="animate-spin h-5 w-5 text-cyan-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>) : (<svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>)}
+                  </button>
+                  {isSharingMenuOpen && (<><div className="fixed inset-0 z-40" onClick={() => setIsSharingMenuOpen(false)}></div><div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden animate-fade-in-up"><div className="p-2"><a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 w-full px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 rounded-lg transition-colors" onClick={()=>setIsSharingMenuOpen(false)}><span className="text-green-500 font-bold">WhatsApp</span></a><a href={emailUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 w-full px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors" onClick={()=>setIsSharingMenuOpen(false)}><span className="text-blue-500 font-bold">Email</span></a><button onClick={handleSharePdf} className="flex items-center gap-3 w-full px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 rounded-lg transition-colors text-left"><span className="text-red-500 font-bold">Descargar PDF</span></button></div></div></>)}
+              </div>
           </div>
       </div>
 
@@ -106,10 +103,10 @@ const Details: React.FC = () => {
           
           {/* Main Content */}
           <div className="lg:col-span-2">
-              <div className="relative">
-                <img src={trip.images[0]} alt={trip.title} className="w-full h-80 md:h-[450px] object-cover rounded-xl shadow-md mb-6" />
+              <div className="relative mb-6">
+                <ImageGallery images={trip.images} title={trip.title} />
                 {trip.discount && (
-                    <div className="absolute top-4 right-4 bg-red-600 text-white font-bold px-4 py-2 rounded-lg shadow-lg">
+                    <div className="absolute top-4 right-4 bg-red-600 text-white font-bold px-4 py-2 rounded-lg shadow-lg z-10 pointer-events-none">
                         {trip.discount}% OFF
                     </div>
                 )}

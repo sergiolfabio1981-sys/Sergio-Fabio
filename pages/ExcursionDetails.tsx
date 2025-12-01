@@ -6,13 +6,13 @@ import { Excursion } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { generateSharePDF } from '../services/pdfShareService';
+import ImageGallery from '../components/ImageGallery';
 
 const ExcursionDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [excursion, setExcursion] = useState<Excursion | undefined>(undefined);
   const [selectedDate, setSelectedDate] = useState('');
   const [passengers, setPassengers] = useState(2);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isSharingMenuOpen, setIsSharingMenuOpen] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const { formatPrice } = useCurrency();
@@ -22,14 +22,6 @@ const ExcursionDetails: React.FC = () => {
       getExcursionById(id).then(setExcursion);
     }
   }, [id]);
-
-  useEffect(() => {
-    if (!excursion || excursion.images.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % excursion.images.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [excursion]);
 
   const totalPrice = excursion ? excursion.price * passengers : 0;
   const bookingFee = totalPrice * 0.10;
@@ -70,10 +62,12 @@ const ExcursionDetails: React.FC = () => {
               </div>
           </div>
       </div>
-      <div className="relative h-[50vh] w-full overflow-hidden">
-          <img src={excursion.images[currentImageIndex]} className="w-full h-full object-cover" alt={excursion.title} />
-          <div className="absolute inset-0 bg-black/40 flex items-end p-8"><div className="max-w-7xl mx-auto w-full"><span className="bg-green-600 text-white px-2 py-1 text-sm font-bold rounded mb-2 inline-block">EXCURSIÓN</span><h1 className="text-4xl font-bold text-white">{excursion.title}</h1><p className="text-white text-lg">{excursion.location}</p></div></div>
+      
+      <div className="relative w-full">
+          <ImageGallery images={excursion.images} title={excursion.title} />
+          <div className="absolute bottom-0 left-0 w-full p-8 pointer-events-none bg-gradient-to-t from-black/80 to-transparent"><div className="max-w-7xl mx-auto w-full"><span className="bg-green-600 text-white px-2 py-1 text-sm font-bold rounded mb-2 inline-block shadow">EXCURSIÓN</span><h1 className="text-4xl font-bold text-white drop-shadow-md">{excursion.title}</h1><p className="text-white text-lg drop-shadow-md">{excursion.location}</p></div></div>
       </div>
+
       <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-2"><div className="bg-white p-6 rounded-xl shadow-sm mb-6"><h2 className="text-2xl font-bold mb-4">Descripción</h2><p className="text-gray-600 mb-4">{excursion.description}</p><div className="flex gap-4 text-sm font-bold text-gray-500"><span className="bg-gray-100 px-3 py-1 rounded">Duración: {excursion.duration}</span><span className="bg-gray-100 px-3 py-1 rounded">Salidas: {excursion.availableDates.join(', ')}</span></div></div></div>
           <div className="md:col-span-1"><div className="bg-white p-6 rounded-xl shadow-lg sticky top-24"><div className="flex justify-between items-end mb-4"><span className="text-gray-500">Precio x persona</span><span className="text-2xl font-bold text-cyan-600">{formatPrice(excursion.price)}</span></div><div className="mb-4"><label className="block text-sm font-bold mb-1">Fecha Preferida</label><input type="date" className="w-full border rounded p-2" value={selectedDate} onChange={(e)=>setSelectedDate(e.target.value)} /></div><div className="mb-4"><label className="block text-sm font-bold mb-1">Cantidad de Personas</label><div className="flex items-center border rounded"><button onClick={()=>setPassengers(Math.max(1, passengers-1))} className="p-2 px-4 hover:bg-gray-100">-</button><span className="flex-1 text-center font-bold">{passengers}</span><button onClick={()=>setPassengers(passengers+1)} className="p-2 px-4 hover:bg-gray-100">+</button></div></div><div className="border-t pt-4 mb-4 space-y-2"><div className="flex justify-between text-sm"><span>Total</span><span>{formatPrice(totalPrice)}</span></div><div className="flex justify-between font-bold text-orange-600"><span>Reserva (10%)</span><span>{formatPrice(bookingFee)}</span></div></div><button onClick={handleSubmit} disabled={!selectedDate} className="w-full bg-cyan-600 text-white font-bold py-3 rounded hover:bg-cyan-700 disabled:bg-gray-300">Reservar Lugar</button></div></div>

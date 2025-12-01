@@ -6,6 +6,7 @@ import { GroupTrip } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { generateSharePDF } from '../services/pdfShareService';
+import ImageGallery from '../components/ImageGallery';
 
 const GroupDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -64,7 +65,10 @@ const GroupDetails: React.FC = () => {
       </div>
       <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-              <div className="relative"><img src={trip.images[0]} alt={trip.title} className="w-full h-80 md:h-[450px] object-cover rounded-xl shadow-md mb-6" /><div className="absolute top-4 right-4 bg-purple-600 text-white font-bold px-4 py-2 rounded-lg shadow-lg">GRUPAL</div></div>
+              <div className="relative mb-6">
+                <ImageGallery images={trip.images} title={trip.title} />
+                <div className="absolute top-4 right-4 bg-purple-600 text-white font-bold px-4 py-2 rounded-lg shadow-lg z-10 pointer-events-none">GRUPAL</div>
+              </div>
               <div className="flex border-b border-gray-200 mb-6 overflow-x-auto"><button onClick={()=>setActiveTab('overview')} className={`px-6 py-3 font-medium border-b-2 whitespace-nowrap transition-colors ${activeTab==='overview' ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-500'}`}>Resumen</button><button onClick={()=>setActiveTab('dates')} className={`px-6 py-3 font-medium border-b-2 whitespace-nowrap transition-colors ${activeTab==='dates' ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-500'}`}>Fechas Confirmadas</button><button onClick={()=>setActiveTab('services')} className={`px-6 py-3 font-medium border-b-2 whitespace-nowrap transition-colors ${activeTab==='services' ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-500'}`}>Incluye</button></div>
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 min-h-[300px]">
                   {activeTab === 'overview' && (<div><h3 className="text-xl font-bold mb-4 text-gray-800">Sobre esta Experiencia Grupal</h3><p className="text-gray-600 leading-relaxed whitespace-pre-line text-lg">{trip.description}</p></div>)}

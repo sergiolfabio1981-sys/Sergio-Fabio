@@ -6,12 +6,12 @@ import { WorldCupTrip } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { generateSharePDF } from '../services/pdfShareService';
+import ImageGallery from '../components/ImageGallery';
 
 const WorldCupDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [trip, setTrip] = useState<WorldCupTrip | undefined>(undefined);
   const [passengers, setPassengers] = useState(1);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isSharingMenuOpen, setIsSharingMenuOpen] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const { formatPrice } = useCurrency();
@@ -21,14 +21,6 @@ const WorldCupDetails: React.FC = () => {
       getWorldCupTripById(id).then(setTrip);
     }
   }, [id]);
-
-  useEffect(() => {
-    if (!trip || trip.images.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % trip.images.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [trip]);
 
   // World Cup Calculation (Fixed target date June 2026)
   const now = new Date();
@@ -76,17 +68,19 @@ const WorldCupDetails: React.FC = () => {
                 </div>
             </div>
         </div>
-        <div className="relative h-[50vh] w-full overflow-hidden">
-             <img src={trip.images[currentImageIndex]} className="w-full h-full object-cover" alt={trip.title} />
-             <div className="absolute inset-0 bg-blue-900/40 flex items-end p-8">
+        
+        <div className="relative w-full">
+             <ImageGallery images={trip.images} title={trip.title} />
+             <div className="absolute bottom-0 left-0 w-full p-8 pointer-events-none bg-gradient-to-t from-blue-900/90 to-transparent">
                  <div className="max-w-7xl mx-auto w-full text-white">
                      <span className="bg-white text-blue-900 px-3 py-1 rounded font-bold mb-2 inline-block shadow">🏆 MUNDIAL 2026</span>
-                     <h1 className="text-4xl md:text-6xl font-black italic">{trip.title}</h1>
-                     <p className="text-xl opacity-90 font-bold">{trip.originCountry} ✈️ {trip.location}</p>
+                     <h1 className="text-4xl md:text-6xl font-black italic drop-shadow-md">{trip.title}</h1>
+                     <p className="text-xl opacity-90 font-bold drop-shadow-md">{trip.originCountry} ✈️ {trip.location}</p>
                  </div>
              </div>
         </div>
-        <div className="max-w-7xl mx-auto px-4 -mt-10 relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <div className="max-w-7xl mx-auto px-4 mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
                 <div className="bg-white p-8 rounded-xl shadow-sm">
                     <h2 className="text-2xl font-bold text-gray-800 mb-4">Detalles del Paquete</h2>

@@ -6,13 +6,13 @@ import { Apartment } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { generateSharePDF } from '../services/pdfShareService';
+import ImageGallery from '../components/ImageGallery';
 
 const RentalDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [rental, setRental] = useState<Apartment | undefined>(undefined);
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isSharingMenuOpen, setIsSharingMenuOpen] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const { formatPrice } = useCurrency();
@@ -22,14 +22,6 @@ const RentalDetails: React.FC = () => {
       getRentalById(id).then(setRental);
     }
   }, [id]);
-
-  useEffect(() => {
-    if (!rental || rental.images.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % rental.images.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [rental, currentImageIndex]);
 
   const calculateDays = () => {
       if (!checkIn || !checkOut) return 0;
@@ -102,18 +94,19 @@ const RentalDetails: React.FC = () => {
               </div>
           </div>
       </div>
-      <div className="relative h-[60vh] w-full overflow-hidden group">
-        <img src={rental.images[currentImageIndex]} alt={rental.title} className="w-full h-full object-cover transition-opacity duration-500" />
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black/80 to-transparent">
+      
+      <div className="relative w-full">
+        <ImageGallery images={rental.images} title={rental.title} />
+        <div className="absolute bottom-0 left-0 w-full p-8 pointer-events-none bg-gradient-to-t from-black/80 to-transparent">
           <div className="max-w-7xl mx-auto">
-            <span className="bg-cyan-500 text-white px-3 py-1 rounded-full text-sm font-bold mb-3 inline-block">ALQUILER TEMPORARIO</span>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">{rental.title}</h1>
-            <p className="text-white/90 text-lg flex items-center"><svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>{rental.location}</p>
+            <span className="bg-cyan-500 text-white px-3 py-1 rounded-full text-sm font-bold mb-3 inline-block shadow">ALQUILER TEMPORARIO</span>
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-2 drop-shadow-md">{rental.title}</h1>
+            <p className="text-white/90 text-lg flex items-center drop-shadow-md"><svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>{rental.location}</p>
           </div>
         </div>
       </div>
-      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${rental.images.length > 1 ? '' : '-mt-10 relative z-10'} grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8`}>
+
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8`}>
         <div className="lg:col-span-2 space-y-8">
           <div className="bg-white rounded-xl shadow-md p-8">
             <div className="flex flex-wrap gap-6 mb-6 pb-6 border-b border-gray-100">

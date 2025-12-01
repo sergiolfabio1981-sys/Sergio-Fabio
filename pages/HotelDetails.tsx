@@ -6,13 +6,13 @@ import { Hotel } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { generateSharePDF } from '../services/pdfShareService';
+import ImageGallery from '../components/ImageGallery';
 
 const HotelDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [hotel, setHotel] = useState<Hotel | undefined>(undefined);
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isSharingMenuOpen, setIsSharingMenuOpen] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const { formatPrice } = useCurrency();
@@ -22,14 +22,6 @@ const HotelDetails: React.FC = () => {
       getHotelById(id).then(setHotel);
     }
   }, [id]);
-
-  useEffect(() => {
-    if (!hotel || hotel.images.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % hotel.images.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [hotel, currentImageIndex]);
 
   const calculateDays = () => {
       if (!checkIn || !checkOut) return 0;
@@ -102,10 +94,10 @@ const HotelDetails: React.FC = () => {
               </div>
           </div>
       </div>
-      <div className="relative h-[60vh] w-full overflow-hidden group">
-        <img src={hotel.images[currentImageIndex]} alt={hotel.title} className="w-full h-full object-cover transition-opacity duration-500" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-        <div className="absolute bottom-0 left-0 w-full p-8">
+      
+      <div className="relative w-full">
+        <ImageGallery images={hotel.images} title={hotel.title} />
+        <div className="absolute bottom-0 left-0 w-full p-8 pointer-events-none bg-gradient-to-t from-black/80 to-transparent">
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center gap-3 mb-3"><span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">HOTEL & RESORT</span><div className="flex text-yellow-400 drop-shadow-md">{Array(hotel.stars).fill(0).map((_,i)=><span key={i} className="text-xl">★</span>)}</div></div>
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-2 drop-shadow-lg">{hotel.title}</h1>
@@ -113,7 +105,8 @@ const HotelDetails: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${hotel.images.length > 1 ? '' : '-mt-10 relative z-10'} grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8`}>
+
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8`}>
         <div className="lg:col-span-2 space-y-8">
           <div className="bg-white rounded-xl shadow-md p-8 border border-gray-100">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">Acerca del Alojamiento</h2>
