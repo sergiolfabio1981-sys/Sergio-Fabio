@@ -16,11 +16,12 @@ export const getTrips = async (): Promise<Trip[]> => {
     }
 
     // AUTO-SEEDING LOGIC FOR TRIPS
-    // If DB is empty or has fewer items than our updated list, we seed it.
-    if (!data || data.length < 5) {
-        console.log("Seeding Database with Trips...");
+    // If DB is empty or has fewer items than our updated list (indicating new packages were added to code), we seed it.
+    if (!data || data.length < INITIAL_TRIPS.length) {
+        console.log("Seeding Database with New Trips...");
         const { error: seedError } = await supabase.from('trips').upsert(INITIAL_TRIPS);
         if (seedError) console.error("Error seeding trips:", seedError);
+        // We return INITIAL_TRIPS here to show the new content immediately even if DB write takes a moment
         return INITIAL_TRIPS; 
     }
 
