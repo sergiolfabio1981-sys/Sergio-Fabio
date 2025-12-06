@@ -1,4 +1,3 @@
-
 import { ListingItem } from '../types';
 
 // Helper to load image from URL to Base64
@@ -18,7 +17,7 @@ const getDataUrl = async (url: string): Promise<string | null> => {
 };
 
 export const generateSharePDF = async (item: ListingItem, formattedPrice: string) => {
-  const { jsPDF } = window.jspdf;
+  const { jsPDF } = (window as any).jspdf;
   const doc = new jsPDF('p', 'mm', 'a4');
   
   // Styles

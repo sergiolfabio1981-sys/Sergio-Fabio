@@ -5,7 +5,7 @@ import { getRentalById } from '../services/rentalService';
 import { Apartment } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
-import { generateSharePDF } from '../services/pdfShareService';
+import { generateShareImage } from '../services/imageShareService';
 import ImageGallery from '../components/ImageGallery';
 
 const RentalDetails: React.FC = () => {
@@ -48,11 +48,11 @@ const RentalDetails: React.FC = () => {
     window.open(whatsappUrl, "_blank");
   };
 
-  const handleSharePdf = async () => {
+  const handleShareImage = async () => {
     if (!rental) return;
     setIsGeneratingPdf(true);
-    const itemForPdf = { ...rental, type: 'rental' as const };
-    await generateSharePDF(itemForPdf, formatPrice(rental.pricePerNight));
+    const itemForImage = { ...rental, type: 'rental' as const };
+    await generateShareImage(itemForImage, formatPrice(rental.pricePerNight));
     setIsGeneratingPdf(false);
     setIsSharingMenuOpen(false);
   };
@@ -86,7 +86,7 @@ const RentalDetails: React.FC = () => {
                               <div className="p-2">
                                   <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 w-full px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 rounded-lg transition-colors" onClick={()=>setIsSharingMenuOpen(false)}><span className="text-green-500 font-bold">WhatsApp</span></a>
                                   <a href={emailUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 w-full px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors" onClick={()=>setIsSharingMenuOpen(false)}><span className="text-blue-500 font-bold">Email</span></a>
-                                  <button onClick={handleSharePdf} className="flex items-center gap-3 w-full px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 rounded-lg transition-colors text-left"><span className="text-red-500 font-bold">Descargar PDF</span></button>
+                                  <button onClick={handleShareImage} className="flex items-center gap-3 w-full px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-700 rounded-lg transition-colors text-left"><span className="text-orange-500 font-bold">Descargar Flyer (JPG)</span></button>
                               </div>
                           </div>
                       </>

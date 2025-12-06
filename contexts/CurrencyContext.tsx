@@ -80,12 +80,15 @@ export const CurrencyProvider: React.FC<{ children: ReactNode }> = ({ children }
     const noFraction = ['CLP', 'COP', 'ARS']; 
     const maxDigits = noFraction.includes(currency) ? 0 : 2;
 
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: currency,
+    // Usamos 'decimal' en lugar de 'currency' para controlar manualmente el prefijo
+    const numberString = new Intl.NumberFormat(locale, {
+      style: 'decimal',
       minimumFractionDigits: maxDigits,
       maximumFractionDigits: maxDigits
     }).format(value);
+
+    // Retornamos explícitamente "USD 1,200" o "ARS 1.500.000"
+    return `${currency} ${numberString}`;
   };
 
   return (

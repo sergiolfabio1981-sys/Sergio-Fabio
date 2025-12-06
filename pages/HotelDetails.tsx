@@ -5,7 +5,7 @@ import { getHotelById } from '../services/hotelService';
 import { Hotel } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
-import { generateSharePDF } from '../services/pdfShareService';
+import { generateShareImage } from '../services/imageShareService';
 import ImageGallery from '../components/ImageGallery';
 
 const HotelDetails: React.FC = () => {
@@ -48,11 +48,11 @@ const HotelDetails: React.FC = () => {
     window.open(whatsappUrl, "_blank");
   };
 
-  const handleSharePdf = async () => {
+  const handleShareImage = async () => {
     if (!hotel) return;
     setIsGeneratingPdf(true);
-    const itemForPdf = { ...hotel, type: 'hotel' as const };
-    await generateSharePDF(itemForPdf, formatPrice(hotel.pricePerNight));
+    const itemForImage = { ...hotel, type: 'hotel' as const };
+    await generateShareImage(itemForImage, formatPrice(hotel.pricePerNight));
     setIsGeneratingPdf(false);
     setIsSharingMenuOpen(false);
   };
@@ -86,7 +86,7 @@ const HotelDetails: React.FC = () => {
                               <div className="p-2">
                                   <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 w-full px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 rounded-lg transition-colors" onClick={()=>setIsSharingMenuOpen(false)}><span className="text-green-500 font-bold">WhatsApp</span></a>
                                   <a href={emailUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 w-full px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors" onClick={()=>setIsSharingMenuOpen(false)}><span className="text-blue-500 font-bold">Email</span></a>
-                                  <button onClick={handleSharePdf} className="flex items-center gap-3 w-full px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 rounded-lg transition-colors text-left"><span className="text-red-500 font-bold">Descargar PDF</span></button>
+                                  <button onClick={handleShareImage} className="flex items-center gap-3 w-full px-4 py-3 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-700 rounded-lg transition-colors text-left"><span className="text-orange-500 font-bold">Descargar Flyer (JPG)</span></button>
                               </div>
                           </div>
                       </>
@@ -131,7 +131,7 @@ const HotelDetails: React.FC = () => {
                   <div><label className="block text-xs font-bold text-gray-500 uppercase mb-1">Check-in</label><input type="date" required className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} /></div>
                   <div><label className="block text-xs font-bold text-gray-500 uppercase mb-1">Check-out</label><input type="date" required className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none" min={checkIn} value={checkOut} onChange={(e) => setCheckOut(e.target.value)} /></div>
               </div>
-              {nights > 0 && (<div className="bg-blue-50 p-4 rounded-lg space-y-2 text-sm mt-4 border border-blue-100"><div className="flex justify-between text-gray-700"><span>{formatPrice(hotel.pricePerNight)} x {nights} noches</span><span>{formatPrice(totalPrice)}</span></div><div className="flex justify-between font-bold text-orange-600 pt-2 border-t border-blue-200 mt-2"><span>Reserva (10%)</span><span>{formatPrice(bookingFee)}</span></div><p className="text-xs text-gray-400 mt-1 italic">El saldo restante se abona en el hotel.</p></div>)}
+              {nights > 0 && (<div className="bg-blue-50 p-4 rounded-lg space-y-2 text-sm mt-4 border border-blue-100"><div className="flex justify-between text-gray-700"><span>{formatPrice(hotel.pricePerNight)} x {nights} noches</span><span>{formatPrice(totalPrice)}</span></div><div className="flex justify-between font-bold text-orange-600 pt-2 border-t border-blue-200 mt-2"><span>Reserva (10%)</span><span>{formatPrice(bookingFee)}</span></div><p className="text-xs text-gray-400 mt-1 italic">El saldo restante se abona al llegar a la propiedad.</p></div>)}
               <button type="submit" disabled={nights <= 0} className="w-full bg-blue-600 disabled:bg-gray-300 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 mt-4 transform hover:-translate-y-1">{nights > 0 ? 'Continuar Reserva' : 'Selecciona Fechas'}</button>
             </form>
           </div>
