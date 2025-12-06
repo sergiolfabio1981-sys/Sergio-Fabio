@@ -7,6 +7,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { generateShareImage } from '../services/imageShareService';
 import ImageGallery from '../components/ImageGallery';
+import PayPalButton from '../components/PayPalButton';
 
 const ExcursionDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -70,7 +71,16 @@ const ExcursionDetails: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-2"><div className="bg-white p-6 rounded-xl shadow-sm mb-6"><h2 className="text-2xl font-bold mb-4">Descripción</h2><p className="text-gray-600 mb-4">{excursion.description}</p><div className="flex gap-4 text-sm font-bold text-gray-500"><span className="bg-gray-100 px-3 py-1 rounded">Duración: {excursion.duration}</span><span className="bg-gray-100 px-3 py-1 rounded">Salidas: {excursion.availableDates.join(', ')}</span></div></div></div>
-          <div className="md:col-span-1"><div className="bg-white p-6 rounded-xl shadow-lg sticky top-24"><div className="flex justify-between items-end mb-4"><span className="text-gray-500">Precio x persona</span><span className="text-2xl font-bold text-cyan-600">{formatPrice(excursion.price)}</span></div><div className="mb-4"><label className="block text-sm font-bold mb-1">Fecha Preferida</label><input type="date" className="w-full border rounded p-2" value={selectedDate} onChange={(e)=>setSelectedDate(e.target.value)} /></div><div className="mb-4"><label className="block text-sm font-bold mb-1">Cantidad de Personas</label><div className="flex items-center border rounded"><button onClick={()=>setPassengers(Math.max(1, passengers-1))} className="p-2 px-4 hover:bg-gray-100">-</button><span className="flex-1 text-center font-bold">{passengers}</span><button onClick={()=>setPassengers(passengers+1)} className="p-2 px-4 hover:bg-gray-100">+</button></div></div><div className="border-t pt-4 mb-4 space-y-2"><div className="flex justify-between text-sm"><span>Total</span><span>{formatPrice(totalPrice)}</span></div><div className="flex justify-between font-bold text-orange-600"><span>Reserva (10%)</span><span>{formatPrice(bookingFee)}</span></div></div><button onClick={handleSubmit} disabled={!selectedDate} className="w-full bg-cyan-600 text-white font-bold py-3 rounded hover:bg-cyan-700 disabled:bg-gray-300">Reservar Lugar</button></div></div>
+          <div className="md:col-span-1">
+            <div className="bg-white p-6 rounded-xl shadow-lg sticky top-24">
+                <div className="flex justify-between items-end mb-4"><span className="text-gray-500">Precio x persona</span><span className="text-2xl font-bold text-cyan-600">{formatPrice(excursion.price)}</span></div>
+                <div className="mb-4"><label className="block text-sm font-bold mb-1">Fecha Preferida</label><input type="date" className="w-full border rounded p-2" value={selectedDate} onChange={(e)=>setSelectedDate(e.target.value)} /></div>
+                <div className="mb-4"><label className="block text-sm font-bold mb-1">Cantidad de Personas</label><div className="flex items-center border rounded"><button onClick={()=>setPassengers(Math.max(1, passengers-1))} className="p-2 px-4 hover:bg-gray-100">-</button><span className="flex-1 text-center font-bold">{passengers}</span><button onClick={()=>setPassengers(passengers+1)} className="p-2 px-4 hover:bg-gray-100">+</button></div></div>
+                <div className="border-t pt-4 mb-4 space-y-2"><div className="flex justify-between text-sm"><span>Total</span><span>{formatPrice(totalPrice)}</span></div><div className="flex justify-between font-bold text-orange-600"><span>Reserva (10%)</span><span>{formatPrice(bookingFee)}</span></div></div>
+                <button onClick={handleSubmit} disabled={!selectedDate} className="w-full bg-cyan-600 text-white font-bold py-3 rounded hover:bg-cyan-700 disabled:bg-gray-300">Reservar Lugar</button>
+                <PayPalButton />
+            </div>
+          </div>
       </div>
     </div>
   );

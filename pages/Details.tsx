@@ -8,6 +8,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { generateShareImage } from '../services/imageShareService';
 import ImageGallery from '../components/ImageGallery';
+import PayPalButton from '../components/PayPalButton';
 
 interface PassengerData {
   fullName: string;
@@ -219,6 +220,8 @@ const Details: React.FC = () => {
                       {selectedDate ? 'Reservar Ahora' : 'Selecciona Fecha'}
                   </button>
                   
+                  <PayPalButton />
+
                   <div className="mt-4 flex justify-center gap-2">
                       <img src="https://img.icons8.com/color/48/000000/visa.png" className="h-6 opacity-70" alt="Visa" />
                       <img src="https://img.icons8.com/color/48/000000/mastercard.png" className="h-6 opacity-70" alt="Mastercard" />

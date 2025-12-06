@@ -7,6 +7,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { generateShareImage } from '../services/imageShareService';
 import ImageGallery from '../components/ImageGallery';
+import PayPalButton from '../components/PayPalButton';
 
 const HotelDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -134,6 +135,7 @@ const HotelDetails: React.FC = () => {
               {nights > 0 && (<div className="bg-blue-50 p-4 rounded-lg space-y-2 text-sm mt-4 border border-blue-100"><div className="flex justify-between text-gray-700"><span>{formatPrice(hotel.pricePerNight)} x {nights} noches</span><span>{formatPrice(totalPrice)}</span></div><div className="flex justify-between font-bold text-orange-600 pt-2 border-t border-blue-200 mt-2"><span>Reserva (10%)</span><span>{formatPrice(bookingFee)}</span></div><p className="text-xs text-gray-400 mt-1 italic">El saldo restante se abona al llegar a la propiedad.</p></div>)}
               <button type="submit" disabled={nights <= 0} className="w-full bg-blue-600 disabled:bg-gray-300 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 mt-4 transform hover:-translate-y-1">{nights > 0 ? 'Continuar Reserva' : 'Selecciona Fechas'}</button>
             </form>
+            <PayPalButton />
           </div>
         </div>
       </div>

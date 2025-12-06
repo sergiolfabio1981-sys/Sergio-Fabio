@@ -7,6 +7,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { generateShareImage } from '../services/imageShareService';
 import ImageGallery from '../components/ImageGallery';
+import PayPalButton from '../components/PayPalButton';
 
 const RentalDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -138,6 +139,7 @@ const RentalDetails: React.FC = () => {
               {nights > 0 && (<div className="bg-gray-50 p-4 rounded-lg space-y-2 text-sm"><div className="flex justify-between"><span>{formatPrice(rental.pricePerNight)} x {nights} noches</span><span>{formatPrice(totalPrice)}</span></div><div className="flex justify-between font-bold text-orange-600 pt-2 border-t border-gray-200"><span>Reserva (10%)</span><span>{formatPrice(bookingFee)}</span></div><p className="text-xs text-gray-400 mt-1">El resto se abona al llegar a la propiedad.</p></div>)}
               <button type="submit" disabled={nights <= 0} className="w-full bg-cyan-600 disabled:bg-gray-300 text-white font-bold py-4 rounded-lg hover:bg-cyan-700 transition-colors shadow-lg shadow-cyan-500/30 mt-4">Solicitar Reserva</button>
             </form>
+            <PayPalButton />
           </div>
         </div>
       </div>

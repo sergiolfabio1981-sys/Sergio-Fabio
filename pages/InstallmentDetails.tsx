@@ -7,6 +7,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { generateShareImage } from '../services/imageShareService';
 import ImageGallery from '../components/ImageGallery';
+import PayPalButton from '../components/PayPalButton';
 
 const InstallmentDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -101,6 +102,7 @@ const InstallmentDetails: React.FC = () => {
                     </div>
                     <p className="text-xs text-center text-gray-400 mt-2 mb-4">Abonando la 1ra cuota hoy congelas el precio total.</p>
                     <button onClick={handleWhatsAppRedirect} className="w-full bg-indigo-600 text-white font-bold py-4 rounded-lg hover:bg-indigo-700 shadow-lg shadow-indigo-500/30">Pagar 1ra Cuota y Reservar</button>
+                    <PayPalButton />
                 </div>
             </div>
         </div>

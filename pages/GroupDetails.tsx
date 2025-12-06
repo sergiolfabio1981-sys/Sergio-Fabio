@@ -7,6 +7,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { generateShareImage } from '../services/imageShareService';
 import ImageGallery from '../components/ImageGallery';
+import PayPalButton from '../components/PayPalButton';
 
 const GroupDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -82,6 +83,7 @@ const GroupDetails: React.FC = () => {
                   <div className="space-y-5 mb-6"><div><label className="block text-xs font-bold text-gray-700 uppercase mb-2">Fecha</label><select className="w-full border p-3 rounded-lg bg-white" value={selectedDate} onChange={e=>setSelectedDate(e.target.value)}><option value="">Selecciona salida...</option>{trip.availableDates.map((d,i)=><option key={i} value={d}>{d}</option>)}</select></div><div><label className="block text-xs font-bold text-gray-700 uppercase mb-2">Pasajeros</label><div className="flex border rounded-lg overflow-hidden"><button onClick={()=>setGuests(Math.max(1,guests-1))} className="px-4 py-2 bg-gray-50 hover:bg-gray-100">-</button><span className="flex-1 text-center py-2 font-bold">{guests}</span><button onClick={()=>setGuests(guests+1)} className="px-4 py-2 bg-gray-50 hover:bg-gray-100">+</button></div></div></div>
                   <div className="bg-purple-50 p-4 rounded-lg mb-6"><div className="flex justify-between font-bold text-purple-900 text-lg"><span>Total</span><span>{formatPrice(basePrice, baseCurrency)}</span></div><div className="flex justify-between text-sm text-purple-700 mt-2"><span>Reserva (10%)</span><span className="font-bold">{formatPrice(bookingFee, baseCurrency)}</span></div></div>
                   <button onClick={handleInitiateBooking} disabled={!selectedDate} className="w-full bg-purple-600 text-white font-bold py-4 rounded-xl hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed shadow-lg">{selectedDate ? 'Reservar Lugar' : 'Selecciona Fecha'}</button>
+                  <PayPalButton />
               </div>
           </div>
       </div>
