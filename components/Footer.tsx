@@ -27,29 +27,62 @@ const Footer: React.FC = () => {
     <footer className="bg-slate-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Brand Column */}
           <div>
             <h3 className="text-2xl font-bold text-cyan-500 mb-4">ABRAS <span className="text-orange-500">Travel</span></h3>
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-400 text-sm mb-6 leading-relaxed">
               Expertos en hacer realidad tus sueños tropicales. 
               Especialistas en Brasil y destinos de playa.
             </p>
+            <div className="flex gap-4">
+                {/* Social Icons Placeholder */}
+                <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:bg-cyan-600 hover:text-white transition cursor-pointer">IG</div>
+                <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white transition cursor-pointer">FB</div>
+            </div>
           </div>
+
+          {/* Links Column */}
           <div>
-            <h4 className="font-bold text-lg mb-4 text-gray-200">Enlaces Rápidos</h4>
-            <ul className="space-y-2 text-sm text-gray-400">
-              <li><Link to="/" className="hover:text-cyan-400 transition">Inicio</Link></li>
-              <li><a href="#" onClick={openTerms} className="hover:text-cyan-400 transition">Bases y Condiciones</a></li>
-              <li><Link to="/admin" className="hover:text-cyan-400 transition">Administración</Link></li>
+            <h4 className="font-bold text-lg mb-4 text-gray-200 border-b border-gray-700 pb-2 inline-block">Enlaces Rápidos</h4>
+            <ul className="space-y-3 text-sm text-gray-400">
+              <li><Link to="/" className="hover:text-cyan-400 transition flex items-center gap-2"><span>›</span> Inicio</Link></li>
+              <li><Link to="/trips" className="hover:text-cyan-400 transition flex items-center gap-2"><span>›</span> Paquetes</Link></li>
+              <li><Link to="/accommodations" className="hover:text-cyan-400 transition flex items-center gap-2"><span>›</span> Alojamientos</Link></li>
+              <li><a href="#" onClick={openTerms} className="hover:text-cyan-400 transition flex items-center gap-2"><span>›</span> Bases y Condiciones</a></li>
+              <li><Link to="/admin" className="hover:text-cyan-400 transition flex items-center gap-2"><span>›</span> Administración</Link></li>
             </ul>
           </div>
+
+          {/* Contact & Addresses Column */}
           <div>
-            <h4 className="font-bold text-lg mb-4 text-gray-200">Contacto</h4>
-            <p className="text-gray-400 text-sm mb-2">📞 +54 9 11 4063 2644</p>
-            <p className="text-gray-400 text-sm">✉️ info@abrastravel.com</p>
+            <h4 className="font-bold text-lg mb-4 text-gray-200 border-b border-gray-700 pb-2 inline-block">Contacto y Oficinas</h4>
+            <div className="space-y-6 text-sm text-gray-400">
+                
+                {/* Contact Data */}
+                <div className="space-y-2">
+                    <p className="flex items-center gap-3"><span className="text-xl">📞</span> +54 9 11 4063 2644</p>
+                    <p className="flex items-center gap-3"><span className="text-xl">✉️</span> info@abrastravel.com</p>
+                </div>
+
+                {/* Argentina Address */}
+                <div>
+                    <p className="text-cyan-400 font-bold mb-1 flex items-center gap-2">🇦🇷 Oficina Argentina</p>
+                    <p>Virrey del Pino 2166</p>
+                    <p>C1426 Cdad. Autónoma de Buenos Aires</p>
+                </div>
+
+                {/* Brazil Address */}
+                <div>
+                    <p className="text-green-400 font-bold mb-1 flex items-center gap-2">🇧🇷 Oficina Brasil</p>
+                    <p>R. Felipe Schmidt, 835 - Centro</p>
+                    <p>Florianópolis - SC, 88010-001, Brasil</p>
+                </div>
+            </div>
           </div>
         </div>
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-xs text-gray-500">
-          © {new Date().getFullYear()} ABRAS Travel. Todos los derechos reservados.
+
+        <div className="border-t border-gray-800 mt-12 pt-8 text-center text-xs text-gray-500">
+          <p>© {new Date().getFullYear()} ABRAS Travel. Todos los derechos reservados.</p>
         </div>
       </div>
     </footer>

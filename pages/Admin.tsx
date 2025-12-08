@@ -10,6 +10,8 @@ import { getWorldCupTrips, saveWorldCupTrip, deleteWorldCupTrip, createEmptyWorl
 import { getGroupTrips, saveGroupTrip, deleteGroupTrip, createEmptyGroupTrip } from '../services/groupService';
 import { getHeroSlides, saveHeroSlide, getPromoBanners, savePromoBanner, deleteHeroSlide } from '../services/heroService';
 import { getTermsAndConditions, saveTermsAndConditions } from '../services/settingsService';
+import { generateDestinationGuide } from '../services/geminiService';
+import { generateQuotePDF } from '../services/quotePdfService';
 import { ADMIN_EMAIL, ADMIN_PASS } from '../constants';
 
 const Admin: React.FC = () => {
@@ -20,7 +22,7 @@ const Admin: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [activeTab, setActiveTab] = useState<'hero' | 'trips' | 'rentals' | 'excursions' | 'hotels' | 'installments' | 'worldcup' | 'groups' | 'legales'>('trips');
+  const [activeTab, setActiveTab] = useState<'hero' | 'trips' | 'rentals' | 'excursions' | 'hotels' | 'installments' | 'worldcup' | 'groups' | 'legales' | 'quote'>('trips');
   const [imageUrlInput, setImageUrlInput] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
@@ -35,6 +37,20 @@ const Admin: React.FC = () => {
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([]);
   const [promoBanners, setPromoBanners] = useState<PromoBanner[]>([]);
   const [termsText, setTermsText] = useState('');
+
+  // Quote State
+  const [quoteData, setQuoteData] = useState({
+      clientName: '',
+      origin: 'Buenos Aires',
+      destination: '',
+      dates: '',
+      passengers: 2,
+      price: 0,
+      description: '',
+      guideText: '',
+      imageUrl: ''
+  });
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
   // Edit State
   const [editingTrip, setEditingTrip] = useState<Trip | null>(null);
@@ -186,6 +202,41 @@ const Admin: React.FC = () => {
       setIsModalOpen(true);
   };
 
+  // QUOTER LOGIC
+  const selectProductForQuote = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const selectedId = e.target.value;
+      if (!selectedId) return;
+
+      let product: any = trips.find(t => t.id === selectedId) ||
+                       hotels.find(h => h.id === selectedId) ||
+                       groupTrips.find(g => g.id === selectedId) ||
+                       rentals.find(r => r.id === selectedId) ||
+                       worldCupTrips.find(w => w.id === selectedId);
+      
+      if (product) {
+          setQuoteData(prev => ({
+              ...prev,
+              destination: product.location || product.title,
+              description: product.description || '',
+              price: product.price || product.pricePerNight || product.totalPrice || 0,
+              imageUrl: product.images?.[0] || '',
+              dates: product.availableDates?.[0] || ''
+          }));
+      }
+  };
+
+  const handleGenerateAI = async () => {
+      if (!quoteData.destination) return alert("Ingrese un destino primero.");
+      setIsGeneratingAI(true);
+      const guide = await generateDestinationGuide(quoteData.destination);
+      setQuoteData(prev => ({ ...prev, guideText: guide }));
+      setIsGeneratingAI(false);
+  };
+
+  const handleDownloadPDF = async () => {
+      await generateQuotePDF(quoteData);
+  };
+
   if (!isAuthenticated) {
      return (
         <div className="min-h-screen flex items-center justify-center bg-slate-100">
@@ -206,9 +257,9 @@ const Admin: React.FC = () => {
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Panel de Administración</h1>
             <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                 <div className="flex space-x-2 bg-white rounded-lg p-1 shadow-sm overflow-x-auto w-full md:w-auto">
-                    {['hero','trips','groups','hotels','rentals','excursions','installments','worldcup','legales'].map(tab => (
+                    {['hero','trips','groups','hotels','rentals','excursions','installments','worldcup','legales', 'quote'].map(tab => (
                         <button key={tab} onClick={() => setActiveTab(tab as any)} className={`px-4 py-2 rounded-md whitespace-nowrap capitalize ${activeTab === tab ? 'bg-cyan-600 text-white' : 'hover:bg-gray-100'}`}>
-                            {tab === 'hero' ? 'Portada' : tab}
+                            {tab === 'hero' ? 'Portada' : tab === 'quote' ? 'Cotizador' : tab}
                         </button>
                     ))}
                 </div>
@@ -238,6 +289,65 @@ const Admin: React.FC = () => {
                 <div className="mt-4 flex justify-end">
                     <button onClick={handleSaveLegales} disabled={isSaving} className="bg-cyan-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-cyan-700 disabled:bg-gray-400">
                         {isSaving ? 'Guardando...' : 'Guardar Términos'}
+                    </button>
+                </div>
+            </div>
+        )}
+
+        {/* --- COTIZADOR TAB --- */}
+        {activeTab === 'quote' && (
+            <div className="bg-white rounded-xl shadow-sm p-6 max-w-4xl mx-auto">
+                <h2 className="text-2xl font-bold mb-6 text-gray-800">Cotizador Profesional</h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                        <h3 className="font-bold text-cyan-700 border-b pb-1">1. Datos del Cliente</h3>
+                        <input value={quoteData.clientName} onChange={e=>setQuoteData({...quoteData, clientName:e.target.value})} className="border p-3 w-full rounded-lg" placeholder="Nombre y Apellido" />
+                        <div className="grid grid-cols-2 gap-4">
+                            <input value={quoteData.origin} onChange={e=>setQuoteData({...quoteData, origin:e.target.value})} className="border p-3 w-full rounded-lg" placeholder="Lugar de Origen" />
+                            <input type="number" value={quoteData.passengers} onChange={e=>setQuoteData({...quoteData, passengers:Number(e.target.value)})} className="border p-3 w-full rounded-lg" placeholder="Pasajeros" />
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <h3 className="font-bold text-green-700 border-b pb-1">2. Producto (Opcional)</h3>
+                        <p className="text-xs text-gray-500">Seleccione un producto cargado para autocompletar:</p>
+                        <select onChange={selectProductForQuote} className="border p-3 w-full rounded-lg bg-gray-50">
+                            <option value="">Seleccionar Producto...</option>
+                            <optgroup label="Paquetes">{trips.map(t=><option key={t.id} value={t.id}>{t.title}</option>)}</optgroup>
+                            <optgroup label="Hoteles">{hotels.map(h=><option key={h.id} value={h.id}>{h.title}</option>)}</optgroup>
+                            <optgroup label="Grupales">{groupTrips.map(g=><option key={g.id} value={g.id}>{g.title}</option>)}</optgroup>
+                        </select>
+                    </div>
+                </div>
+
+                <div className="mt-8 space-y-4">
+                    <h3 className="font-bold text-orange-600 border-b pb-1">3. Detalle de la Cotización</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                        <input value={quoteData.destination} onChange={e=>setQuoteData({...quoteData, destination:e.target.value})} className="border p-3 w-full rounded-lg" placeholder="Destino Principal" />
+                        <input value={quoteData.dates} onChange={e=>setQuoteData({...quoteData, dates:e.target.value})} className="border p-3 w-full rounded-lg" placeholder="Fechas de Viaje" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <input type="number" value={quoteData.price} onChange={e=>setQuoteData({...quoteData, price:Number(e.target.value)})} className="border p-3 w-full rounded-lg font-bold text-lg" placeholder="Precio Total USD" />
+                        <input value={quoteData.imageUrl} onChange={e=>setQuoteData({...quoteData, imageUrl:e.target.value})} className="border p-3 w-full rounded-lg" placeholder="URL Imagen Principal" />
+                    </div>
+                    <textarea value={quoteData.description} onChange={e=>setQuoteData({...quoteData, description:e.target.value})} className="border p-3 w-full rounded-lg h-32" placeholder="Descripción detallada (Itinerario, servicios incluidos, etc.)" />
+                </div>
+
+                <div className="mt-8 space-y-4">
+                    <div className="flex justify-between items-center border-b pb-1">
+                        <h3 className="font-bold text-purple-700">4. Guía Turística (IA)</h3>
+                        <button onClick={handleGenerateAI} disabled={isGeneratingAI} className="bg-purple-100 text-purple-700 px-4 py-1 rounded text-sm font-bold hover:bg-purple-200 flex items-center gap-2">
+                            {isGeneratingAI ? 'Escribiendo...' : '✨ Generar con IA'}
+                        </button>
+                    </div>
+                    <textarea value={quoteData.guideText} onChange={e=>setQuoteData({...quoteData, guideText:e.target.value})} className="border p-3 w-full rounded-lg h-40 bg-purple-50" placeholder="Información turística del destino (se puede generar automáticamente o escribir manualmente)..." />
+                </div>
+
+                <div className="mt-8 flex justify-end">
+                    <button onClick={handleDownloadPDF} className="bg-red-600 text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:bg-red-700 transition-transform hover:scale-105 flex items-center gap-2">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                        Descargar Presupuesto (PDF)
                     </button>
                 </div>
             </div>
@@ -461,7 +571,7 @@ const Admin: React.FC = () => {
                           </form>
                       )}
 
-                      {/* --- OTROS FORMULARIOS MANTENIDOS SIMILARES PERO ENRIQUECIDOS --- */}
+                      {/* --- OTROS FORMULARIOS --- */}
                       
                       {/* HERO SLIDE FORM */}
                       {editingSlide && (
@@ -486,7 +596,7 @@ const Admin: React.FC = () => {
                           </form>
                       )}
 
-                      {/* GROUP FORM (Similar to Trip but specific) */}
+                      {/* GROUP FORM */}
                       {editingGroup && (
                           <form onSubmit={handleSave} className="space-y-6">
                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -508,7 +618,6 @@ const Admin: React.FC = () => {
                                        </div>
                                    </div>
                                </div>
-                               {/* Image logic reused */}
                                <div><label>Imágenes</label><div className="flex gap-2 flex-wrap mb-2">{editingGroup.images.map((img,i)=><div key={i} className="relative w-20 h-20"><img src={img} className="w-full h-full object-cover rounded" /><button type="button" onClick={()=>{const n=[...editingGroup.images];n.splice(i,1);setEditingGroup({...editingGroup, images:n})}} className="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 flex items-center justify-center rounded-full text-xs">x</button></div>)}</div><div className="flex gap-2"><input value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} className="border p-1 flex-grow" placeholder="URL" /><button type="button" onClick={()=>{if(imageUrlInput)setEditingGroup({...editingGroup, images:[...editingGroup.images, imageUrlInput]});setImageUrlInput('')}} className="bg-gray-200 px-2 rounded">Add URL</button><input type="file" multiple onChange={(e)=>handleFileUpload(e, setEditingGroup)} /></div></div>
                           </form>
                       )}

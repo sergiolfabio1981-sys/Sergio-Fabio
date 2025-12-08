@@ -84,3 +84,28 @@ export const sendMessageToGemini = async function* (message: string) {
     chatSession = null;
   }
 };
+
+// Nueva función para el Cotizador
+export const generateDestinationGuide = async (destination: string): Promise<string> => {
+    try {
+        const apiKey = process.env.API_KEY;
+        if (!apiKey) return "No se pudo conectar con la IA (Falta API Key).";
+
+        const ai = new GoogleGenAI({ apiKey });
+        const model = ai.models.getGenerativeModel({ model: 'gemini-2.5-flash' });
+
+        const prompt = `Escribe una guía turística breve, atractiva y persuasiva sobre ${destination} para incluir en un presupuesto de viaje de la agencia ABRAS Travel.
+        Debe tener 3 secciones:
+        1. ¿Por qué visitar ${destination}? (Intro inspiradora)
+        2. Lugares imperdibles (3 puntos clave)
+        3. Tips de viaje (Clima, mejor época, etc)
+        
+        Usa un tono profesional pero cálido. No uses markdown (negritas, etc), solo texto plano con saltos de línea. Máximo 200 palabras.`;
+
+        const result = await model.generateContent({ contents: prompt });
+        return result.response.text() || "No se pudo generar la guía.";
+    } catch (error) {
+        console.error("Error generating guide:", error);
+        return "Error al generar la guía turística. Intente manualmente.";
+    }
+};
