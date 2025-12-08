@@ -11,6 +11,7 @@ import { getWorldCupTrips } from '../services/worldCupService';
 import { getGroupTrips } from '../services/groupService';
 import { getHeroSlides, getPromoBanners } from '../services/heroService';
 import TripCard from '../components/TripCard';
+import Testimonials from '../components/Testimonials';
 
 const Home: React.FC = () => {
   const [combinedOffers, setCombinedOffers] = useState<ListingItem[]>([]);
@@ -22,6 +23,11 @@ const Home: React.FC = () => {
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([]);
   const [promoBanners, setPromoBanners] = useState<PromoBanner[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Normalization helper for search
+  const normalizeText = (text: string) => {
+    return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -82,10 +88,15 @@ const Home: React.FC = () => {
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
 
   const getFilteredItems = () => {
+      const normalizedSearch = normalizeText(searchTerm);
+      
       return allItems.filter(item => {
+          const normalizedTitle = normalizeText(item.title);
+          const normalizedLocation = normalizeText(item.location);
+          
           const matchesSearch = 
-            item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.location.toLowerCase().includes(searchTerm.toLowerCase());
+            normalizedTitle.includes(normalizedSearch) ||
+            normalizedLocation.includes(normalizedSearch);
           
           const matchesCategory = activeCategory === 'all' || item.type === activeCategory;
 
@@ -111,7 +122,7 @@ const Home: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
+    <div className="min-h-screen bg-slate-50 pb-0">
       
       {/* DYNAMIC HERO CAROUSEL */}
       <div className="relative h-[650px] w-full overflow-hidden bg-gray-900">
@@ -184,7 +195,7 @@ const Home: React.FC = () => {
             ))}
         </div>
 
-        <div className="mt-8" id="explore-section">
+        <div className="mt-8 mb-20" id="explore-section">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 border-b border-gray-200 pb-4 gap-4">
              <div>
                 <span className="text-cyan-600 font-bold uppercase tracking-wider text-sm">Explora</span>
@@ -214,6 +225,10 @@ const Home: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* TESTIMONIALS SECTION */}
+      <Testimonials />
+
     </div>
   );
 };

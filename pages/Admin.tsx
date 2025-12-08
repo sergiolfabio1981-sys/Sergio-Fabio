@@ -25,6 +25,9 @@ const Admin: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'hero' | 'trips' | 'rentals' | 'excursions' | 'hotels' | 'installments' | 'worldcup' | 'groups' | 'legales' | 'quote'>('trips');
   const [imageUrlInput, setImageUrlInput] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  
+  // List Search
+  const [listSearchTerm, setListSearchTerm] = useState('');
 
   // State
   const [trips, setTrips] = useState<Trip[]>([]);
@@ -78,6 +81,9 @@ const Admin: React.FC = () => {
   }, [isAuthenticated]);
 
   useEffect(() => {
+      // Reset search on tab change
+      setListSearchTerm('');
+      
       if (activeTab === 'legales') {
           getTermsAndConditions().then(setTermsText);
       }
@@ -124,6 +130,49 @@ const Admin: React.FC = () => {
       if (type === 'worldcup') await deleteWorldCupTrip(id);
       if (type === 'hero_slide') await deleteHeroSlide(id);
       await loadAllData();
+  };
+
+  const handleDuplicate = async (item: any, type: string) => {
+      if(!window.confirm("¿Duplicar esta publicación?")) return;
+      
+      const newId = crypto.randomUUID();
+      const newItem = { ...item, id: newId, title: `${item.title} (COPIA)` };
+      
+      // Remove Supabase metadata if exists
+      delete newItem.created_at;
+
+      resetEditState();
+
+      if (type === 'trip') {
+          await saveTrip(newItem);
+          setEditingTrip(newItem);
+          setTripDatesInput((newItem.availableDates || []).join('\n'));
+      } else if (type === 'rental') {
+          await saveRental(newItem);
+          setEditingRental(newItem);
+          setRentalAmenitiesInput((newItem.amenities || []).join('\n'));
+      } else if (type === 'hotel') {
+          await saveHotel(newItem);
+          setEditingHotel(newItem);
+          setHotelAmenitiesInput((newItem.amenities || []).join('\n'));
+      } else if (type === 'excursion') {
+          await saveExcursion(newItem);
+          setEditingExcursion(newItem);
+          setExcursionDatesInput((newItem.availableDates || []).join('\n'));
+      } else if (type === 'group') {
+          await saveGroupTrip(newItem);
+          setEditingGroup(newItem);
+          setGroupDatesInput((newItem.availableDates || []).join('\n'));
+      } else if (type === 'installment') {
+          await saveInstallmentTrip(newItem);
+          setEditingInstallment(newItem);
+      } else if (type === 'worldcup') {
+          await saveWorldCupTrip(newItem);
+          setEditingWorldCup(newItem);
+      }
+
+      await loadAllData();
+      setIsModalOpen(true);
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -237,6 +286,16 @@ const Admin: React.FC = () => {
       await generateQuotePDF(quoteData);
   };
 
+  // FILTER HELPER
+  const filterList = (list: any[]) => {
+      if (!listSearchTerm) return list;
+      const term = listSearchTerm.toLowerCase();
+      return list.filter(item => 
+          item.title?.toLowerCase().includes(term) || 
+          item.location?.toLowerCase().includes(term)
+      );
+  };
+
   if (!isAuthenticated) {
      return (
         <div className="min-h-screen flex items-center justify-center bg-slate-100">
@@ -267,14 +326,28 @@ const Admin: React.FC = () => {
             </div>
         </div>
 
+        {/* --- LIST SEARCH --- */}
+        {!['hero', 'legales', 'quote'].includes(activeTab) && (
+            <div className="mb-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center gap-2">
+                <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                <input 
+                    type="text" 
+                    placeholder="Buscar por título o destino..." 
+                    className="w-full outline-none text-sm" 
+                    value={listSearchTerm}
+                    onChange={(e) => setListSearchTerm(e.target.value)}
+                />
+            </div>
+        )}
+
         {/* --- LISTS --- */}
-        {activeTab === 'trips' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl">Paquetes</h2><button onClick={()=>{resetEditState(); setEditingTrip(createEmptyTrip()); setTripDatesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Paquete</button></div>{trips.map(t=><div key={t.id} className="flex justify-between border-b py-2 items-center"><span>{t.title}</span><div><button onClick={()=>{resetEditState(); setEditingTrip({...t}); setTripDatesInput(t.availableDates.join('\n')); setIsModalOpen(true)}} className="text-blue-500 mr-4">Editar</button><button onClick={()=>handleDelete(t.id, 'trip')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
-        {activeTab === 'groups' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl text-purple-700">Grupales</h2><button onClick={()=>{resetEditState(); setEditingGroup(createEmptyGroupTrip()); setGroupDatesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Grupal</button></div>{groupTrips.map(g=><div key={g.id} className="flex justify-between border-b py-2 items-center"><span>{g.title}</span><div><button onClick={()=>{resetEditState(); setEditingGroup({...g}); setGroupDatesInput(g.availableDates.join('\n')); setIsModalOpen(true)}} className="text-blue-500 mr-4">Editar</button><button onClick={()=>handleDelete(g.id, 'group')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
-        {activeTab === 'hotels' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl">Hoteles</h2><button onClick={()=>{resetEditState(); setEditingHotel(createEmptyHotel()); setHotelAmenitiesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Hotel</button></div>{hotels.map(h=><div key={h.id} className="flex justify-between border-b py-2 items-center"><span>{h.title}</span><div><button onClick={()=>{resetEditState(); setEditingHotel({...h}); setHotelAmenitiesInput(h.amenities.join('\n')); setIsModalOpen(true)}} className="text-blue-500 mr-4">Editar</button><button onClick={()=>handleDelete(h.id, 'hotel')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
-        {activeTab === 'rentals' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl">Alquileres</h2><button onClick={()=>{resetEditState(); setEditingRental(createEmptyRental()); setRentalAmenitiesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Alquiler</button></div>{rentals.map(r=><div key={r.id} className="flex justify-between border-b py-2 items-center"><span>{r.title}</span><div><button onClick={()=>{resetEditState(); setEditingRental({...r}); setRentalAmenitiesInput(r.amenities.join('\n')); setIsModalOpen(true)}} className="text-blue-500 mr-4">Editar</button><button onClick={()=>handleDelete(r.id, 'rental')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
-        {activeTab === 'excursions' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl">Excursiones</h2><button onClick={()=>{resetEditState(); setEditingExcursion(createEmptyExcursion()); setExcursionDatesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nueva Excursión</button></div>{excursions.map(e=><div key={e.id} className="flex justify-between border-b py-2 items-center"><span>{e.title}</span><div><button onClick={()=>{resetEditState(); setEditingExcursion({...e}); setExcursionDatesInput(e.availableDates.join('\n')); setIsModalOpen(true)}} className="text-blue-500 mr-4">Editar</button><button onClick={()=>handleDelete(e.id, 'excursion')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
-        {activeTab === 'installments' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl text-indigo-800">Cuotas</h2><button onClick={()=>{resetEditState(); setEditingInstallment(createEmptyInstallmentTrip()); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Plan</button></div>{installments.map(i=><div key={i.id} className="flex justify-between border-b py-2 items-center"><span>{i.title}</span><div><button onClick={()=>{resetEditState(); setEditingInstallment({...i}); setIsModalOpen(true)}} className="text-blue-500 mr-4">Editar</button><button onClick={()=>handleDelete(i.id, 'installment')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
-        {activeTab === 'worldcup' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl text-blue-900">Mundial</h2><button onClick={()=>{resetEditState(); setEditingWorldCup(createEmptyWorldCupTrip()); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Paquete</button></div>{worldCupTrips.map(w=><div key={w.id} className="flex justify-between border-b py-2 items-center"><span>{w.title}</span><div><button onClick={()=>{resetEditState(); setEditingWorldCup({...w}); setIsModalOpen(true)}} className="text-blue-500 mr-4">Editar</button><button onClick={()=>handleDelete(w.id, 'worldcup')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
+        {activeTab === 'trips' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl">Paquetes</h2><button onClick={()=>{resetEditState(); setEditingTrip(createEmptyTrip()); setTripDatesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Paquete</button></div>{filterList(trips).map(t=><div key={t.id} className="flex justify-between border-b py-2 items-center"><span>{t.title}</span><div className="flex gap-2"><button onClick={()=>handleDuplicate(t, 'trip')} className="text-gray-500 hover:text-gray-700" title="Duplicar">❐</button><button onClick={()=>{resetEditState(); setEditingTrip({...t}); setTripDatesInput(t.availableDates.join('\n')); setIsModalOpen(true)}} className="text-blue-500">Editar</button><button onClick={()=>handleDelete(t.id, 'trip')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
+        {activeTab === 'groups' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl text-purple-700">Grupales</h2><button onClick={()=>{resetEditState(); setEditingGroup(createEmptyGroupTrip()); setGroupDatesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Grupal</button></div>{filterList(groupTrips).map(g=><div key={g.id} className="flex justify-between border-b py-2 items-center"><span>{g.title}</span><div className="flex gap-2"><button onClick={()=>handleDuplicate(g, 'group')} className="text-gray-500 hover:text-gray-700" title="Duplicar">❐</button><button onClick={()=>{resetEditState(); setEditingGroup({...g}); setGroupDatesInput(g.availableDates.join('\n')); setIsModalOpen(true)}} className="text-blue-500">Editar</button><button onClick={()=>handleDelete(g.id, 'group')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
+        {activeTab === 'hotels' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl">Hoteles</h2><button onClick={()=>{resetEditState(); setEditingHotel(createEmptyHotel()); setHotelAmenitiesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Hotel</button></div>{filterList(hotels).map(h=><div key={h.id} className="flex justify-between border-b py-2 items-center"><span>{h.title}</span><div className="flex gap-2"><button onClick={()=>handleDuplicate(h, 'hotel')} className="text-gray-500 hover:text-gray-700" title="Duplicar">❐</button><button onClick={()=>{resetEditState(); setEditingHotel({...h}); setHotelAmenitiesInput(h.amenities.join('\n')); setIsModalOpen(true)}} className="text-blue-500">Editar</button><button onClick={()=>handleDelete(h.id, 'hotel')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
+        {activeTab === 'rentals' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl">Alquileres</h2><button onClick={()=>{resetEditState(); setEditingRental(createEmptyRental()); setRentalAmenitiesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Alquiler</button></div>{filterList(rentals).map(r=><div key={r.id} className="flex justify-between border-b py-2 items-center"><span>{r.title}</span><div className="flex gap-2"><button onClick={()=>handleDuplicate(r, 'rental')} className="text-gray-500 hover:text-gray-700" title="Duplicar">❐</button><button onClick={()=>{resetEditState(); setEditingRental({...r}); setRentalAmenitiesInput(r.amenities.join('\n')); setIsModalOpen(true)}} className="text-blue-500">Editar</button><button onClick={()=>handleDelete(r.id, 'rental')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
+        {activeTab === 'excursions' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl">Excursiones</h2><button onClick={()=>{resetEditState(); setEditingExcursion(createEmptyExcursion()); setExcursionDatesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Excursión</button></div>{filterList(excursions).map(e=><div key={e.id} className="flex justify-between border-b py-2 items-center"><span>{e.title}</span><div className="flex gap-2"><button onClick={()=>handleDuplicate(e, 'excursion')} className="text-gray-500 hover:text-gray-700" title="Duplicar">❐</button><button onClick={()=>{resetEditState(); setEditingExcursion({...e}); setExcursionDatesInput(e.availableDates.join('\n')); setIsModalOpen(true)}} className="text-blue-500">Editar</button><button onClick={()=>handleDelete(e.id, 'excursion')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
+        {activeTab === 'installments' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl text-indigo-800">Cuotas</h2><button onClick={()=>{resetEditState(); setEditingInstallment(createEmptyInstallmentTrip()); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Plan</button></div>{filterList(installments).map(i=><div key={i.id} className="flex justify-between border-b py-2 items-center"><span>{i.title}</span><div className="flex gap-2"><button onClick={()=>handleDuplicate(i, 'installment')} className="text-gray-500 hover:text-gray-700" title="Duplicar">❐</button><button onClick={()=>{resetEditState(); setEditingInstallment({...i}); setIsModalOpen(true)}} className="text-blue-500">Editar</button><button onClick={()=>handleDelete(i.id, 'installment')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
+        {activeTab === 'worldcup' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl text-blue-900">Mundial</h2><button onClick={()=>{resetEditState(); setEditingWorldCup(createEmptyWorldCupTrip()); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Paquete</button></div>{filterList(worldCupTrips).map(w=><div key={w.id} className="flex justify-between border-b py-2 items-center"><span>{w.title}</span><div className="flex gap-2"><button onClick={()=>handleDuplicate(w, 'worldcup')} className="text-gray-500 hover:text-gray-700" title="Duplicar">❐</button><button onClick={()=>{resetEditState(); setEditingWorldCup({...w}); setIsModalOpen(true)}} className="text-blue-500">Editar</button><button onClick={()=>handleDelete(w.id, 'worldcup')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
         
         {activeTab === 'legales' && (
             <div className="bg-white rounded-xl shadow-sm p-6">
