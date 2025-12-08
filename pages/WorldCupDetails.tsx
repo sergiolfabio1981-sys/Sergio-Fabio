@@ -7,7 +7,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { generateShareImage } from '../services/imageShareService';
 import ImageGallery from '../components/ImageGallery';
-import PayPalButton from '../components/PayPalButton';
+import BookingModal from '../components/BookingModal';
 
 const WorldCupDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,6 +15,9 @@ const WorldCupDetails: React.FC = () => {
   const [passengers, setPassengers] = useState(1);
   const [isSharingMenuOpen, setIsSharingMenuOpen] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
   const { formatPrice } = useCurrency();
 
   useEffect(() => {
@@ -48,10 +51,23 @@ const WorldCupDetails: React.FC = () => {
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
   const emailUrl = `mailto:?subject=${encodeURIComponent(trip?.title || '')}&body=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`;
 
-  const handleWhatsAppRedirect = () => {
-      const message = `Hola ABRAS Travel, quiero reservar el paquete Mundial 2026: *${trip?.title}*.\n\n🔗 Link: ${window.location.href}`;
-      const whatsappUrl = `https://wa.me/5491140632644?text=${encodeURIComponent(message)}`;
-      window.open(whatsappUrl, "_blank");
+  const handleBookingClick = () => {
+      setIsBookingModalOpen(true);
+  };
+
+  const handleConfirmWhatsApp = (passengerData: any) => {
+    const message = `*MUNDIAL 2026 - RESERVA*\n\n` +
+                    `🏆 *Paquete:* ${trip?.title}\n` +
+                    `👥 *Pasajeros:* ${passengers}\n` +
+                    `💰 *Total:* ${formatPrice(totalPrice, baseCurrency)}\n` +
+                    `💳 *Cuotas:* ${formatPrice(installmentValue, baseCurrency)} x ${monthsCount}\n\n` +
+                    `*DATOS:* ${passengerData.firstName} ${passengerData.lastName}\n` +
+                    `📧 ${passengerData.email}\n` +
+                    `🔗 Link: ${window.location.href}`;
+    
+    const whatsappUrl = `https://wa.me/5491140632644?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank");
+    setIsBookingModalOpen(false);
   };
 
   if (!trip) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div></div>;
@@ -102,11 +118,18 @@ const WorldCupDetails: React.FC = () => {
                         <div className="flex justify-between text-xl font-bold text-blue-600 pt-2"><span>Valor Cuota Mensual</span><span>{formatPrice(installmentValue, baseCurrency)}</span></div>
                     </div>
                     <p className="text-xs text-center text-gray-400 mt-2 mb-4">Abonando la 1ra cuota hoy congelas el precio en {baseCurrency}.</p>
-                    <button onClick={handleWhatsAppRedirect} className="w-full bg-blue-600 text-white font-bold py-4 rounded-lg hover:bg-blue-700 shadow-lg shadow-blue-500/30">Pagar 1ra Cuota y Reservar</button>
-                    <PayPalButton />
+                    <button onClick={handleBookingClick} className="w-full bg-blue-600 text-white font-bold py-4 rounded-lg hover:bg-blue-700 shadow-lg shadow-blue-500/30">Pagar 1ra Cuota y Reservar</button>
                 </div>
             </div>
         </div>
+
+        <BookingModal 
+            isOpen={isBookingModalOpen} 
+            onClose={() => setIsBookingModalOpen(false)}
+            title={trip.title}
+            priceInfo={`1ra Cuota (${passengers} pax): ${formatPrice(installmentValue, baseCurrency)}`}
+            onConfirmWhatsApp={handleConfirmWhatsApp}
+        />
     </div>
   );
 };

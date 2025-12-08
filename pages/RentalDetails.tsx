@@ -7,7 +7,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { generateShareImage } from '../services/imageShareService';
 import ImageGallery from '../components/ImageGallery';
-import PayPalButton from '../components/PayPalButton';
+import BookingModal from '../components/BookingModal';
 
 const RentalDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,6 +16,10 @@ const RentalDetails: React.FC = () => {
   const [checkOut, setCheckOut] = useState('');
   const [isSharingMenuOpen, setIsSharingMenuOpen] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  
+  // Modal
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
   const { formatPrice } = useCurrency();
 
   useEffect(() => {
@@ -30,23 +34,37 @@ const RentalDetails: React.FC = () => {
       const end = new Date(checkOut);
       const diffTime = Math.abs(end.getTime() - start.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-      return diffDays;
+      return diffDays > 0 ? diffDays : 0;
   };
 
   const nights = calculateDays();
   const totalPrice = rental ? rental.pricePerNight * nights : 0;
   const bookingFee = totalPrice * 0.10;
 
-  const handleInitiateBooking = () => {
+  const handleBookingClick = () => {
     if (!nights || nights <= 0) {
         alert("Por favor seleccione fechas válidas (mínimo 1 noche)");
         return;
     }
+    setIsBookingModalOpen(true);
+  };
+
+  const handleConfirmWhatsApp = (passengerData: any) => {
+    const message = `*SOLICITUD DE ALQUILER - ABRAS TRAVEL*\n\n` +
+                    `🏡 *Propiedad:* ${rental?.title}\n` +
+                    `📅 *Check-in:* ${checkIn}\n` +
+                    `📅 *Check-out:* ${checkOut} (${nights} noches)\n` +
+                    `💰 *Total:* ${formatPrice(totalPrice)}\n\n` +
+                    `*DATOS DEL HUÉSPED:*\n` +
+                    `👤 Nombre: ${passengerData.firstName} ${passengerData.lastName}\n` +
+                    `🆔 DNI: ${passengerData.dni}\n` +
+                    `📧 Email: ${passengerData.email}\n` +
+                    `📱 Teléfono: ${passengerData.phone}\n\n` +
+                    `🔗 Link: ${window.location.href}`;
     
-    const message = `Hola ABRAS Travel, quiero reservar el alojamiento: *${rental?.title}*.\n\n📅 Fechas: ${checkIn} al ${checkOut}\n🔗 Link: ${window.location.href}`;
     const whatsappUrl = `https://wa.me/5491140632644?text=${encodeURIComponent(message)}`;
-    
     window.open(whatsappUrl, "_blank");
+    setIsBookingModalOpen(false);
   };
 
   const handleShareImage = async () => {
@@ -131,18 +149,25 @@ const RentalDetails: React.FC = () => {
                   <span className="text-3xl font-bold text-cyan-600">{formatPrice(rental.pricePerNight)}</span>
               </div>
             </div>
-            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleInitiateBooking(); }}>
+            <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">Check-in</label><input type="date" required className="w-full border border-gray-300 rounded-lg p-2 focus:ring-cyan-500" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} /></div>
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">Check-out</label><input type="date" required className="w-full border border-gray-300 rounded-lg p-2 focus:ring-cyan-500" min={checkIn} value={checkOut} onChange={(e) => setCheckOut(e.target.value)} /></div>
               </div>
               {nights > 0 && (<div className="bg-gray-50 p-4 rounded-lg space-y-2 text-sm"><div className="flex justify-between"><span>{formatPrice(rental.pricePerNight)} x {nights} noches</span><span>{formatPrice(totalPrice)}</span></div><div className="flex justify-between font-bold text-orange-600 pt-2 border-t border-gray-200"><span>Reserva (10%)</span><span>{formatPrice(bookingFee)}</span></div><p className="text-xs text-gray-400 mt-1">El resto se abona al llegar a la propiedad.</p></div>)}
-              <button type="submit" disabled={nights <= 0} className="w-full bg-cyan-600 disabled:bg-gray-300 text-white font-bold py-4 rounded-lg hover:bg-cyan-700 transition-colors shadow-lg shadow-cyan-500/30 mt-4">Solicitar Reserva</button>
-            </form>
-            <PayPalButton />
+              <button onClick={handleBookingClick} disabled={nights <= 0} className="w-full bg-cyan-600 disabled:bg-gray-300 text-white font-bold py-4 rounded-lg hover:bg-cyan-700 transition-colors shadow-lg shadow-cyan-500/30 mt-4">Solicitar Reserva</button>
+            </div>
           </div>
         </div>
       </div>
+
+      <BookingModal 
+        isOpen={isBookingModalOpen} 
+        onClose={() => setIsBookingModalOpen(false)}
+        title={rental.title}
+        priceInfo={`Total x ${nights} noches: ${formatPrice(totalPrice)}`}
+        onConfirmWhatsApp={handleConfirmWhatsApp}
+      />
     </div>
   );
 };

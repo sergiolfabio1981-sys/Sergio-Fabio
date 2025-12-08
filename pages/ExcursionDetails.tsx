@@ -7,7 +7,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { generateShareImage } from '../services/imageShareService';
 import ImageGallery from '../components/ImageGallery';
-import PayPalButton from '../components/PayPalButton';
+import BookingModal from '../components/BookingModal';
 
 const ExcursionDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,6 +16,9 @@ const ExcursionDetails: React.FC = () => {
   const [passengers, setPassengers] = useState(2);
   const [isSharingMenuOpen, setIsSharingMenuOpen] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
   const { formatPrice } = useCurrency();
 
   useEffect(() => {
@@ -27,11 +30,29 @@ const ExcursionDetails: React.FC = () => {
   const totalPrice = excursion ? excursion.price * passengers : 0;
   const bookingFee = totalPrice * 0.10;
 
-  const handleSubmit = () => {
-      if(!excursion) return;
-      const message = `Hola ABRAS Travel, quiero reservar la excursión: *${excursion.title}*.\n\n📅 Fecha: ${selectedDate}\n👥 Personas: ${passengers}\n🔗 Link: ${window.location.href}`;
-      const whatsappUrl = `https://wa.me/5491140632644?text=${encodeURIComponent(message)}`;
-      window.open(whatsappUrl, "_blank");
+  const handleBookingClick = () => {
+      if(!selectedDate) {
+          alert("Seleccione una fecha");
+          return;
+      }
+      setIsBookingModalOpen(true);
+  };
+
+  const handleConfirmWhatsApp = (passengerData: any) => {
+    const message = `*SOLICITUD DE EXCURSIÓN - ABRAS TRAVEL*\n\n` +
+                    `🎒 *Excursión:* ${excursion?.title}\n` +
+                    `📅 *Fecha:* ${selectedDate}\n` +
+                    `👥 *Pasajeros:* ${passengers}\n` +
+                    `💰 *Total:* ${formatPrice(totalPrice)}\n\n` +
+                    `*DATOS DE CONTACTO:*\n` +
+                    `👤 Nombre: ${passengerData.firstName} ${passengerData.lastName}\n` +
+                    `🆔 DNI: ${passengerData.dni}\n` +
+                    `📧 Email: ${passengerData.email}\n` +
+                    `🔗 Link: ${window.location.href}`;
+    
+    const whatsappUrl = `https://wa.me/5491140632644?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank");
+    setIsBookingModalOpen(false);
   };
 
   const handleShareImage = async () => {
@@ -77,11 +98,18 @@ const ExcursionDetails: React.FC = () => {
                 <div className="mb-4"><label className="block text-sm font-bold mb-1">Fecha Preferida</label><input type="date" className="w-full border rounded p-2" value={selectedDate} onChange={(e)=>setSelectedDate(e.target.value)} /></div>
                 <div className="mb-4"><label className="block text-sm font-bold mb-1">Cantidad de Personas</label><div className="flex items-center border rounded"><button onClick={()=>setPassengers(Math.max(1, passengers-1))} className="p-2 px-4 hover:bg-gray-100">-</button><span className="flex-1 text-center font-bold">{passengers}</span><button onClick={()=>setPassengers(passengers+1)} className="p-2 px-4 hover:bg-gray-100">+</button></div></div>
                 <div className="border-t pt-4 mb-4 space-y-2"><div className="flex justify-between text-sm"><span>Total</span><span>{formatPrice(totalPrice)}</span></div><div className="flex justify-between font-bold text-orange-600"><span>Reserva (10%)</span><span>{formatPrice(bookingFee)}</span></div></div>
-                <button onClick={handleSubmit} disabled={!selectedDate} className="w-full bg-cyan-600 text-white font-bold py-3 rounded hover:bg-cyan-700 disabled:bg-gray-300">Reservar Lugar</button>
-                <PayPalButton />
+                <button onClick={handleBookingClick} disabled={!selectedDate} className="w-full bg-cyan-600 text-white font-bold py-3 rounded hover:bg-cyan-700 disabled:bg-gray-300">Reservar Lugar</button>
             </div>
           </div>
       </div>
+
+      <BookingModal 
+        isOpen={isBookingModalOpen} 
+        onClose={() => setIsBookingModalOpen(false)}
+        title={excursion.title}
+        priceInfo={`Total (${passengers} pax): ${formatPrice(totalPrice)}`}
+        onConfirmWhatsApp={handleConfirmWhatsApp}
+      />
     </div>
   );
 };

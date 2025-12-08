@@ -3,23 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getTripById } from '../services/tripService';
 import { Trip } from '../types';
-import { ADMIN_EMAIL } from '../constants';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { generateShareImage } from '../services/imageShareService';
 import ImageGallery from '../components/ImageGallery';
-import PayPalButton from '../components/PayPalButton';
-
-interface PassengerData {
-  fullName: string;
-  dni: string;
-  birthDate: string;
-  address: string;
-  city: string;
-  province: string;
-  nationality: string;
-  email?: string;
-}
+import BookingModal from '../components/BookingModal';
 
 const Details: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -30,14 +18,16 @@ const Details: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState('');
   const [guests, setGuests] = useState(2);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
-  const [isSharingMenuOpen, setIsSharingMenuOpen] = useState(false); // Added share menu state
+  const [isSharingMenuOpen, setIsSharingMenuOpen] = useState(false);
+  
+  // Modal State
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   const { t } = useLanguage();
   const { formatPrice } = useCurrency();
 
   useEffect(() => {
     if (id) {
-        // Fetch async
         getTripById(id).then(data => setTrip(data));
     }
   }, [id]);
@@ -48,14 +38,31 @@ const Details: React.FC = () => {
   const basePrice = trip.price * guests;
   const bookingFee = basePrice * 0.10;
 
-  const handleInitiateBooking = () => {
-    if (!selectedDate) return;
+  const handleBookingClick = () => {
+      if (!selectedDate) {
+          alert('Por favor selecciona una fecha de viaje.');
+          return;
+      }
+      setIsBookingModalOpen(true);
+  };
+
+  const handleConfirmWhatsApp = (passengerData: any) => {
+    const message = `*SOLICITUD DE RESERVA - ABRAS TRAVEL*\n\n` +
+                    `📦 *Paquete:* ${trip.title}\n` +
+                    `📅 *Fecha:* ${selectedDate}\n` +
+                    `👥 *Pasajeros:* ${guests}\n` +
+                    `💰 *Total Estimado:* ${formatPrice(basePrice, baseCurrency)}\n\n` +
+                    `*DATOS DEL PASAJERO:*\n` +
+                    `👤 Nombre: ${passengerData.firstName} ${passengerData.lastName}\n` +
+                    `🆔 DNI: ${passengerData.dni} (Edad: ${passengerData.age})\n` +
+                    `📍 Dirección: ${passengerData.address}, ${passengerData.city}, ${passengerData.province}, ${passengerData.country}\n` +
+                    `📧 Email: ${passengerData.email}\n` +
+                    `📱 Teléfono: ${passengerData.phone}\n\n` +
+                    `🔗 Link: ${window.location.href}`;
     
-    // Construct message with Link and Details
-    const message = `Hola ABRAS Travel, quiero reservar el paquete: *${trip.title}*.\n\n📅 Fecha: ${selectedDate}\n👥 Pasajeros: ${guests}\n🔗 Link: ${window.location.href}`;
     const whatsappUrl = `https://wa.me/5491140632644?text=${encodeURIComponent(message)}`;
-    
     window.open(whatsappUrl, "_blank");
+    setIsBookingModalOpen(false);
   };
 
   const handleShareImage = async () => {
@@ -213,15 +220,12 @@ const Details: React.FC = () => {
                   </div>
 
                   <button 
-                    onClick={handleInitiateBooking} 
-                    disabled={!selectedDate} 
-                    className="w-full bg-cyan-600 text-white font-bold py-4 rounded-xl hover:bg-cyan-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all shadow-lg shadow-cyan-500/30 transform active:scale-95"
+                    onClick={handleBookingClick} 
+                    className="w-full bg-cyan-600 text-white font-bold py-4 rounded-xl hover:bg-cyan-700 transition-all shadow-lg shadow-cyan-500/30 transform active:scale-95"
                   >
                       {selectedDate ? 'Reservar Ahora' : 'Selecciona Fecha'}
                   </button>
                   
-                  <PayPalButton />
-
                   <div className="mt-4 flex justify-center gap-2">
                       <img src="https://img.icons8.com/color/48/000000/visa.png" className="h-6 opacity-70" alt="Visa" />
                       <img src="https://img.icons8.com/color/48/000000/mastercard.png" className="h-6 opacity-70" alt="Mastercard" />
@@ -230,6 +234,14 @@ const Details: React.FC = () => {
               </div>
           </div>
       </div>
+
+      <BookingModal 
+        isOpen={isBookingModalOpen} 
+        onClose={() => setIsBookingModalOpen(false)}
+        title={trip.title}
+        priceInfo={`Total Estimado: ${formatPrice(basePrice, baseCurrency)}`}
+        onConfirmWhatsApp={handleConfirmWhatsApp}
+      />
     </div>
   );
 };
