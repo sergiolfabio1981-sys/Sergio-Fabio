@@ -8,6 +8,18 @@ import { useCurrency } from '../contexts/CurrencyContext';
 import { generateShareImage } from '../services/imageShareService';
 import ImageGallery from '../components/ImageGallery';
 import BookingModal from '../components/BookingModal';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+
+// Leaflet Icon Fix
+if ((L.Icon.Default.prototype as any)._getIconUrl) {
+    delete (L.Icon.Default.prototype as any)._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+      iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    });
+}
 
 const RentalDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -139,6 +151,23 @@ const RentalDetails: React.FC = () => {
                 {rental.amenities.map((amenity, idx) => (<div key={idx} className="flex items-center text-gray-600"><svg className="w-4 h-4 mr-2 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>{amenity}</div>))}
             </div>
           </div>
+
+          {/* MAP SECTION */}
+          {rental.lat && rental.lng && (
+              <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                  <div className="p-4 border-b">
+                      <h3 className="text-xl font-bold text-gray-800">Ubicación en el Mapa</h3>
+                  </div>
+                  <div className="h-[400px] w-full z-0">
+                      <MapContainer center={[rental.lat, rental.lng]} zoom={14} scrollWheelZoom={false} style={{ height: "100%", width: "100%" }}>
+                          <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                          <Marker position={[rental.lat, rental.lng]}>
+                              <Popup>{rental.title}</Popup>
+                          </Marker>
+                      </MapContainer>
+                  </div>
+              </div>
+          )}
         </div>
         <div className="lg:col-span-1">
           <div className="bg-white rounded-xl shadow-lg p-6 sticky top-24 border border-gray-100">

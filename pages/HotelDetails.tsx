@@ -8,6 +8,18 @@ import { useCurrency } from '../contexts/CurrencyContext';
 import { generateShareImage } from '../services/imageShareService';
 import ImageGallery from '../components/ImageGallery';
 import BookingModal from '../components/BookingModal';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+
+// Leaflet Icon Fix
+if ((L.Icon.Default.prototype as any)._getIconUrl) {
+    delete (L.Icon.Default.prototype as any)._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+      iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    });
+}
 
 const HotelDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -135,6 +147,23 @@ const HotelDetails: React.FC = () => {
                 {hotel.amenities.map((amenity, idx) => (<div key={idx} className="flex items-start text-gray-700"><svg className="w-5 h-5 mr-3 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg><span className="text-sm font-medium">{amenity}</span></div>))}
             </div>
           </div>
+
+          {/* MAP SECTION */}
+          {hotel.lat && hotel.lng && (
+              <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                  <div className="p-4 border-b">
+                      <h3 className="text-xl font-bold text-gray-800">Ubicación en el Mapa</h3>
+                  </div>
+                  <div className="h-[400px] w-full z-0">
+                      <MapContainer center={[hotel.lat, hotel.lng]} zoom={14} scrollWheelZoom={false} style={{ height: "100%", width: "100%" }}>
+                          <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                          <Marker position={[hotel.lat, hotel.lng]}>
+                              <Popup>{hotel.title}</Popup>
+                          </Marker>
+                      </MapContainer>
+                  </div>
+              </div>
+          )}
         </div>
         <div className="lg:col-span-1">
           <div className="bg-white rounded-xl shadow-xl p-6 sticky top-24 border border-blue-100">

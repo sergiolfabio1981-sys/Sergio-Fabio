@@ -25,6 +25,7 @@ const Admin: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'hero' | 'trips' | 'rentals' | 'excursions' | 'hotels' | 'installments' | 'worldcup' | 'groups' | 'legales' | 'quote'>('trips');
   const [imageUrlInput, setImageUrlInput] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [isGeocoding, setIsGeocoding] = useState(false);
   
   // List Search
   const [listSearchTerm, setListSearchTerm] = useState('');
@@ -235,6 +236,32 @@ const Admin: React.FC = () => {
       const reader = new FileReader();
       reader.onload = (ev) => setEditingBanner(prev => prev ? { ...prev, image: ev.target?.result as string } : null);
       reader.readAsDataURL(file);
+  };
+
+  // --- GEOCODING LOGIC ---
+  const autoGeocode = async (address: string, setter: any, currentObj: any) => {
+      if(!address) return alert("Ingrese una ubicación o dirección primero.");
+      
+      setIsGeocoding(true);
+      try {
+          // Using Nominatim (OpenStreetMap) - Free, no API Key needed for client side usage
+          const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`);
+          const data = await response.json();
+          
+          if (data && data.length > 0) {
+              const lat = parseFloat(data[0].lat);
+              const lng = parseFloat(data[0].lon);
+              setter({ ...currentObj, lat, lng });
+              alert(`¡Ubicación encontrada!\nLat: ${lat}\nLng: ${lng}`);
+          } else {
+              alert("No se encontraron coordenadas para esa dirección. Intente ser más específico (ej: 'Calle, Ciudad, País')");
+          }
+      } catch (error) {
+          console.error("Geocoding error", error);
+          alert("Error al conectar con el servicio de mapas.");
+      } finally {
+          setIsGeocoding(false);
+      }
   };
 
   const createNewHeroSlide = () => {
@@ -550,7 +577,13 @@ const Admin: React.FC = () => {
                                    <div className="space-y-4">
                                        <h4 className="font-bold text-blue-700 border-b pb-1">Datos del Hotel</h4>
                                        <input value={editingHotel.title} onChange={e=>setEditingHotel({...editingHotel, title:e.target.value})} className="border p-3 w-full rounded-lg font-bold" placeholder="Nombre del Hotel" />
-                                       <input value={editingHotel.location} onChange={e=>setEditingHotel({...editingHotel, location:e.target.value})} className="border p-3 w-full rounded-lg" placeholder="Ubicación" />
+                                       <input value={editingHotel.location} onChange={e=>setEditingHotel({...editingHotel, location:e.target.value})} className="border p-3 w-full rounded-lg" placeholder="Ubicación (Dirección completa para mapa)" />
+                                       
+                                       {/* AUTO GEOCODER BUTTON */}
+                                       <button type="button" onClick={() => autoGeocode(editingHotel.location, setEditingHotel, editingHotel)} disabled={isGeocoding} className="w-full bg-blue-100 text-blue-700 px-4 py-2 rounded-lg font-bold hover:bg-blue-200 transition-colors flex items-center justify-center gap-2">
+                                            {isGeocoding ? 'Buscando...' : '📍 Buscar Coordenadas (Auto)'}
+                                       </button>
+
                                        <div className="grid grid-cols-2 gap-4">
                                             <div><label className="text-xs font-bold text-gray-500">Estrellas</label><select value={editingHotel.stars} onChange={e=>setEditingHotel({...editingHotel, stars:Number(e.target.value)})} className="border p-3 w-full rounded-lg"><option value="3">3 Estrellas</option><option value="4">4 Estrellas</option><option value="5">5 Estrellas</option></select></div>
                                             <div><label className="text-xs font-bold text-gray-500">Precio x Noche (USD)</label><input type="number" value={editingHotel.pricePerNight} onChange={e=>setEditingHotel({...editingHotel, pricePerNight:Number(e.target.value)})} className="border p-3 w-full rounded-lg" /></div>
@@ -559,9 +592,10 @@ const Admin: React.FC = () => {
                                    </div>
                                    <div className="space-y-4">
                                        <h4 className="font-bold text-gray-700 border-b pb-1">Ubicación y Oferta</h4>
-                                       <div className="grid grid-cols-2 gap-4">
-                                            <input type="number" value={editingHotel.lat || ''} onChange={e=>setEditingHotel({...editingHotel, lat:Number(e.target.value)})} className="border p-2 rounded" placeholder="Latitud" />
-                                            <input type="number" value={editingHotel.lng || ''} onChange={e=>setEditingHotel({...editingHotel, lng:Number(e.target.value)})} className="border p-2 rounded" placeholder="Longitud" />
+                                       <div className="grid grid-cols-2 gap-4 bg-gray-50 p-2 rounded">
+                                            <div className="col-span-2 text-xs text-gray-500 text-center mb-1">Coordenadas (Se llenan automático con el botón)</div>
+                                            <input type="number" value={editingHotel.lat || ''} onChange={e=>setEditingHotel({...editingHotel, lat:Number(e.target.value)})} className="border p-2 rounded bg-white" placeholder="Latitud" />
+                                            <input type="number" value={editingHotel.lng || ''} onChange={e=>setEditingHotel({...editingHotel, lng:Number(e.target.value)})} className="border p-2 rounded bg-white" placeholder="Longitud" />
                                        </div>
                                        <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 mt-4">
                                             <label className="flex items-center space-x-2 mb-2 cursor-pointer">
@@ -600,7 +634,13 @@ const Admin: React.FC = () => {
                                    <div className="space-y-4">
                                        <h4 className="font-bold text-green-700 border-b pb-1">Datos de la Propiedad</h4>
                                        <input value={editingRental.title} onChange={e=>setEditingRental({...editingRental, title:e.target.value})} className="border p-3 w-full rounded-lg" placeholder="Título del Aviso" />
-                                       <input value={editingRental.location} onChange={e=>setEditingRental({...editingRental, location:e.target.value})} className="border p-3 w-full rounded-lg" placeholder="Dirección / Ciudad" />
+                                       <input value={editingRental.location} onChange={e=>setEditingRental({...editingRental, location:e.target.value})} className="border p-3 w-full rounded-lg" placeholder="Dirección exacta para mapa" />
+                                       
+                                       {/* AUTO GEOCODER BUTTON */}
+                                       <button type="button" onClick={() => autoGeocode(editingRental.location, setEditingRental, editingRental)} disabled={isGeocoding} className="w-full bg-green-100 text-green-700 px-4 py-2 rounded-lg font-bold hover:bg-green-200 transition-colors flex items-center justify-center gap-2">
+                                            {isGeocoding ? 'Buscando...' : '📍 Buscar Coordenadas (Auto)'}
+                                       </button>
+
                                        <div className="grid grid-cols-3 gap-2">
                                             <div><label className="text-xs font-bold text-gray-500">Precio/Noche (USD)</label><input type="number" value={editingRental.pricePerNight} onChange={e=>setEditingRental({...editingRental, pricePerNight:Number(e.target.value)})} className="border p-2 w-full rounded" /></div>
                                             <div><label className="text-xs font-bold text-gray-500">Habitaciones</label><input type="number" value={editingRental.bedrooms} onChange={e=>setEditingRental({...editingRental, bedrooms:Number(e.target.value)})} className="border p-2 w-full rounded" /></div>
@@ -610,9 +650,10 @@ const Admin: React.FC = () => {
                                    </div>
                                    <div className="space-y-4">
                                        <h4 className="font-bold text-gray-700 border-b pb-1">Ubicación y Estado</h4>
-                                       <div className="grid grid-cols-2 gap-4">
-                                            <input type="number" value={editingRental.lat || ''} onChange={e=>setEditingRental({...editingRental, lat:Number(e.target.value)})} className="border p-2 rounded" placeholder="Latitud" />
-                                            <input type="number" value={editingRental.lng || ''} onChange={e=>setEditingRental({...editingRental, lng:Number(e.target.value)})} className="border p-2 rounded" placeholder="Longitud" />
+                                       <div className="grid grid-cols-2 gap-4 bg-gray-50 p-2 rounded">
+                                            <div className="col-span-2 text-xs text-gray-500 text-center mb-1">Coordenadas (Se llenan automático)</div>
+                                            <input type="number" value={editingRental.lat || ''} onChange={e=>setEditingRental({...editingRental, lat:Number(e.target.value)})} className="border p-2 rounded bg-white" placeholder="Latitud" />
+                                            <input type="number" value={editingRental.lng || ''} onChange={e=>setEditingRental({...editingRental, lng:Number(e.target.value)})} className="border p-2 rounded bg-white" placeholder="Longitud" />
                                        </div>
                                        <div className="bg-gray-50 p-4 rounded-lg border mt-4">
                                             <label className="flex items-center space-x-2 mb-2 cursor-pointer">

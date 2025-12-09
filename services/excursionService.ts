@@ -10,6 +10,17 @@ export const getExcursions = async (): Promise<Excursion[]> => {
       console.error('Error fetching excursions:', error);
       return INITIAL_EXCURSIONS;
     }
+
+    // AUTO-SEEDING LOGIC FOR EXCURSIONS
+    // If DB is empty or has significantly fewer items than our updated constants (indicating missing new data), seed it.
+    if (!data || data.length < INITIAL_EXCURSIONS.length) {
+        console.log("Seeding Database with New Excursions...");
+        const { error: seedError } = await supabase.from('excursions').upsert(INITIAL_EXCURSIONS);
+        if (seedError) console.error("Error seeding excursions:", seedError);
+        // Return local data immediately to show update
+        return INITIAL_EXCURSIONS;
+    }
+
     return (data as Excursion[]) || INITIAL_EXCURSIONS;
   } catch (err) {
     return INITIAL_EXCURSIONS;

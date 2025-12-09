@@ -614,9 +614,197 @@ export const INITIAL_TRIPS: Trip[] = [
   }
 ];
 
+// --- EXCURSIONES (New) ---
+export const INITIAL_EXCURSIONS: Excursion[] = [
+  {
+    id: 'exc-city-tour-floripa',
+    title: 'Tour Panorámico por Florianópolis',
+    location: 'Florianópolis, Brasil',
+    price: 35,
+    description: 'Descubre los encantos de Floripa. Visitaremos el Centro Histórico, Mercado Público, Puente Hercilio Luz y miradores espectaculares. Incluye guía en español.',
+    images: ['https://cf.bstatic.com/xdata/images/hotel/max1024x768/562304953.jpg?k=5c3b9e8c5f5e5c9e8c5f5e5c9e8c5f5e5c9e8c5f5e5c9e8c5f5e5c9e8c5f5e&o=', 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?q=80&w=2070&auto=format&fit=crop'],
+    isOffer: false,
+    duration: 'Full Day (8 hs)',
+    availableDates: ['Lunes', 'Miércoles', 'Viernes'],
+    rating: 8.8,
+    reviewsCount: 120,
+    baseCurrency: 'USD',
+    type: 'excursion'
+  },
+  {
+    id: 'exc-barco-pirata',
+    title: 'Barco Pirata en Canasvieiras',
+    location: 'Florianópolis, Brasil',
+    price: 45,
+    description: '¡Diversión garantizada! Paseo en barco temático con show de piratas a bordo. Navegación por la costa norte, parada para baño en Ilha do Francês. Ideal para familias.',
+    images: ['https://cf.bstatic.com/xdata/images/hotel/max1024x768/562304953.jpg?k=5c3b9e8c5f5e5c9e8c5f5e5c9e8c5f5e5c9e8c5f5e5c9e8c5f5e5c9e8c5f5e&o=', 'https://images.unsplash.com/photo-1544256667-27e1f486cc4e?q=80&w=2071&auto=format&fit=crop'],
+    isOffer: true,
+    duration: '5 Horas',
+    availableDates: ['Diario en Temporada Alta'],
+    rating: 9.2,
+    reviewsCount: 350,
+    baseCurrency: 'USD',
+    type: 'excursion',
+    specialLabel: 'SHOW EN VIVO'
+  },
+  {
+    id: 'exc-beto-carrero',
+    title: 'Beto Carrero World (Traslado + Entrada)',
+    location: 'Penha, Brasil',
+    price: 95,
+    description: 'Visita el parque temático más grande de Latinoamérica. Montañas rusas, shows en vivo (Hot Wheels, Madagascar) y zoológico. Incluye traslado ida y vuelta desde Florianópolis.',
+    images: ['https://images.unsplash.com/photo-1628062973713-33e367c3b905?q=80&w=2070&auto=format&fit=crop', 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/562304953.jpg?k=5c3b9e8c5f5e5c9e8c5f5e5c9e8c5f5e5c9e8c5f5e5c9e8c5f5e5c9e8c5f5e&o='],
+    isOffer: true,
+    duration: 'Full Day (12 hs)',
+    availableDates: ['Martes', 'Jueves', 'Sábado', 'Domingo'],
+    rating: 9.6,
+    reviewsCount: 500,
+    baseCurrency: 'USD',
+    type: 'excursion',
+    specialLabel: 'PARQUE TEMÁTICO'
+  },
+  {
+    id: 'exc-blumenau-pomerode',
+    title: 'Tour Alemán: Blumenau y Pomerode',
+    location: 'Santa Catarina, Brasil',
+    price: 55,
+    description: 'Conoce la "Pequeña Alemania" de Brasil. Arquitectura europea, cerveza artesanal, chocolate y cultura. Visitaremos la Villa Germánica (sede del Oktoberfest).',
+    images: ['https://images.unsplash.com/photo-1563806461-12778943df44?q=80&w=2070&auto=format&fit=crop'],
+    isOffer: false,
+    duration: 'Full Day (10 hs)',
+    availableDates: ['Jueves', 'Domingo'],
+    rating: 9.0,
+    reviewsCount: 85,
+    baseCurrency: 'USD',
+    type: 'excursion'
+  },
+  {
+    id: 'exc-camboriu-unipraias',
+    title: 'Balneário Camboriú y Parque Unipraias',
+    location: 'Camboriú, Brasil',
+    price: 60,
+    description: 'Excursión a la "Dubai Brasileña". Tiempo libre en la playa central y visita opcional al Parque Unipraias (Teleférico con vistas increíbles). Regreso al atardecer.',
+    images: ['https://images.unsplash.com/photo-1555979869-7da2696b738e?q=80&w=1974&auto=format&fit=crop'],
+    isOffer: false,
+    duration: 'Full Day (10 hs)',
+    availableDates: ['Martes', 'Viernes'],
+    rating: 9.1,
+    reviewsCount: 110,
+    baseCurrency: 'USD',
+    type: 'excursion'
+  },
+  {
+    id: 'exc-bombinhas-4islas',
+    title: 'Bombinhas y 4 Islas - Paraíso de Buceo',
+    location: 'Bombinhas, Brasil',
+    price: 65,
+    description: 'Disfruta de las aguas cristalinas de Bombinhas, ideales para snorkel y buceo. Visitaremos Praia da Sepultura y Retiro dos Padres. Paisajes naturales únicos.',
+    images: ['https://images.unsplash.com/photo-1519832276906-e77fa7478054?q=80&w=2069&auto=format&fit=crop'],
+    isOffer: true,
+    duration: 'Full Day (9 hs)',
+    availableDates: ['Lunes', 'Miércoles', 'Sábado'],
+    rating: 9.4,
+    reviewsCount: 95,
+    baseCurrency: 'USD',
+    type: 'excursion',
+    specialLabel: 'AGUAS CRISTALINAS'
+  },
+  {
+    id: 'exc-ilhamagia-este',
+    title: 'Playas del Este: Joaquina y Barra da Lagoa',
+    location: 'Florianópolis, Brasil',
+    price: 30,
+    description: 'Recorrido por las playas de olas y surf. Conoce las dunas de Joaquina, el ambiente relajado de Barra da Lagoa y el Proyecto Tamar (tortugas marinas, entrada opcional).',
+    images: ['https://images.unsplash.com/photo-1544015759-3a33909772bf?q=80&w=2070&auto=format&fit=crop'],
+    isOffer: false,
+    duration: '6 Horas',
+    availableDates: ['Diario'],
+    rating: 8.7,
+    reviewsCount: 60,
+    baseCurrency: 'USD',
+    type: 'excursion'
+  },
+  {
+    id: 'exc-sul-ilha',
+    title: 'Sur de la Isla: Campeche y Ribeirão',
+    location: 'Florianópolis, Brasil',
+    price: 40,
+    description: 'Explora el lado más rústico y preservado. Playa de Campeche (el "Caribe Catarinense") y el histórico Ribeirão da Ilha, famoso por sus ostras y arquitectura azoriana.',
+    images: ['https://images.unsplash.com/photo-1592861219875-1a3b7c43c749?q=80&w=2070&auto=format&fit=crop'],
+    isOffer: false,
+    duration: '7 Horas',
+    availableDates: ['Martes', 'Jueves'],
+    rating: 9.3,
+    reviewsCount: 40,
+    baseCurrency: 'USD',
+    type: 'excursion'
+  },
+  {
+    id: 'exc-rafting',
+    title: 'Aventura Rafting en Santo Amaro',
+    location: 'Santo Amaro, Brasil',
+    price: 85,
+    description: 'Adrenalina pura bajando los rápidos del río Cubatão. Incluye equipo de seguridad, instrucción y traslado desde Florianópolis. Nivel principiante/intermedio.',
+    images: ['https://images.unsplash.com/photo-1530866495561-507c9faab2ed?q=80&w=2069&auto=format&fit=crop'],
+    isOffer: false,
+    duration: '6 Horas',
+    availableDates: ['Sábados'],
+    rating: 9.5,
+    reviewsCount: 25,
+    baseCurrency: 'USD',
+    type: 'excursion',
+    specialLabel: 'AVENTURA'
+  },
+  {
+    id: 'exc-buceo-arvoredo',
+    title: 'Bautismo de Buceo en Isla Arvoredo',
+    location: 'Reserva Biológica Arvoredo',
+    price: 150,
+    description: 'Sumérgete en una de las mejores reservas marinas de Brasil. Incluye equipo completo, instructor personal y navegación hasta la isla. ¡Inolvidable!',
+    images: ['https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=2070&auto=format&fit=crop'],
+    isOffer: false,
+    duration: 'Full Day',
+    availableDates: ['Bajo reserva previa'],
+    rating: 9.8,
+    reviewsCount: 15,
+    baseCurrency: 'USD',
+    type: 'excursion',
+    specialLabel: 'PREMIUM'
+  },
+  {
+    id: 'exc-aqua-show',
+    title: 'Entradas Aqua Show Park',
+    location: 'Ingleses, Florianópolis',
+    price: 25,
+    description: 'Diversión acuática para toda la familia en el norte de la isla. Toboganes, piscinas y juegos. Solo entrada (sin traslado).',
+    images: ['https://images.unsplash.com/photo-1582650625119-3a31f8fa2699?q=80&w=1936&auto=format&fit=crop'],
+    isOffer: true,
+    duration: 'Pase Diario',
+    availableDates: ['Diario en verano'],
+    rating: 8.5,
+    reviewsCount: 200,
+    baseCurrency: 'USD',
+    type: 'excursion'
+  },
+  {
+    id: 'exc-ilhas-anhatomirim',
+    title: 'Paseo en Goleta a Fortaleza Anhatomirim',
+    location: 'Florianópolis, Brasil',
+    price: 50,
+    description: 'Navegación histórica visitando las fortalezas del siglo XVIII y avistamiento de delfines en la Bahía de los Golfinhos. Almuerzo opcional en Governador Celso Ramos.',
+    images: ['https://images.unsplash.com/photo-1504542982118-59308b40fe0c?q=80&w=2070&auto=format&fit=crop'],
+    isOffer: false,
+    duration: '6 Horas',
+    availableDates: ['Martes', 'Jueves', 'Sábado'],
+    rating: 9.1,
+    reviewsCount: 75,
+    baseCurrency: 'USD',
+    type: 'excursion'
+  }
+];
+
 export const INITIAL_RENTALS: Apartment[] = [];
 export const INITIAL_HOTELS: Hotel[] = [];
-export const INITIAL_EXCURSIONS: Excursion[] = [];
 export const INITIAL_INSTALLMENT_TRIPS: InstallmentTrip[] = [];
 export const INITIAL_WORLDCUP_TRIPS: WorldCupTrip[] = [];
 export const INITIAL_GROUP_TRIPS: GroupTrip[] = [];
