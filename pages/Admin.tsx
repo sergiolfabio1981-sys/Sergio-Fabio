@@ -91,14 +91,18 @@ const Admin: React.FC = () => {
   }, [activeTab]);
 
   const loadAllData = async () => {
-      const [t, r, e, h, i, w, g, hs, pb] = await Promise.all([
-          getTrips(), getRentals(), getExcursions(), getHotels(),
-          getInstallmentTrips(), getWorldCupTrips(), getGroupTrips(),
-          getHeroSlides(), getPromoBanners()
-      ]);
-      setTrips(t); setRentals(r); setExcursions(e); setHotels(h);
-      setInstallments(i); setWorldCupTrips(w); setGroupTrips(g);
-      setHeroSlides(hs); setPromoBanners(pb);
+      try {
+          const [t, r, e, h, i, w, g, hs, pb] = await Promise.all([
+              getTrips(), getRentals(), getExcursions(), getHotels(),
+              getInstallmentTrips(), getWorldCupTrips(), getGroupTrips(),
+              getHeroSlides(), getPromoBanners()
+          ]);
+          setTrips(t); setRentals(r); setExcursions(e); setHotels(h);
+          setInstallments(i); setWorldCupTrips(w); setGroupTrips(g);
+          setHeroSlides(hs); setPromoBanners(pb);
+      } catch (error) {
+          console.error("Error loading data", error);
+      }
   };
 
   const handleLogin = (e: React.FormEvent) => {
@@ -122,15 +126,19 @@ const Admin: React.FC = () => {
 
   const handleDelete = async (id: any, type: string) => {
       if(!window.confirm("¿Eliminar este elemento?")) return;
-      if (type === 'trip') await deleteTrip(id);
-      if (type === 'rental') await deleteRental(id);
-      if (type === 'hotel') await deleteHotel(id);
-      if (type === 'excursion') await deleteExcursion(id);
-      if (type === 'group') await deleteGroupTrip(id);
-      if (type === 'installment') await deleteInstallmentTrip(id);
-      if (type === 'worldcup') await deleteWorldCupTrip(id);
-      if (type === 'hero_slide') await deleteHeroSlide(id);
-      await loadAllData();
+      try {
+          if (type === 'trip') await deleteTrip(id);
+          if (type === 'rental') await deleteRental(id);
+          if (type === 'hotel') await deleteHotel(id);
+          if (type === 'excursion') await deleteExcursion(id);
+          if (type === 'group') await deleteGroupTrip(id);
+          if (type === 'installment') await deleteInstallmentTrip(id);
+          if (type === 'worldcup') await deleteWorldCupTrip(id);
+          if (type === 'hero_slide') await deleteHeroSlide(id);
+          await loadAllData();
+      } catch (e) {
+          alert('Error al eliminar');
+      }
   };
 
   const handleDuplicate = async (item: any, type: string) => {
@@ -144,6 +152,7 @@ const Admin: React.FC = () => {
 
       resetEditState();
 
+      // PROTECCIÓN CONTRA ARRAYS NULOS (|| [])
       if (type === 'trip') {
           await saveTrip(newItem);
           setEditingTrip(newItem);
@@ -179,19 +188,25 @@ const Admin: React.FC = () => {
   const handleSave = async (e: React.FormEvent) => {
       e.preventDefault();
       setIsSaving(true);
-      if (editingTrip) await saveTrip({...editingTrip, availableDates: tripDatesInput.split('\n').filter(d=>d.trim()!=='')});
-      else if (editingRental) await saveRental({...editingRental, amenities: rentalAmenitiesInput.split('\n').filter(a=>a.trim()!=='')});
-      else if (editingHotel) await saveHotel({...editingHotel, amenities: hotelAmenitiesInput.split('\n').filter(a=>a.trim()!=='')});
-      else if (editingExcursion) await saveExcursion({...editingExcursion, availableDates: excursionDatesInput.split('\n').filter(d=>d.trim()!=='')});
-      else if (editingGroup) await saveGroupTrip({...editingGroup, availableDates: groupDatesInput.split('\n').filter(d=>d.trim()!=='')});
-      else if (editingInstallment) await saveInstallmentTrip(editingInstallment);
-      else if (editingWorldCup) await saveWorldCupTrip(editingWorldCup);
-      else if (editingSlide) await saveHeroSlide(editingSlide);
-      else if (editingBanner) await savePromoBanner(editingBanner);
-      
-      await loadAllData();
-      setIsSaving(false);
-      setIsModalOpen(false);
+      try {
+          if (editingTrip) await saveTrip({...editingTrip, availableDates: tripDatesInput.split('\n').filter(d=>d.trim()!=='')});
+          else if (editingRental) await saveRental({...editingRental, amenities: rentalAmenitiesInput.split('\n').filter(a=>a.trim()!=='')});
+          else if (editingHotel) await saveHotel({...editingHotel, amenities: hotelAmenitiesInput.split('\n').filter(a=>a.trim()!=='')});
+          else if (editingExcursion) await saveExcursion({...editingExcursion, availableDates: excursionDatesInput.split('\n').filter(d=>d.trim()!=='')});
+          else if (editingGroup) await saveGroupTrip({...editingGroup, availableDates: groupDatesInput.split('\n').filter(d=>d.trim()!=='')});
+          else if (editingInstallment) await saveInstallmentTrip(editingInstallment);
+          else if (editingWorldCup) await saveWorldCupTrip(editingWorldCup);
+          else if (editingSlide) await saveHeroSlide(editingSlide);
+          else if (editingBanner) await savePromoBanner(editingBanner);
+          
+          await loadAllData();
+          setIsModalOpen(false);
+      } catch (error) {
+          console.error("Error saving:", error);
+          alert("Hubo un error al guardar. Verifique los datos o la conexión.");
+      } finally {
+          setIsSaving(false);
+      }
   };
 
   const handleSaveLegales = async () => {
@@ -244,7 +259,7 @@ const Admin: React.FC = () => {
       
       setIsGeocoding(true);
       try {
-          // Using Nominatim (OpenStreetMap) - Free, no API Key needed for client side usage
+          // Using Nominatim (OpenStreetMap)
           const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`);
           const data = await response.json();
           
@@ -368,11 +383,12 @@ const Admin: React.FC = () => {
         )}
 
         {/* --- LISTS --- */}
-        {activeTab === 'trips' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl">Paquetes</h2><button onClick={()=>{resetEditState(); setEditingTrip(createEmptyTrip()); setTripDatesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Paquete</button></div>{filterList(trips).map(t=><div key={t.id} className="flex justify-between border-b py-2 items-center"><span>{t.title}</span><div className="flex gap-2"><button onClick={()=>handleDuplicate(t, 'trip')} className="text-gray-500 hover:text-gray-700" title="Duplicar">❐</button><button onClick={()=>{resetEditState(); setEditingTrip({...t}); setTripDatesInput(t.availableDates.join('\n')); setIsModalOpen(true)}} className="text-blue-500">Editar</button><button onClick={()=>handleDelete(t.id, 'trip')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
-        {activeTab === 'groups' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl text-purple-700">Grupales</h2><button onClick={()=>{resetEditState(); setEditingGroup(createEmptyGroupTrip()); setGroupDatesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Grupal</button></div>{filterList(groupTrips).map(g=><div key={g.id} className="flex justify-between border-b py-2 items-center"><span>{g.title}</span><div className="flex gap-2"><button onClick={()=>handleDuplicate(g, 'group')} className="text-gray-500 hover:text-gray-700" title="Duplicar">❐</button><button onClick={()=>{resetEditState(); setEditingGroup({...g}); setGroupDatesInput(g.availableDates.join('\n')); setIsModalOpen(true)}} className="text-blue-500">Editar</button><button onClick={()=>handleDelete(g.id, 'group')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
-        {activeTab === 'hotels' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl">Hoteles</h2><button onClick={()=>{resetEditState(); setEditingHotel(createEmptyHotel()); setHotelAmenitiesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Hotel</button></div>{filterList(hotels).map(h=><div key={h.id} className="flex justify-between border-b py-2 items-center"><span>{h.title}</span><div className="flex gap-2"><button onClick={()=>handleDuplicate(h, 'hotel')} className="text-gray-500 hover:text-gray-700" title="Duplicar">❐</button><button onClick={()=>{resetEditState(); setEditingHotel({...h}); setHotelAmenitiesInput(h.amenities.join('\n')); setIsModalOpen(true)}} className="text-blue-500">Editar</button><button onClick={()=>handleDelete(h.id, 'hotel')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
-        {activeTab === 'rentals' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl">Alquileres</h2><button onClick={()=>{resetEditState(); setEditingRental(createEmptyRental()); setRentalAmenitiesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Alquiler</button></div>{filterList(rentals).map(r=><div key={r.id} className="flex justify-between border-b py-2 items-center"><span>{r.title}</span><div className="flex gap-2"><button onClick={()=>handleDuplicate(r, 'rental')} className="text-gray-500 hover:text-gray-700" title="Duplicar">❐</button><button onClick={()=>{resetEditState(); setEditingRental({...r}); setRentalAmenitiesInput(r.amenities.join('\n')); setIsModalOpen(true)}} className="text-blue-500">Editar</button><button onClick={()=>handleDelete(r.id, 'rental')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
-        {activeTab === 'excursions' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl">Excursiones</h2><button onClick={()=>{resetEditState(); setEditingExcursion(createEmptyExcursion()); setExcursionDatesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Excursión</button></div>{filterList(excursions).map(e=><div key={e.id} className="flex justify-between border-b py-2 items-center"><span>{e.title}</span><div className="flex gap-2"><button onClick={()=>handleDuplicate(e, 'excursion')} className="text-gray-500 hover:text-gray-700" title="Duplicar">❐</button><button onClick={()=>{resetEditState(); setEditingExcursion({...e}); setExcursionDatesInput(e.availableDates.join('\n')); setIsModalOpen(true)}} className="text-blue-500">Editar</button><button onClick={()=>handleDelete(e.id, 'excursion')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
+        {/* PROTECCIÓN (|| []) AGREGADA EN CADA JOIN */}
+        {activeTab === 'trips' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl">Paquetes</h2><button onClick={()=>{resetEditState(); setEditingTrip(createEmptyTrip()); setTripDatesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Paquete</button></div>{filterList(trips).map(t=><div key={t.id} className="flex justify-between border-b py-2 items-center"><span>{t.title}</span><div className="flex gap-2"><button onClick={()=>handleDuplicate(t, 'trip')} className="text-gray-500 hover:text-gray-700" title="Duplicar">❐</button><button onClick={()=>{resetEditState(); setEditingTrip({...t}); setTripDatesInput((t.availableDates || []).join('\n')); setIsModalOpen(true)}} className="text-blue-500">Editar</button><button onClick={()=>handleDelete(t.id, 'trip')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
+        {activeTab === 'groups' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl text-purple-700">Grupales</h2><button onClick={()=>{resetEditState(); setEditingGroup(createEmptyGroupTrip()); setGroupDatesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Grupal</button></div>{filterList(groupTrips).map(g=><div key={g.id} className="flex justify-between border-b py-2 items-center"><span>{g.title}</span><div className="flex gap-2"><button onClick={()=>handleDuplicate(g, 'group')} className="text-gray-500 hover:text-gray-700" title="Duplicar">❐</button><button onClick={()=>{resetEditState(); setEditingGroup({...g}); setGroupDatesInput((g.availableDates || []).join('\n')); setIsModalOpen(true)}} className="text-blue-500">Editar</button><button onClick={()=>handleDelete(g.id, 'group')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
+        {activeTab === 'hotels' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl">Hoteles</h2><button onClick={()=>{resetEditState(); setEditingHotel(createEmptyHotel()); setHotelAmenitiesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Hotel</button></div>{filterList(hotels).map(h=><div key={h.id} className="flex justify-between border-b py-2 items-center"><span>{h.title}</span><div className="flex gap-2"><button onClick={()=>handleDuplicate(h, 'hotel')} className="text-gray-500 hover:text-gray-700" title="Duplicar">❐</button><button onClick={()=>{resetEditState(); setEditingHotel({...h}); setHotelAmenitiesInput((h.amenities || []).join('\n')); setIsModalOpen(true)}} className="text-blue-500">Editar</button><button onClick={()=>handleDelete(h.id, 'hotel')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
+        {activeTab === 'rentals' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl">Alquileres</h2><button onClick={()=>{resetEditState(); setEditingRental(createEmptyRental()); setRentalAmenitiesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Alquiler</button></div>{filterList(rentals).map(r=><div key={r.id} className="flex justify-between border-b py-2 items-center"><span>{r.title}</span><div className="flex gap-2"><button onClick={()=>handleDuplicate(r, 'rental')} className="text-gray-500 hover:text-gray-700" title="Duplicar">❐</button><button onClick={()=>{resetEditState(); setEditingRental({...r}); setRentalAmenitiesInput((r.amenities || []).join('\n')); setIsModalOpen(true)}} className="text-blue-500">Editar</button><button onClick={()=>handleDelete(r.id, 'rental')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
+        {activeTab === 'excursions' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl">Excursiones</h2><button onClick={()=>{resetEditState(); setEditingExcursion(createEmptyExcursion()); setExcursionDatesInput(''); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Excursión</button></div>{filterList(excursions).map(e=><div key={e.id} className="flex justify-between border-b py-2 items-center"><span>{e.title}</span><div className="flex gap-2"><button onClick={()=>handleDuplicate(e, 'excursion')} className="text-gray-500 hover:text-gray-700" title="Duplicar">❐</button><button onClick={()=>{resetEditState(); setEditingExcursion({...e}); setExcursionDatesInput((e.availableDates || []).join('\n')); setIsModalOpen(true)}} className="text-blue-500">Editar</button><button onClick={()=>handleDelete(e.id, 'excursion')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
         {activeTab === 'installments' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl text-indigo-800">Cuotas</h2><button onClick={()=>{resetEditState(); setEditingInstallment(createEmptyInstallmentTrip()); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Plan</button></div>{filterList(installments).map(i=><div key={i.id} className="flex justify-between border-b py-2 items-center"><span>{i.title}</span><div className="flex gap-2"><button onClick={()=>handleDuplicate(i, 'installment')} className="text-gray-500 hover:text-gray-700" title="Duplicar">❐</button><button onClick={()=>{resetEditState(); setEditingInstallment({...i}); setIsModalOpen(true)}} className="text-blue-500">Editar</button><button onClick={()=>handleDelete(i.id, 'installment')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
         {activeTab === 'worldcup' && (<div className="bg-white p-6 rounded-xl shadow-sm"><div className="flex justify-between mb-4"><h2 className="font-bold text-xl text-blue-900">Mundial</h2><button onClick={()=>{resetEditState(); setEditingWorldCup(createEmptyWorldCupTrip()); setIsModalOpen(true)}} className="bg-green-500 text-white px-4 py-2 rounded">+ Nuevo Paquete</button></div>{filterList(worldCupTrips).map(w=><div key={w.id} className="flex justify-between border-b py-2 items-center"><span>{w.title}</span><div className="flex gap-2"><button onClick={()=>handleDuplicate(w, 'worldcup')} className="text-gray-500 hover:text-gray-700" title="Duplicar">❐</button><button onClick={()=>{resetEditState(); setEditingWorldCup({...w}); setIsModalOpen(true)}} className="text-blue-500">Editar</button><button onClick={()=>handleDelete(w.id, 'worldcup')} className="text-red-500">Eliminar</button></div></div>)}</div>)}
         

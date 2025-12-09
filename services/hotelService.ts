@@ -19,7 +19,12 @@ export const getHotels = async (): Promise<Hotel[]> => {
         return INITIAL_HOTELS;
     }
 
-    return (data as Hotel[]) || INITIAL_HOTELS;
+    // Ensure arrays are arrays and not null
+    return (data as Hotel[]).map(h => ({
+        ...h,
+        images: h.images || [],
+        amenities: h.amenities || []
+    }));
   } catch (err) {
     return INITIAL_HOTELS;
   }
@@ -29,7 +34,13 @@ export const getHotelById = async (id: string): Promise<Hotel | undefined> => {
   try {
     const { data, error } = await supabase.from('hotels').select('*').eq('id', id).single();
     if (error) return INITIAL_HOTELS.find(h => h.id === id);
-    return data as Hotel;
+    // Ensure arrays
+    const hotel = data as Hotel;
+    return {
+        ...hotel,
+        images: hotel.images || [],
+        amenities: hotel.amenities || []
+    };
   } catch {
     return INITIAL_HOTELS.find(h => h.id === id);
   }
@@ -42,7 +53,10 @@ export const saveHotel = async (hotel: Hotel): Promise<void> => {
       amenities: Array.isArray(hotel.amenities) ? hotel.amenities : []
   };
   const { error } = await supabase.from('hotels').upsert(hotelToSave);
-  if (error) console.error('Error saving hotel:', error);
+  if (error) {
+      console.error('Error saving hotel:', error);
+      throw error; // Re-throw to catch in Admin component
+  }
 };
 
 export const deleteHotel = async (id: string): Promise<void> => {
