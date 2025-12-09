@@ -8,21 +8,21 @@ export const getWorldCupTrips = async (): Promise<WorldCupTrip[]> => {
     const { data, error } = await supabase.from('worldcup').select('*');
     if (error) {
         console.error(error);
-        return INITIAL_WORLDCUP_TRIPS;
+        return [];
     }
-    return (data as WorldCupTrip[]) || INITIAL_WORLDCUP_TRIPS;
+    return (data as WorldCupTrip[]) || [];
   } catch {
-    return INITIAL_WORLDCUP_TRIPS;
+    return [];
   }
 };
 
 export const getWorldCupTripById = async (id: string): Promise<WorldCupTrip | undefined> => {
   try {
     const { data, error } = await supabase.from('worldcup').select('*').eq('id', id).single();
-    if (error) return INITIAL_WORLDCUP_TRIPS.find(t => t.id === id);
+    if (error) return undefined;
     return data as WorldCupTrip;
   } catch {
-    return INITIAL_WORLDCUP_TRIPS.find(t => t.id === id);
+    return undefined;
   }
 };
 

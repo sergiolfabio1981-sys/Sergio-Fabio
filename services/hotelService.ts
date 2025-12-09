@@ -8,15 +8,7 @@ export const getHotels = async (): Promise<Hotel[]> => {
     const { data, error } = await supabase.from('hotels').select('*');
     if (error) {
       console.error('Error fetching hotels:', error);
-      return INITIAL_HOTELS;
-    }
-
-    // AUTO-SEEDING FOR HOTELS
-    if (!data || data.length < 5) {
-        console.log("Seeding Database with Hotels...");
-        const { error: seedError } = await supabase.from('hotels').upsert(INITIAL_HOTELS);
-        if (seedError) console.error("Error seeding hotels:", seedError);
-        return INITIAL_HOTELS;
+      return [];
     }
 
     // Ensure arrays are arrays and not null
@@ -26,14 +18,14 @@ export const getHotels = async (): Promise<Hotel[]> => {
         amenities: h.amenities || []
     }));
   } catch (err) {
-    return INITIAL_HOTELS;
+    return [];
   }
 };
 
 export const getHotelById = async (id: string): Promise<Hotel | undefined> => {
   try {
     const { data, error } = await supabase.from('hotels').select('*').eq('id', id).single();
-    if (error) return INITIAL_HOTELS.find(h => h.id === id);
+    if (error) return undefined;
     // Ensure arrays
     const hotel = data as Hotel;
     return {
@@ -42,7 +34,7 @@ export const getHotelById = async (id: string): Promise<Hotel | undefined> => {
         amenities: hotel.amenities || []
     };
   } catch {
-    return INITIAL_HOTELS.find(h => h.id === id);
+    return undefined;
   }
 };
 
@@ -55,7 +47,7 @@ export const saveHotel = async (hotel: Hotel): Promise<void> => {
   const { error } = await supabase.from('hotels').upsert(hotelToSave);
   if (error) {
       console.error('Error saving hotel:', error);
-      throw error; // Re-throw to catch in Admin component
+      throw error; 
   }
 };
 

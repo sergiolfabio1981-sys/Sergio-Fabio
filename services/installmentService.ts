@@ -8,21 +8,21 @@ export const getInstallmentTrips = async (): Promise<InstallmentTrip[]> => {
     const { data, error } = await supabase.from('installments').select('*');
     if (error) {
         console.error(error);
-        return INITIAL_INSTALLMENT_TRIPS;
+        return [];
     }
-    return (data as InstallmentTrip[]) || INITIAL_INSTALLMENT_TRIPS;
+    return (data as InstallmentTrip[]) || [];
   } catch {
-    return INITIAL_INSTALLMENT_TRIPS;
+    return [];
   }
 };
 
 export const getInstallmentTripById = async (id: string): Promise<InstallmentTrip | undefined> => {
   try {
     const { data, error } = await supabase.from('installments').select('*').eq('id', id).single();
-    if (error) return INITIAL_INSTALLMENT_TRIPS.find(t => t.id === id);
+    if (error) return undefined;
     return data as InstallmentTrip;
   } catch {
-    return INITIAL_INSTALLMENT_TRIPS.find(t => t.id === id);
+    return undefined;
   }
 };
 

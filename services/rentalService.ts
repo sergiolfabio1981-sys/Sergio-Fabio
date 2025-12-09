@@ -8,30 +8,22 @@ export const getRentals = async (): Promise<Apartment[]> => {
     const { data, error } = await supabase.from('rentals').select('*');
     if (error) {
       console.error('Error fetching rentals:', error);
-      return INITIAL_RENTALS;
+      return [];
     }
 
-    // AUTO-SEEDING FOR RENTALS
-    if (!data || data.length < 5) {
-        console.log("Seeding Database with Rentals...");
-        const { error: seedError } = await supabase.from('rentals').upsert(INITIAL_RENTALS);
-        if (seedError) console.error("Error seeding rentals:", seedError);
-        return INITIAL_RENTALS;
-    }
-
-    return (data as Apartment[]) || INITIAL_RENTALS;
+    return (data as Apartment[]) || [];
   } catch (err) {
-    return INITIAL_RENTALS;
+    return [];
   }
 };
 
 export const getRentalById = async (id: string): Promise<Apartment | undefined> => {
   try {
     const { data, error } = await supabase.from('rentals').select('*').eq('id', id).single();
-    if (error) return INITIAL_RENTALS.find(r => r.id === id);
+    if (error) return undefined;
     return data as Apartment;
   } catch {
-    return INITIAL_RENTALS.find(r => r.id === id);
+    return undefined;
   }
 };
 
