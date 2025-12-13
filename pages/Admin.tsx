@@ -201,9 +201,9 @@ const Admin: React.FC = () => {
           
           await loadAllData();
           setIsModalOpen(false);
-      } catch (error) {
+      } catch (error: any) {
           console.error("Error saving:", error);
-          alert("Hubo un error al guardar. Verifique los datos o la conexión.");
+          alert(`Hubo un error al guardar. Detalle: ${error.message || 'Error de conexión o base de datos'}`);
       } finally {
           setIsSaving(false);
       }
