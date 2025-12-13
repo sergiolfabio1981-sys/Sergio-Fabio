@@ -11,7 +11,8 @@ export const getRentals = async (): Promise<Apartment[]> => {
       return [];
     }
 
-    return (data as Apartment[]) || [];
+    // Explicitly set type
+    return (data as Apartment[]).map(r => ({...r, type: 'rental'})) || [];
   } catch (err) {
     return [];
   }
@@ -21,7 +22,8 @@ export const getRentalById = async (id: string): Promise<Apartment | undefined> 
   try {
     const { data, error } = await supabase.from('rentals').select('*').eq('id', id).single();
     if (error) return undefined;
-    return data as Apartment;
+    // Inject type rental here
+    return { ...data, type: 'rental' } as Apartment;
   } catch {
     return undefined;
   }
@@ -47,7 +49,7 @@ export const createEmptyRental = (): Apartment => ({
   title: '',
   location: '',
   pricePerNight: 0,
-  priceFrequency: 'nightly', // Default to nightly
+  priceFrequency: 'nightly', // Default
   description: '',
   images: [`https://picsum.photos/seed/${Date.now()}/800/600`],
   bedrooms: 1,

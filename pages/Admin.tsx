@@ -353,7 +353,7 @@ const Admin: React.FC = () => {
                           <tr key={item.id}>
                               <td className="px-6 py-4 whitespace-nowrap"><div className="text-sm font-medium text-gray-900">{item.title}</div>{item.isOffer && <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Oferta</span>}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.location}</td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.baseCurrency} {item.price || item.pricePerNight || item.totalPrice}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.baseCurrency} {item.price || item.pricePerNight || item.totalPrice} {type === 'rental' && item.priceFrequency === 'monthly' ? '/ mes' : ''}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                   <button onClick={() => {
                                       resetEditState();
@@ -508,50 +508,6 @@ const Admin: React.FC = () => {
                               <div className="flex gap-4 items-center border-t pt-4">
                                   <label className="flex items-center gap-2"><input type="checkbox" checked={editingRental.isOffer} onChange={e=>setEditingRental({...editingRental, isOffer: e.target.checked})} /> Es Oferta Destacada</label>
                                   <input type="number" placeholder="% Descuento" className="border p-2 rounded w-32" value={editingRental.discount || ''} onChange={e=>setEditingRental({...editingRental, discount: parseFloat(e.target.value)})} />
-                              </div>
-
-                              <div className="flex justify-end gap-2 border-t pt-4">
-                                  <button type="button" onClick={()=>setIsModalOpen(false)} className="px-4 py-2 text-gray-600">Cancelar</button>
-                                  <button type="submit" disabled={isSaving} className="bg-cyan-600 text-white px-6 py-2 rounded font-bold hover:bg-cyan-700 disabled:opacity-50">{isSaving ? 'Guardando...' : 'Guardar Cambios'}</button>
-                              </div>
-                          </form>
-                      )}
-
-                      {/* TRIP FORM (Keep existing logic but just hidden if not active) */}
-                      {editingTrip && (
-                          <form onSubmit={handleSave} className="space-y-4">
-                              <h3 className="text-xl font-bold mb-4">Editar Paquete</h3>
-                              <div className="grid grid-cols-2 gap-4">
-                                  <div><label className="block text-sm font-bold">Título</label><input className="w-full border p-2 rounded" value={editingTrip.title} onChange={e=>setEditingTrip({...editingTrip, title: e.target.value})} required /></div>
-                                  <div><label className="block text-sm font-bold">Ubicación</label><input className="w-full border p-2 rounded" value={editingTrip.location} onChange={e=>setEditingTrip({...editingTrip, location: e.target.value})} required /></div>
-                              </div>
-                              <div className="grid grid-cols-2 gap-4">
-                                  <div><label className="block text-sm font-bold">Precio</label><input type="number" className="w-full border p-2 rounded" value={editingTrip.price} onChange={e=>setEditingTrip({...editingTrip, price: parseFloat(e.target.value)})} required /></div>
-                                  <div><label className="block text-sm font-bold">Moneda</label><select className="w-full border p-2 rounded" value={editingTrip.baseCurrency} onChange={e=>setEditingTrip({...editingTrip, baseCurrency: e.target.value as any})}><option value="USD">USD</option><option value="ARS">ARS</option></select></div>
-                              </div>
-                              <div><label className="block text-sm font-bold">Descripción</label><textarea className="w-full border p-2 rounded h-32" value={editingTrip.description} onChange={e=>setEditingTrip({...editingTrip, description: e.target.value})} required /></div>
-                              <div><label className="block text-sm font-bold">Fechas Disponibles (una por línea)</label><textarea className="w-full border p-2 rounded h-24" value={tripDatesInput} onChange={e=>setTripDatesInput(e.target.value)} /></div>
-                              
-                              {/* Images section similar to Rental */}
-                              <div>
-                                  <label className="block text-sm font-bold mb-2">Imágenes</label>
-                                  <div className="flex gap-2 overflow-x-auto mb-2">
-                                      {editingTrip.images.map((img, idx) => (
-                                          <div key={idx} className="relative w-24 h-24 flex-shrink-0 group"><img src={img} className="w-full h-full object-cover rounded" /><button type="button" onClick={()=>{const newImgs = [...editingTrip.images]; newImgs.splice(idx,1); setEditingTrip({...editingTrip, images: newImgs})}} className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100">x</button></div>
-                                      ))}
-                                  </div>
-                                  <div className="flex gap-2">
-                                      <input type="text" placeholder="URL de imagen" className="border p-2 rounded flex-grow" value={imageUrlInput} onChange={e=>setImageUrlInput(e.target.value)} />
-                                      <button type="button" onClick={()=>{if(imageUrlInput){setEditingTrip({...editingTrip, images: [...editingTrip.images, imageUrlInput]}); setImageUrlInput('');}}} className="bg-gray-200 px-4 rounded">Agregar URL</button>
-                                      <label className="bg-gray-200 px-4 py-2 rounded cursor-pointer">Subir <input type="file" hidden multiple onChange={(e)=>handleFileUpload(e, setEditingTrip)} /></label>
-                                  </div>
-                              </div>
-
-                              <div className="flex gap-4 items-center border-t pt-4">
-                                  <label className="flex items-center gap-2"><input type="checkbox" checked={editingTrip.isOffer} onChange={e=>setEditingTrip({...editingTrip, isOffer: e.target.checked})} /> Es Oferta</label>
-                                  <label className="flex items-center gap-2"><input type="checkbox" checked={editingTrip.includesFlight} onChange={e=>setEditingTrip({...editingTrip, includesFlight: e.target.checked})} /> Incluye Vuelo</label>
-                                  <input type="text" placeholder="Etiqueta Especial (ej: HOT SALE)" className="border p-2 rounded" value={editingTrip.specialLabel || ''} onChange={e=>setEditingTrip({...editingTrip, specialLabel: e.target.value})} />
-                                  <input type="text" placeholder="Duración (ej: 7 Días)" className="border p-2 rounded" value={editingTrip.durationLabel || ''} onChange={e=>setEditingTrip({...editingTrip, durationLabel: e.target.value})} />
                               </div>
 
                               <div className="flex justify-end gap-2 border-t pt-4">

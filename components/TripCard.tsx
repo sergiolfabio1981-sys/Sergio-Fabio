@@ -45,13 +45,10 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
   if ('pricePerNight' in item) {
       displayPrice = (item as any).pricePerNight || 0;
       
-      if (isRental) {
-          const rentalItem = item as Apartment;
-          if (rentalItem.priceFrequency === 'monthly') {
-              priceLabel = 'Precio por mes';
-          } else {
-              priceLabel = 'Precio por noche';
-          }
+      // Robust check for monthly frequency, regardless of type tag
+      const freq = (item as any).priceFrequency;
+      if (freq === 'monthly') {
+          priceLabel = 'Precio por mes';
       } else {
           priceLabel = 'Precio por noche';
       }
