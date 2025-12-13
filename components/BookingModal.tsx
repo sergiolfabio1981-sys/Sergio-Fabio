@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import PayPalButton from './PayPalButton';
 
 interface PassengerData {
   firstName: string;
@@ -30,6 +29,10 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, title, pri
     address: '', city: '', province: '', country: '',
     email: '', phone: ''
   });
+
+  // Calculator State for Mercado Pago
+  const [calcUsd, setCalcUsd] = useState<number>(0);
+  const EXCHANGE_RATE = 1410; // Fixed rate as requested
 
   if (!isOpen) return null;
 
@@ -131,10 +134,55 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, title, pri
                 </div>
               </div>
 
-              {/* Option 2: PayPal */}
-              <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl">
-                <h5 className="font-bold text-blue-800 mb-2 text-center">Pagar Online con Tarjeta</h5>
-                <PayPalButton />
+              {/* Option 2: Mercado Pago */}
+              <div className="bg-sky-50 border border-sky-200 p-5 rounded-xl hover:shadow-md transition-all">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="bg-sky-500 text-white p-3 rounded-full">
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M4.5 4.5a3 3 0 00-3 3v9a3 3 0 003 3h8.25a3 3 0 003-3v-9a3 3 0 00-3-3H4.5zM19.94 18.75l-2.69-2.69V7.94l2.69-2.69c.944-.945 2.56-.276 2.56 1.06v11.38c0 1.336-1.616 2.005-2.56 1.06zM6.5 13h3a.5.5 0 010 1h-3a.5.5 0 010-1z" /></svg>
+                  </div>
+                  <div>
+                    <h5 className="font-bold text-sky-800">Pagar con Mercado Pago</h5>
+                    <p className="text-xs text-sky-700">Tarjetas de Débito, Crédito y Dinero en cuenta.</p>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-lg border border-sky-100 mb-4">
+                    <p className="text-xs font-bold text-gray-500 uppercase mb-2">Calculadora de Cambio</p>
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="flex-1">
+                            <label className="text-[10px] font-bold text-gray-400">Monto USD</label>
+                            <input 
+                                type="number" 
+                                placeholder="0.00" 
+                                className="w-full border p-2 rounded font-bold text-gray-700" 
+                                value={calcUsd || ''}
+                                onChange={(e) => setCalcUsd(parseFloat(e.target.value))}
+                            />
+                        </div>
+                        <span className="text-gray-400 pt-4">=</span>
+                        <div className="flex-1">
+                            <label className="text-[10px] font-bold text-gray-400">Total a Pagar (ARS)</label>
+                            <div className="w-full bg-gray-100 p-2 rounded font-bold text-sky-600 border border-gray-200">
+                                $ {(calcUsd * EXCHANGE_RATE).toLocaleString('es-AR')}
+                            </div>
+                        </div>
+                    </div>
+                    <p className="text-[10px] text-center text-gray-400">
+                        Cotización fija: 1 USD = ${EXCHANGE_RATE.toLocaleString('es-AR')} ARS
+                    </p>
+                </div>
+
+                <a 
+                    href="http://link.mercadopago.com.ar/lumat2" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="block w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 rounded-lg text-center transition-colors shadow-lg shadow-sky-500/30"
+                >
+                    Ir a Pagar
+                </a>
+                <p className="text-[10px] text-center text-gray-400 mt-2">
+                    Serás redirigido a Mercado Pago. Ingresa el monto en ARS calculado arriba.
+                </p>
               </div>
 
             </div>
