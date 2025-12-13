@@ -42,7 +42,8 @@ export interface Apartment {
   id: string;
   title: string;
   location: string;
-  pricePerNight: number;
+  pricePerNight: number; // This holds the Unit Price (Nightly or Monthly)
+  priceFrequency?: 'nightly' | 'monthly'; // New field
   description: string;
   images: string[];
   bedrooms: number;

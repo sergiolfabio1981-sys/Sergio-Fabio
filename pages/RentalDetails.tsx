@@ -50,7 +50,22 @@ const RentalDetails: React.FC = () => {
   };
 
   const nights = calculateDays();
-  const totalPrice = rental ? rental.pricePerNight * nights : 0;
+  
+  // LOGIC FOR PRICING (NIGHTLY VS MONTHLY)
+  let totalPrice = 0;
+  const isMonthly = rental?.priceFrequency === 'monthly';
+  const priceLabel = isMonthly ? 'Precio por mes' : 'Precio por noche';
+
+  if (rental) {
+      if (isMonthly) {
+          // If monthly, we estimate daily cost as Price / 30 for calculation purposes on short stays
+          // Or just standard pro-rating
+          totalPrice = (rental.pricePerNight / 30) * nights;
+      } else {
+          totalPrice = rental.pricePerNight * nights;
+      }
+  }
+
   const bookingFee = totalPrice * 0.10;
 
   const handleBookingClick = () => {
@@ -130,7 +145,7 @@ const RentalDetails: React.FC = () => {
         <ImageGallery images={rental.images} title={rental.title} />
         <div className="absolute bottom-0 left-0 w-full p-8 pointer-events-none bg-gradient-to-t from-black/80 to-transparent">
           <div className="max-w-7xl mx-auto">
-            <span className="bg-cyan-500 text-white px-3 py-1 rounded-full text-sm font-bold mb-3 inline-block shadow">ALQUILER TEMPORARIO</span>
+            <span className="bg-cyan-500 text-white px-3 py-1 rounded-full text-sm font-bold mb-3 inline-block shadow">ALQUILER {isMonthly ? 'MENSUAL' : 'TEMPORARIO'}</span>
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-2 drop-shadow-md">{rental.title}</h1>
             <p className="text-white/90 text-lg flex items-center drop-shadow-md"><svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>{rental.location}</p>
           </div>
@@ -172,7 +187,7 @@ const RentalDetails: React.FC = () => {
         <div className="lg:col-span-1">
           <div className="bg-white rounded-xl shadow-lg p-6 sticky top-24 border border-gray-100">
             <div className="flex justify-between items-end mb-6">
-              <span className="text-gray-500">Precio por noche</span>
+              <span className="text-gray-500">{priceLabel}</span>
               <div className="text-right">
                   {rental.discount && (<span className="text-sm text-gray-400 line-through mr-2">{formatPrice(rental.pricePerNight / (1 - rental.discount/100))}</span>)}
                   <span className="text-3xl font-bold text-cyan-600">{formatPrice(rental.pricePerNight)}</span>
@@ -183,7 +198,19 @@ const RentalDetails: React.FC = () => {
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">Check-in</label><input type="date" required className="w-full border border-gray-300 rounded-lg p-2 focus:ring-cyan-500" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} /></div>
                   <div><label className="block text-sm font-medium text-gray-700 mb-1">Check-out</label><input type="date" required className="w-full border border-gray-300 rounded-lg p-2 focus:ring-cyan-500" min={checkIn} value={checkOut} onChange={(e) => setCheckOut(e.target.value)} /></div>
               </div>
-              {nights > 0 && (<div className="bg-gray-50 p-4 rounded-lg space-y-2 text-sm"><div className="flex justify-between"><span>{formatPrice(rental.pricePerNight)} x {nights} noches</span><span>{formatPrice(totalPrice)}</span></div><div className="flex justify-between font-bold text-orange-600 pt-2 border-t border-gray-200"><span>Reserva (10%)</span><span>{formatPrice(bookingFee)}</span></div><p className="text-xs text-gray-400 mt-1">El resto se abona al llegar a la propiedad.</p></div>)}
+              {nights > 0 && (
+                  <div className="bg-gray-50 p-4 rounded-lg space-y-2 text-sm">
+                      <div className="flex justify-between">
+                          <span>{isMonthly ? 'Tarifa calculada (proporcional)' : `${formatPrice(rental.pricePerNight)} x ${nights} noches`}</span>
+                          <span>{formatPrice(totalPrice)}</span>
+                      </div>
+                      <div className="flex justify-between font-bold text-orange-600 pt-2 border-t border-gray-200">
+                          <span>Reserva (10%)</span>
+                          <span>{formatPrice(bookingFee)}</span>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-1">El resto se abona al llegar a la propiedad.</p>
+                  </div>
+              )}
               <button onClick={handleBookingClick} disabled={nights <= 0} className="w-full bg-cyan-600 disabled:bg-gray-300 text-white font-bold py-4 rounded-lg hover:bg-cyan-700 transition-colors shadow-lg shadow-cyan-500/30 mt-4">Solicitar Reserva</button>
             </div>
           </div>

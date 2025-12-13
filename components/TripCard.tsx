@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ListingItem } from '../types';
+import { ListingItem, Apartment } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 
@@ -44,7 +44,18 @@ const TripCard: React.FC<TripCardProps> = ({ trip: item }) => {
 
   if ('pricePerNight' in item) {
       displayPrice = (item as any).pricePerNight || 0;
-      priceLabel = 'Precio por noche';
+      
+      if (isRental) {
+          const rentalItem = item as Apartment;
+          if (rentalItem.priceFrequency === 'monthly') {
+              priceLabel = 'Precio por mes';
+          } else {
+              priceLabel = 'Precio por noche';
+          }
+      } else {
+          priceLabel = 'Precio por noche';
+      }
+
   } else if (isInstallment || isWorldCup) {
       const total = (item as any).totalPrice || 0;
       displayPrice = total; // Just show total or calculate monthly if needed, keeping simple for this view

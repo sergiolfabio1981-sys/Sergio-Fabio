@@ -47,6 +47,7 @@ export const createEmptyRental = (): Apartment => ({
   title: '',
   location: '',
   pricePerNight: 0,
+  priceFrequency: 'nightly', // Default to nightly
   description: '',
   images: [`https://picsum.photos/seed/${Date.now()}/800/600`],
   bedrooms: 1,
