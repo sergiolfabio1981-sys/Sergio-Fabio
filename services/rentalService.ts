@@ -5,15 +5,18 @@ import { supabase } from './supabase';
 
 // Helper to unpack frequency from amenities
 const unpackRental = (rental: Apartment): Apartment => {
-  const amenities = rental.amenities || [];
-  const freqTag = amenities.find(a => a.startsWith('__freq:'));
+  // SAFETY CHECK: Ensure amenities is an array before using array methods
+  const rawAmenities = rental.amenities;
+  const amenities = Array.isArray(rawAmenities) ? rawAmenities : [];
+  
+  const freqTag = amenities.find(a => typeof a === 'string' && a.startsWith('__freq:'));
   
   let frequency: 'nightly' | 'monthly' = 'nightly';
   let cleanAmenities = amenities;
 
   if (freqTag) {
       frequency = freqTag.split(':')[1] as 'nightly' | 'monthly';
-      cleanAmenities = amenities.filter(a => !a.startsWith('__freq:'));
+      cleanAmenities = amenities.filter(a => a !== freqTag);
   } else if (rental.priceFrequency) {
       // Fallback if it was somehow saved in the column in a legacy row
       frequency = rental.priceFrequency;
