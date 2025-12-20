@@ -361,7 +361,7 @@ const Admin: React.FC = () => {
           <label className="block text-sm font-bold mb-2">Imágenes</label>
           <div className="flex gap-2 overflow-x-auto mb-2">
               {obj.images?.map((img: string, idx: number) => (
-                  <div key={idx} className="relative w-24 h-24 flex-shrink-0 group"><img src={img} className="w-full h-full object-cover rounded" /><button type="button" onClick={()=>{const newImgs = [...obj.images]; newImgs.splice(idx,1); setter({...obj, images: newImgs})}} className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100">x</button></div>
+                  <div key={idx} className="relative w-24 h-24 flex-shrink-0 group"><img src={img} className="w-full h-full object-cover rounded" /><button type="button" onClick={()=>{if(window.confirm("¿Eliminar imagen?")){const newImgs = [...obj.images]; newImgs.splice(idx,1); setter({...obj, images: newImgs});}}} className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100">x</button></div>
               ))}
           </div>
           <div className="flex gap-2">
@@ -381,7 +381,7 @@ const Admin: React.FC = () => {
                       <h1 className="text-xl font-bold text-gray-800 mr-8">Panel de Control</h1>
                       <div className="hidden md:flex space-x-2 overflow-x-auto">
                           {['trips','rentals','groups','hotels','excursions','installments','worldcup','hero','legales','quote'].map((t: any) => (
-                              <button key={t} onClick={() => setActiveTab(t)} className={`px-3 py-2 rounded-md text-sm font-medium capitalize ${activeTab === t ? 'bg-gray-900 text-white' : 'text-gray-700 hover:bg-gray-200'}`}>{t}</button>
+                              <button key={t} onClick={() => setActiveTab(t as any)} className={`px-3 py-2 rounded-md text-sm font-medium capitalize ${activeTab === t ? 'bg-gray-900 text-white' : 'text-gray-700 hover:bg-gray-200'}`}>{t}</button>
                           ))}
                       </div>
                   </div>
@@ -526,7 +526,8 @@ const Admin: React.FC = () => {
                               </div>
                               <div className="grid grid-cols-3 gap-4">
                                   <div><label className="block text-sm font-bold">Precio</label><input type="number" className="w-full border p-2 rounded" value={editingRental.pricePerNight} onChange={e=>setEditingRental({...editingRental, pricePerNight: parseFloat(e.target.value)})} required /></div>
-                                  <div><label className="block text-sm font-bold">Frecuencia</label><select className="w-full border p-2 rounded" value={editingRental.priceFrequency || 'nightly'} onChange={e=>setEditingRental({...editingRental, priceFrequency: e.target.value})}><option value="nightly">Noche</option><option value="monthly">Mes</option></select></div>
+                                  {/* Fix: Casting e.target.value to ensure it matches the specific union type 'nightly' | 'monthly' */}
+                                  <div><label className="block text-sm font-bold">Frecuencia</label><select className="w-full border p-2 rounded" value={editingRental.priceFrequency || 'nightly'} onChange={e=>setEditingRental({...editingRental, priceFrequency: e.target.value as 'nightly' | 'monthly'})}><option value="nightly">Noche</option><option value="monthly">Mes</option></select></div>
                                   <div><label className="block text-sm font-bold">Moneda</label><select className="w-full border p-2 rounded" value={editingRental.baseCurrency} onChange={e=>setEditingRental({...editingRental, baseCurrency: e.target.value as any})}><option value="USD">USD</option><option value="ARS">ARS</option></select></div>
                               </div>
                               <div><label className="block text-sm font-bold">Descripción</label><textarea className="w-full border p-2 rounded h-24" value={editingRental.description} onChange={e=>setEditingRental({...editingRental, description: e.target.value})} required /></div>

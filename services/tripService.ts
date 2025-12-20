@@ -11,17 +11,15 @@ export const getTrips = async (): Promise<Trip[]> => {
 
     if (error) {
       console.error('Error fetching trips from Supabase:', error);
-      // Fallback to initial data if DB fails or is empty initially for demo
       return INITIAL_TRIPS; 
     }
 
-    // AUTO-SEEDING LOGIC FOR TRIPS
-    // If DB is empty or has fewer items than our updated list (indicating new packages were added to code), we seed it.
-    if (!data || data.length < INITIAL_TRIPS.length) {
-        console.log("Seeding Database with New Trips...");
+    // SEEDING LOGIC: Only run if DB is completely empty.
+    // This respects deletions made by the admin.
+    if (!data || data.length === 0) {
+        console.log("Seeding Database with Default Trips...");
         const { error: seedError } = await supabase.from('trips').upsert(INITIAL_TRIPS);
         if (seedError) console.error("Error seeding trips:", seedError);
-        // We return INITIAL_TRIPS here to show the new content immediately even if DB write takes a moment
         return INITIAL_TRIPS; 
     }
 
@@ -41,7 +39,6 @@ export const getTripById = async (id: string): Promise<Trip | undefined> => {
       .single();
 
     if (error) {
-       // Fallback to local search if not in DB (e.g. if using mock data)
        return INITIAL_TRIPS.find(t => t.id === id);
     }
     
@@ -52,7 +49,6 @@ export const getTripById = async (id: string): Promise<Trip | undefined> => {
 };
 
 export const saveTrip = async (trip: Trip): Promise<void> => {
-  // Ensure dates/images are arrays for Supabase text[] column compatibility
   const tripToSave = {
       ...trip,
       images: Array.isArray(trip.images) ? trip.images : [],
@@ -65,7 +61,7 @@ export const saveTrip = async (trip: Trip): Promise<void> => {
 
   if (error) {
     console.error('Error saving trip to Supabase:', error);
-    alert('Error guardando en la base de datos. Verifica la consola.');
+    throw error;
   }
 };
 
@@ -81,12 +77,12 @@ export const deleteTrip = async (id: string): Promise<void> => {
 };
 
 export const createEmptyTrip = (): Trip => ({
-  id: crypto.randomUUID(), // Use standard UUID for DB
+  id: crypto.randomUUID(),
   title: '',
   location: '',
   price: 0,
   description: '',
-  images: [`https://picsum.photos/seed/${Date.now()}/800/600`],
+  images: [`https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop`],
   isOffer: false,
   availableDates: [],
   discount: 0,

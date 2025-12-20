@@ -11,17 +11,15 @@ export const getExcursions = async (): Promise<Excursion[]> => {
       return INITIAL_EXCURSIONS;
     }
 
-    // AUTO-SEEDING LOGIC FOR EXCURSIONS
-    // If DB is empty or has significantly fewer items than our updated constants (indicating missing new data), seed it.
-    if (!data || data.length < INITIAL_EXCURSIONS.length) {
-        console.log("Seeding Database with New Excursions...");
+    // Seed ONLY if table is empty
+    if (!data || data.length === 0) {
+        console.log("Seeding Database with Default Excursions...");
         const { error: seedError } = await supabase.from('excursions').upsert(INITIAL_EXCURSIONS);
         if (seedError) console.error("Error seeding excursions:", seedError);
-        // Return local data immediately to show update
         return INITIAL_EXCURSIONS;
     }
 
-    return (data as Excursion[]) || INITIAL_EXCURSIONS;
+    return (data as Excursion[]) || [];
   } catch (err) {
     return INITIAL_EXCURSIONS;
   }
@@ -44,7 +42,10 @@ export const saveExcursion = async (excursion: Excursion): Promise<void> => {
       availableDates: Array.isArray(excursion.availableDates) ? excursion.availableDates : []
   };
   const { error } = await supabase.from('excursions').upsert(excursionToSave);
-  if (error) console.error('Error saving excursion:', error);
+  if (error) {
+      console.error('Error saving excursion:', error);
+      throw error;
+  }
 };
 
 export const deleteExcursion = async (id: string): Promise<void> => {
@@ -58,7 +59,7 @@ export const createEmptyExcursion = (): Excursion => ({
   location: '',
   price: 0,
   description: '',
-  images: [`https://picsum.photos/seed/${Date.now()}/800/600`],
+  images: [`https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?q=80&w=2070&auto=format&fit=crop`],
   isOffer: false,
   duration: '',
   availableDates: [],

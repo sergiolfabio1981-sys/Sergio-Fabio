@@ -14,18 +14,14 @@ export const initializeChat = () => {
         return;
     }
     
-    const ai = new GoogleGenAI({ apiKey });
+    // Initialize with correct object parameter as per guidelines
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     chatSession = ai.chats.create({
-      model: 'gemini-2.5-flash',
+      // Using gemini-3-flash-preview for basic text tasks
+      model: 'gemini-3-flash-preview',
       config: {
-        // Configuramos filtros de seguridad permisivos para evitar bloqueos de contenido turístico
-        safetySettings: [
-            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
-        ],
+        // System instruction is now part of the config object
         systemInstruction: `Eres "Cami", la asistente virtual amigable y profesional de la agencia de viajes "ABRAS Travel", especializada en destinos de playa, especialmente Brasil.
         Tu objetivo es ayudar a los usuarios y RECOLECTAR la siguiente información para generar un lead de venta:
         1. Nombre completo.
@@ -60,6 +56,7 @@ export const sendMessageToGemini = async function* (message: string) {
   try {
     const result = await chatSession.sendMessageStream({ message });
     for await (const chunk of result) {
+       // Accessing text as a property, not a method call
        if (chunk.text) {
          yield chunk.text;
        }
@@ -88,11 +85,10 @@ export const sendMessageToGemini = async function* (message: string) {
 // Nueva función para el Cotizador
 export const generateDestinationGuide = async (destination: string): Promise<string> => {
     try {
-        const apiKey = process.env.API_KEY;
-        if (!apiKey) return "No se pudo conectar con la IA (Falta API Key).";
+        if (!process.env.API_KEY) return "No se pudo conectar con la IA (Falta API Key).";
 
-        const ai = new GoogleGenAI({ apiKey });
-        const model = ai.models.getGenerativeModel({ model: 'gemini-2.5-flash' });
+        // Always create a new instance right before making an API call
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
         const prompt = `Escribe una guía turística breve, atractiva y persuasiva sobre ${destination} para incluir en un presupuesto de viaje de la agencia ABRAS Travel.
         Debe tener 3 secciones:
@@ -102,8 +98,14 @@ export const generateDestinationGuide = async (destination: string): Promise<str
         
         Usa un tono profesional pero cálido. No uses markdown (negritas, etc), solo texto plano con saltos de línea. Máximo 200 palabras.`;
 
-        const result = await model.generateContent({ contents: prompt });
-        return result.response.text() || "No se pudo generar la guía.";
+        // Direct call to ai.models.generateContent without defining model first
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: prompt,
+        });
+
+        // Use the .text property to get the string output
+        return response.text || "No se pudo generar la guía.";
     } catch (error) {
         console.error("Error generating guide:", error);
         return "Error al generar la guía turística. Intente manualmente.";
