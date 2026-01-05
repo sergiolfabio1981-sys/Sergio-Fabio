@@ -106,6 +106,7 @@ export interface InstallmentTrip {
   title: string;
   location: string;
   totalPrice: number;
+  firstPaymentAmount?: number; // Added: Admin-defined initial payment per person
   description: string;
   images: string[];
   departureDate: string; // ISO string or "YYYY-MM-DD"

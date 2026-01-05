@@ -45,6 +45,7 @@ export const createEmptyInstallmentTrip = (): InstallmentTrip => ({
   title: '',
   location: '',
   totalPrice: 0,
+  firstPaymentAmount: 0,
   description: '',
   images: [`https://picsum.photos/seed/${Date.now()}/800/600`],
   departureDate: '2026-01-01',
