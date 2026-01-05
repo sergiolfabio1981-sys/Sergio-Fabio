@@ -13,6 +13,7 @@ const InstallmentDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [trip, setTrip] = useState<InstallmentTrip | undefined>(undefined);
   const [passengers, setPassengers] = useState(1);
+  const [firstPayment, setFirstPayment] = useState<number | ''>('');
   const [isSharingMenuOpen, setIsSharingMenuOpen] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   
@@ -29,11 +30,19 @@ const InstallmentDetails: React.FC = () => {
   // Installment Calculation
   const now = new Date();
   const depDate = trip ? new Date(trip.departureDate) : new Date();
+  // We calculate months difference
   const diffMonths = (depDate.getFullYear() - now.getFullYear()) * 12 + (depDate.getMonth() - now.getMonth());
-  const monthsCount = diffMonths > 0 ? diffMonths : 1; 
+  const totalMonths = diffMonths > 0 ? diffMonths : 1; 
 
   const totalPrice = trip ? trip.totalPrice * passengers : 0;
-  const installmentValue = totalPrice / monthsCount;
+  
+  // Logic for custom first installment
+  const defaultFirstPayment = totalPrice / totalMonths;
+  const actualFirstPayment = firstPayment === '' ? defaultFirstPayment : Number(firstPayment);
+  
+  const remainingBalance = Math.max(0, totalPrice - actualFirstPayment);
+  const remainingMonths = totalMonths > 1 ? totalMonths - 1 : 0;
+  const monthlyInstallment = remainingMonths > 0 ? remainingBalance / remainingMonths : 0;
 
   // --- SHARE LOGIC ---
   const handleShareImage = async () => {
@@ -59,7 +68,8 @@ const InstallmentDetails: React.FC = () => {
                     `📦 *Plan:* ${trip?.title}\n` +
                     `👥 *Pasajeros:* ${passengers}\n` +
                     `💰 *VALOR TOTAL:* ${formatPrice(totalPrice)}\n` +
-                    `💳 *Financiación:* ${monthsCount} cuotas de ${formatPrice(installmentValue)}\n\n` +
+                    `💳 *Entrega Inicial:* ${formatPrice(actualFirstPayment)}\n` +
+                    `📉 *Saldo:* ${remainingMonths} cuotas de ${formatPrice(monthlyInstallment)}\n\n` +
                     `*DATOS DEL TITULAR:*\n` +
                     `👤 ${passengerData.firstName} ${passengerData.lastName}\n` +
                     `🆔 DNI: ${passengerData.dni}\n` +
@@ -105,22 +115,76 @@ const InstallmentDetails: React.FC = () => {
                     <h2 className="text-2xl font-bold text-gray-800 mb-4">Detalles de ABRAS Cuotas</h2>
                     <p className="text-gray-600 text-lg leading-relaxed mb-6">{trip.description}</p>
                     <div className="bg-indigo-50 p-6 rounded-xl border border-indigo-100 flex flex-col md:flex-row justify-between items-center gap-4">
-                        <div className="text-center md:text-left"><p className="text-indigo-900 font-bold text-lg">Financiación Propia</p><p className="text-indigo-700 text-sm">Sin bancos, sin intereses ocultos.</p></div>
-                        <div className="text-3xl font-bold text-indigo-600">{monthsCount} CUOTAS</div>
+                        <div className="text-center md:text-left">
+                            <p className="text-indigo-900 font-bold text-lg">Financiación Propia</p>
+                            <p className="text-indigo-700 text-sm">Abona mensualmente y congela el precio total.</p>
+                        </div>
+                        <div className="text-3xl font-bold text-indigo-600">{totalMonths} MESES DISPONIBLES</div>
                     </div>
                 </div>
             </div>
             <div className="lg:col-span-1">
                 <div className="bg-white p-6 rounded-xl shadow-lg sticky top-24 border-t-4 border-indigo-600">
-                    <h3 className="text-xl font-bold mb-6 text-center">Resumen del Plan</h3>
-                    <div className="mb-4"><label className="block text-sm font-bold text-gray-500 mb-1">Pasajeros</label><div className="flex border rounded"><button onClick={()=>setPassengers(Math.max(1, passengers-1))} className="px-4 py-2 hover:bg-gray-100">-</button><span className="flex-1 text-center py-2 font-bold">{passengers}</span><button onClick={()=>setPassengers(passengers+1)} className="px-4 py-2 hover:bg-gray-100">+</button></div></div>
-                    <div className="space-y-3 py-4 border-t border-b border-gray-100">
-                        <div className="flex justify-between text-gray-600 font-bold"><span>VALOR TOTAL ({passengers} pax)</span><span>{formatPrice(totalPrice)}</span></div>
-                        <div className="flex justify-between text-gray-600 text-sm"><span>Meses hasta salida</span><span>{monthsCount} meses</span></div>
-                        <div className="flex justify-between text-lg font-bold text-indigo-600 pt-2"><span>Cuota Mensual Sugerida</span><span>{formatPrice(installmentValue)}</span></div>
+                    <h3 className="text-xl font-bold mb-6 text-center">Configura tu Pago</h3>
+                    
+                    <div className="mb-4">
+                        <label className="block text-sm font-bold text-gray-500 mb-1">Cantidad de Pasajeros</label>
+                        <div className="flex border rounded overflow-hidden">
+                            <button onClick={()=>setPassengers(Math.max(1, passengers-1))} className="px-4 py-2 hover:bg-gray-100 transition-colors">-</button>
+                            <span className="flex-1 text-center py-2 font-bold bg-white">{passengers}</span>
+                            <button onClick={()=>setPassengers(passengers+1)} className="px-4 py-2 hover:bg-gray-100 transition-colors">+</button>
+                        </div>
                     </div>
-                    <p className="text-xs text-center text-gray-400 mt-2 mb-4">Abonando la 1ra cuota hoy congelas el precio total.</p>
-                    <button onClick={handleBookingClick} className="w-full bg-indigo-600 text-white font-bold py-4 rounded-lg hover:bg-indigo-700 shadow-lg shadow-indigo-500/30">Pagar y Reservar</button>
+
+                    <div className="mb-6">
+                        <label className="block text-sm font-bold text-gray-500 mb-1">Entrega Inicial / 1ra Cuota (USD)</label>
+                        <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">USD</span>
+                            <input 
+                                type="number" 
+                                className="w-full border rounded-lg py-2 pl-14 pr-4 focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-indigo-700"
+                                placeholder={defaultFirstPayment.toFixed(0)}
+                                value={firstPayment}
+                                onChange={(e) => setFirstPayment(e.target.value === '' ? '' : Number(e.target.value))}
+                            />
+                        </div>
+                        <p className="text-[10px] text-gray-400 mt-1">Sugerido: {formatPrice(defaultFirstPayment)}</p>
+                    </div>
+
+                    <div className="space-y-3 py-4 border-t border-b border-gray-100">
+                        <div className="flex justify-between text-gray-600 font-bold">
+                            <span>VALOR TOTAL</span>
+                            <span>{formatPrice(totalPrice)}</span>
+                        </div>
+                        <div className="flex justify-between text-gray-600 text-sm italic">
+                            <span>Entrega hoy</span>
+                            <span className="font-bold text-indigo-600">{formatPrice(actualFirstPayment)}</span>
+                        </div>
+                        {remainingMonths > 0 ? (
+                            <div className="flex justify-between text-lg font-bold text-indigo-700 pt-2 border-t border-dashed mt-2">
+                                <div className="flex flex-col">
+                                    <span>Saldo Restante</span>
+                                    <span className="text-xs text-gray-400 font-normal">en {remainingMonths} cuotas de</span>
+                                </div>
+                                <span className="text-2xl">{formatPrice(monthlyInstallment)}</span>
+                            </div>
+                        ) : (
+                            <div className="text-center text-sm text-orange-600 font-bold pt-2">
+                                Salida inmediata: El saldo debe abonarse hoy.
+                            </div>
+                        )}
+                    </div>
+
+                    <p className="text-[10px] text-center text-gray-400 mt-3 mb-5 leading-tight">
+                        Abonando la 1ra cuota hoy congelas el precio total en dólares para todos los pasajeros.
+                    </p>
+
+                    <button 
+                        onClick={handleBookingClick} 
+                        className="w-full bg-indigo-600 text-white font-bold py-4 rounded-lg hover:bg-indigo-700 shadow-lg shadow-indigo-500/30 transition-all transform active:scale-95"
+                    >
+                        Pagar 1ra Cuota y Reservar
+                    </button>
                 </div>
             </div>
         </div>
@@ -129,7 +193,7 @@ const InstallmentDetails: React.FC = () => {
             isOpen={isBookingModalOpen} 
             onClose={() => setIsBookingModalOpen(false)}
             title={trip.title}
-            priceInfo={`Valor Total (${passengers} pax): ${formatPrice(totalPrice)}`}
+            priceInfo={`1ra Cuota (${passengers} pax): ${formatPrice(actualFirstPayment)}`}
             onConfirmWhatsApp={handleConfirmWhatsApp}
         />
     </div>
