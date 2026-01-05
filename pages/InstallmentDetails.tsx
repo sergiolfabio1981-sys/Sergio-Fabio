@@ -55,12 +55,16 @@ const InstallmentDetails: React.FC = () => {
   };
 
   const handleConfirmWhatsApp = (passengerData: any) => {
-    const message = `*PLAN ABRAS CUOTAS - SOLICITUD*\n\n` +
+    const message = `*PLAN ABRAS CUOTAS - SOLICITUD DE RESERVA*\n\n` +
                     `📦 *Plan:* ${trip?.title}\n` +
                     `👥 *Pasajeros:* ${passengers}\n` +
-                    `💳 *Cuota Estimada:* ${formatPrice(installmentValue)} (${monthsCount} cuotas)\n\n` +
-                    `*DATOS:* ${passengerData.firstName} ${passengerData.lastName} - DNI ${passengerData.dni}\n` +
+                    `💰 *VALOR TOTAL:* ${formatPrice(totalPrice)}\n` +
+                    `💳 *Financiación:* ${monthsCount} cuotas de ${formatPrice(installmentValue)}\n\n` +
+                    `*DATOS DEL TITULAR:*\n` +
+                    `👤 ${passengerData.firstName} ${passengerData.lastName}\n` +
+                    `🆔 DNI: ${passengerData.dni}\n` +
                     `📧 ${passengerData.email}\n` +
+                    `📱 ${passengerData.phone}\n\n` +
                     `🔗 Link: ${window.location.href}`;
     
     const whatsappUrl = `https://wa.me/5491140632644?text=${encodeURIComponent(message)}`;
@@ -108,15 +112,15 @@ const InstallmentDetails: React.FC = () => {
             </div>
             <div className="lg:col-span-1">
                 <div className="bg-white p-6 rounded-xl shadow-lg sticky top-24 border-t-4 border-indigo-600">
-                    <h3 className="text-xl font-bold mb-6 text-center">Calculadora de Cuotas</h3>
+                    <h3 className="text-xl font-bold mb-6 text-center">Resumen del Plan</h3>
                     <div className="mb-4"><label className="block text-sm font-bold text-gray-500 mb-1">Pasajeros</label><div className="flex border rounded"><button onClick={()=>setPassengers(Math.max(1, passengers-1))} className="px-4 py-2 hover:bg-gray-100">-</button><span className="flex-1 text-center py-2 font-bold">{passengers}</span><button onClick={()=>setPassengers(passengers+1)} className="px-4 py-2 hover:bg-gray-100">+</button></div></div>
                     <div className="space-y-3 py-4 border-t border-b border-gray-100">
-                        <div className="flex justify-between text-gray-600"><span>Precio Total ({passengers} pax)</span><span>{formatPrice(totalPrice)}</span></div>
-                        <div className="flex justify-between text-gray-600"><span>Meses hasta salida</span><span>{monthsCount} meses</span></div>
-                        <div className="flex justify-between text-xl font-bold text-indigo-600 pt-2"><span>Valor Cuota Mensual</span><span>{formatPrice(installmentValue)}</span></div>
+                        <div className="flex justify-between text-gray-600 font-bold"><span>VALOR TOTAL ({passengers} pax)</span><span>{formatPrice(totalPrice)}</span></div>
+                        <div className="flex justify-between text-gray-600 text-sm"><span>Meses hasta salida</span><span>{monthsCount} meses</span></div>
+                        <div className="flex justify-between text-lg font-bold text-indigo-600 pt-2"><span>Cuota Mensual Sugerida</span><span>{formatPrice(installmentValue)}</span></div>
                     </div>
                     <p className="text-xs text-center text-gray-400 mt-2 mb-4">Abonando la 1ra cuota hoy congelas el precio total.</p>
-                    <button onClick={handleBookingClick} className="w-full bg-indigo-600 text-white font-bold py-4 rounded-lg hover:bg-indigo-700 shadow-lg shadow-indigo-500/30">Pagar 1ra Cuota y Reservar</button>
+                    <button onClick={handleBookingClick} className="w-full bg-indigo-600 text-white font-bold py-4 rounded-lg hover:bg-indigo-700 shadow-lg shadow-indigo-500/30">Pagar y Reservar</button>
                 </div>
             </div>
         </div>
@@ -125,7 +129,7 @@ const InstallmentDetails: React.FC = () => {
             isOpen={isBookingModalOpen} 
             onClose={() => setIsBookingModalOpen(false)}
             title={trip.title}
-            priceInfo={`1ra Cuota (${passengers} pax): ${formatPrice(installmentValue)}`}
+            priceInfo={`Valor Total (${passengers} pax): ${formatPrice(totalPrice)}`}
             onConfirmWhatsApp={handleConfirmWhatsApp}
         />
     </div>
