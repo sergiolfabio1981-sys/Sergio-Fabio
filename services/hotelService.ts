@@ -39,14 +39,19 @@ export const getHotelById = async (id: string): Promise<Hotel | undefined> => {
 };
 
 export const saveHotel = async (hotel: Hotel): Promise<void> => {
+  // Extraemos 'lat', 'lng' y 'type' para que no rompan el guardado si las columnas no existen en Supabase
+  const { type, lat, lng, ...rest } = hotel;
+
   const hotelToSave = {
-      ...hotel,
+      ...rest,
       images: Array.isArray(hotel.images) ? hotel.images : [],
       amenities: Array.isArray(hotel.amenities) ? hotel.amenities : []
   };
+
   const { error } = await supabase.from('hotels').upsert(hotelToSave);
+  
   if (error) {
-      console.error('Error saving hotel:', error);
+      console.error('Error saving hotel to Supabase:', error);
       throw error; 
   }
 };

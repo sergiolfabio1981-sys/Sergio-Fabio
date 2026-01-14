@@ -65,8 +65,8 @@ export const saveRental = async (rental: Apartment): Promise<void> => {
   }
 
   // 2. Construct Payload (removing virtual fields that don't exist in DB)
-  // We explicitly destructure to avoid sending 'type' or 'priceFrequency' which might block the INSERT
-  const { type, priceFrequency, ...rentalData } = rental;
+  // Excluimos lat/lng preventivamente para evitar errores de esquema
+  const { type, priceFrequency, lat, lng, ...rentalData } = rental;
 
   const rentalToSave = {
       ...rentalData,
@@ -78,7 +78,7 @@ export const saveRental = async (rental: Apartment): Promise<void> => {
   
   if (error) {
       console.error('Error saving rental:', error);
-      throw error; // Rethrow so Admin UI can alert the user
+      throw error; 
   }
 };
 
